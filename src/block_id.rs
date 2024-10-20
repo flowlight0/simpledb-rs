@@ -5,6 +5,9 @@ pub struct BlockId<'a> {
 
 impl<'a> BlockId<'a> {
     pub fn new(file_name: &'a str, block_slot: usize) -> Self {
-        BlockId { file_name, block_slot }
+        BlockId {
+            file_name,
+            block_slot,
+        }
     }
 }

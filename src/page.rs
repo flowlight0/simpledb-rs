@@ -8,7 +8,7 @@ impl Page {
             byte_buffer: vec![0; block_size],
         }
     }
-    
+
     pub fn set_i32(&mut self, offset: usize, value: i32) -> () {
         let bytes = value.to_le_bytes();
         self.byte_buffer[offset..offset + 4].copy_from_slice(&bytes);
@@ -21,6 +21,10 @@ impl Page {
             self.byte_buffer[offset + 2],
             self.byte_buffer[offset + 3],
         ])
+    }
+
+    pub fn set_bytes(&mut self, offset: usize, bytes: &[u8]) -> () {
+        self.byte_buffer[offset..offset + bytes.len()].copy_from_slice(bytes);
     }
 }
 
