@@ -50,14 +50,13 @@ impl FileManager {
         file.metadata().unwrap().len() as usize / self.block_size
     }
 
-    pub fn append_block<'a>(&mut self, file_name: &'a str) -> Result<BlockId<'a>> {
+    pub fn append_block<'a>(&mut self, file_name: &'a str) -> Result<usize> {
         let binding = self.load_and_cache_file(file_name);
         let mut file = binding.lock().unwrap();
         let num_blocks = file.metadata().unwrap().len() as usize / self.block_size;
-        let new_block_id = BlockId::new(file_name, num_blocks);
         let new_block_contents = vec![0; self.block_size];
         file.write(new_block_contents.as_slice())?;
-        Ok(new_block_id)
+        Ok(num_blocks)
     }
 
     fn load_and_cache_file(&mut self, file_name: &str) -> Arc<Mutex<File>> {
@@ -120,8 +119,8 @@ mod tests {
 
         assert_eq!(file_manager.get_num_blocks("testfile"), 0);
         for i in 0..10 {
-            let block_id = file_manager.append_block("testfile")?;
-            assert_eq!(block_id.block_slot, i);
+            let block_slot = file_manager.append_block("testfile")?;
+            assert_eq!(block_slot, i);
             assert_eq!(file_manager.get_num_blocks("testfile"), i + 1);
         }
         Ok(())
