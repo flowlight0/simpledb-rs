@@ -7,7 +7,7 @@ use crate::{block_id::BlockId, page::Page};
 
 pub struct FileManager {
     directory: PathBuf,
-    block_size: usize,
+    pub block_size: usize,
     opened_files: RwLock<HashMap<String, Arc<Mutex<File>>>>,
 }
 
@@ -27,7 +27,9 @@ impl FileManager {
     pub fn write(&mut self, block_id: &BlockId, page: &Page) -> Result<()> {
         let binding = self.load_and_cache_file(block_id);
         let mut file = binding.lock().unwrap();
-        file.seek(SeekFrom::Start((block_id.block_slot * self.block_size) as u64))?;
+        file.seek(SeekFrom::Start(
+            (block_id.block_slot * self.block_size) as u64,
+        ))?;
         file.write(page.byte_buffer.as_slice())?;
         Ok(())
     }
@@ -35,7 +37,9 @@ impl FileManager {
     pub fn read(&mut self, block_id: &BlockId, page: &mut Page) -> Result<()> {
         let binding = self.load_and_cache_file(block_id);
         let mut file = binding.lock().unwrap();
-        file.seek(SeekFrom::Start((block_id.block_slot * self.block_size) as u64))?;
+        file.seek(SeekFrom::Start(
+            (block_id.block_slot * self.block_size) as u64,
+        ))?;
         file.read_exact(&mut page.byte_buffer)?;
         Ok(())
     }
@@ -61,11 +65,19 @@ impl FileManager {
             .read(true)
             .write(true)
             .create(true)
-             .open(file_path)
+            .open(file_path)
             .unwrap();
         let value = Arc::new(Mutex::new(file));
         hash_map.insert(block_id.file_name.to_string(), value.clone());
         return value;
+    }
+
+    pub fn get_num_blocks(&self, file_name: &str) -> usize {
+        todo!()
+    }
+
+    pub fn append_block<'a>(&mut self, file_name: &'a str) -> BlockId<'a> {
+        todo!()
     }
 }
 
