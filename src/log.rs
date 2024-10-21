@@ -112,7 +112,8 @@ mod tests {
 
     #[test]
     fn test_log_manager() -> Result<()> {
-        let file_manager = FileManager::new("data".into(), 1024);
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let file_manager = FileManager::new(temp_dir, 1024);
         let mut log_manager = LogManager::new(file_manager, "log".into())?;
         log_manager.append_record(&LogRecord::Start)?;
         log_manager.flush(1)?;
