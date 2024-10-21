@@ -1,3 +1,3 @@
-mod file_manager;
-mod log;
-mod page;
+pub mod file_manager;
+pub mod log;
+pub mod page;
