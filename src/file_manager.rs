@@ -3,7 +3,21 @@ use std::io::{Read, Result, Seek, SeekFrom, Write};
 use std::sync::{Arc, Mutex, RwLock};
 use std::{collections::HashMap, path::PathBuf};
 
-use crate::{block_id::BlockId, page::Page};
+use crate::page::Page;
+
+pub struct BlockId<'a> {
+    pub file_name: &'a str,
+    pub block_slot: usize,
+}
+
+impl<'a> BlockId<'a> {
+    pub fn new(file_name: &'a str, block_slot: usize) -> Self {
+        BlockId {
+            file_name,
+            block_slot,
+        }
+    }
+}
 
 pub struct FileManager {
     directory: PathBuf,
@@ -89,7 +103,7 @@ impl FileManager {
 
 #[cfg(test)]
 mod tests {
-    use crate::{block_id::BlockId, page::Page};
+    use crate::page::Page;
 
     use super::*;
     use tempfile;

@@ -1,6 +1,9 @@
 use std::{io::Result, mem, sync::Mutex};
 
-use crate::{block_id::BlockId, file_manager::FileManager, page::Page};
+use crate::{
+    file_manager::{BlockId, FileManager},
+    page::Page,
+};
 
 enum LogRecord {
     Start,
