@@ -20,7 +20,7 @@ struct LogManager {
     file_manager: FileManager,
     log_file: String,
     log_page: Page,
-    current_block_slot: usize,
+    current_block: BlockId,
     append_lock: Mutex<()>,
     latest_log_sequence_number: usize,
     last_saved_log_sequence_number: usize,
@@ -34,31 +34,26 @@ impl LogManager {
     pub fn new(mut file_manager: FileManager, log_file: String) -> Result<Self> {
         let num_blocks = file_manager.get_num_blocks(&log_file);
         let mut log_page = Page::new(file_manager.block_size);
-
-        let log_file_for_block_id = log_file.clone();
-        let current_block_slot = if num_blocks == 0 {
+        let current_block = if num_blocks == 0 {
             // Create the first block of the file
-            let current_block_slot = file_manager.append_block(&log_file_for_block_id)?;
+            let block_id = file_manager.append_block(&log_file)?;
 
             // Currently, page cannot store usize values
             log_page.set_i32(0, file_manager.block_size as i32);
-            file_manager.write(
-                &BlockId::new(&log_file_for_block_id, current_block_slot),
-                &log_page,
-            )?;
-            current_block_slot
+            file_manager.write(&block_id, &log_page)?;
+            block_id
         } else {
             // Read the last block of the file
-            let current_block = BlockId::new(&log_file_for_block_id, num_blocks - 1);
+            let current_block = file_manager.get_last_block(&log_file);
             file_manager.read(&current_block, &mut log_page)?;
-            current_block.block_slot
+            current_block
         };
 
         Ok(Self {
             file_manager,
             log_file,
             log_page,
-            current_block_slot,
+            current_block,
             append_lock: Mutex::new(()),
             latest_log_sequence_number: 0,
             last_saved_log_sequence_number: 0,
@@ -76,21 +71,16 @@ impl LogManager {
             // The record does not fit in the current block
 
             // Save the current page into the file
-            self.file_manager.write(
-                &BlockId::new(&self.log_file, self.current_block_slot),
-                &self.log_page,
-            )?;
+            self.file_manager
+                .write(&self.current_block, &self.log_page)?;
             self.last_saved_log_sequence_number = self.latest_log_sequence_number;
 
             // Create a new block
-            let new_block_slot = self.file_manager.append_block(&self.log_file)?;
+            let new_block = self.file_manager.append_block(&self.log_file)?;
             self.log_page
                 .set_i32(0, self.file_manager.block_size as i32);
-            self.file_manager.write(
-                &BlockId::new(&self.log_file, new_block_slot),
-                &mut self.log_page,
-            )?;
-            self.current_block_slot = new_block_slot;
+            self.file_manager.write(&new_block, &mut self.log_page)?;
+            self.current_block = new_block;
             boundary = self.log_page.get_i32(0) as usize;
         }
 
@@ -109,10 +99,8 @@ impl LogManager {
     }
 
     fn do_flush(&mut self) -> Result<()> {
-        self.file_manager.write(
-            &BlockId::new(&self.log_file, self.current_block_slot),
-            &self.log_page,
-        )?;
+        self.file_manager
+            .write(&self.current_block, &self.log_page)?;
         self.last_saved_log_sequence_number = self.latest_log_sequence_number;
         Ok(())
     }
