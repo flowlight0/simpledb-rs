@@ -5,7 +5,7 @@ use std::{
 };
 
 use crate::{
-    file_manager::{BlockId, FileManager},
+    file::{BlockId, FileManager},
     page::Page,
 };
 

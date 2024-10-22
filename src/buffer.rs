@@ -2,7 +2,7 @@ use std::io::Result;
 use std::sync::{Arc, Condvar, Mutex};
 use std::time::{Duration, Instant};
 
-use crate::file_manager::{BlockId, FileManager};
+use crate::file::{BlockId, FileManager};
 use crate::log::LogManager;
 use crate::page::Page;
 
