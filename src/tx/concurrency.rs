@@ -1,6 +1,7 @@
 use std::{
     collections::HashMap,
-    sync::{Condvar, Mutex},
+    f32::consts::LOG10_2,
+    sync::{Arc, Condvar, Mutex},
     time::Instant,
 };
 
@@ -12,7 +13,7 @@ enum Lock {
     Shared(usize),
 }
 
-struct LockTable {
+pub struct LockTable {
     locks: Mutex<HashMap<BlockId, Lock>>,
     condvar: Condvar,
     lock_maxtime: u128,
@@ -54,7 +55,7 @@ fn get_num_shared_locks(locks: &HashMap<BlockId, Lock>, block: BlockId) -> Optio
 }
 
 impl LockTable {
-    fn new(lock_maxtime: u128) -> Self {
+    pub fn new(lock_maxtime: u128) -> Self {
         LockTable {
             locks: Mutex::new(HashMap::new()),
             condvar: Condvar::new(),
@@ -140,6 +141,32 @@ impl LockTable {
                 Lock::None => {}
             }
         }
+    }
+}
+
+pub struct ConcurrencyManager {
+    lock_table: Arc<LockTable>,
+    my_locks: HashMap<BlockId, Lock>,
+}
+
+impl ConcurrencyManager {
+    pub fn new(lock_table: Arc<LockTable>) -> Self {
+        ConcurrencyManager {
+            lock_table: lock_table.clone(),
+            my_locks: HashMap::new(),
+        }
+    }
+
+    pub fn lock_shared(&mut self, block: BlockId) {
+        unimplemented!()
+    }
+
+    pub fn lock_exclusive(&mut self, block: BlockId) {
+        unimplemented!()
+    }
+
+    pub fn release(&mut self) {
+        unimplemented!()
     }
 }
 
