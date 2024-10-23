@@ -11,11 +11,13 @@ use crate::{
 
 pub enum LogRecord {
     Start,
+    Commit(usize),
 }
 impl LogRecord {
     fn to_bytes(&self) -> &[u8] {
         match self {
             LogRecord::Start => &['S' as u8],
+            LogRecord::Commit(transaction_id) => !unimplemented!(),
         }
     }
 }

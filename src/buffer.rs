@@ -175,6 +175,16 @@ impl BufferManager {
         }
         Ok(None)
     }
+
+    pub fn flush_all(&self, transaction_id: usize) -> Result<()> {
+        let mut buffers = self.buffers.lock().unwrap();
+        for buffer in buffers.iter_mut() {
+            if buffer.modifying_transaction_id == Some(transaction_id) {
+                buffer.flush()?;
+            }
+        }
+        Ok(())
+    }
 }
 
 #[cfg(test)]
