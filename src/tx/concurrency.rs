@@ -15,9 +15,10 @@ enum Lock {
 struct LockTable {
     locks: Mutex<HashMap<BlockId, Lock>>,
     condvar: Condvar,
+    lock_maxtime: u128,
 }
 
-const LOCK_MAX_TIME_IN_MILLIS: u128 = 10_000;
+const DEFAULT_LOCK_MAXTIME_IN_MILLIS: u128 = 10_000;
 
 fn has_exclusive_lock(locks: &HashMap<BlockId, Lock>, block: BlockId) -> bool {
     if let Some(lock) = locks.get(&block) {
@@ -53,10 +54,11 @@ fn get_num_shared_locks(locks: &HashMap<BlockId, Lock>, block: BlockId) -> Optio
 }
 
 impl LockTable {
-    fn new() -> Self {
+    fn new(lock_maxtime: u128) -> Self {
         LockTable {
             locks: Mutex::new(HashMap::new()),
             condvar: Condvar::new(),
+            lock_maxtime,
         }
     }
 
@@ -64,10 +66,10 @@ impl LockTable {
         let start_time = Instant::now();
         let mut locks = self.locks.lock().unwrap();
         while has_exclusive_lock(&locks, block) {
-            if start_time.elapsed().as_millis() > LOCK_MAX_TIME_IN_MILLIS {
+            if start_time.elapsed().as_millis() > self.lock_maxtime {
                 return false;
             }
-            let duration = std::time::Duration::from_millis(LOCK_MAX_TIME_IN_MILLIS as u64);
+            let duration = std::time::Duration::from_millis(self.lock_maxtime as u64);
             let lock_result = self.condvar.wait_timeout(locks, duration).unwrap();
             locks = lock_result.0;
             if lock_result.1.timed_out() {
@@ -93,11 +95,11 @@ impl LockTable {
         let start_time = Instant::now();
         let mut locks = self.locks.lock().unwrap();
         while has_any_lock(&locks, block) {
-            if start_time.elapsed().as_millis() > LOCK_MAX_TIME_IN_MILLIS {
+            if start_time.elapsed().as_millis() > self.lock_maxtime {
                 return false;
             }
 
-            let duration = std::time::Duration::from_millis(LOCK_MAX_TIME_IN_MILLIS as u64);
+            let duration = std::time::Duration::from_millis(self.lock_maxtime as u64);
             let lock_result = self.condvar.wait_timeout(locks, duration).unwrap();
             locks = lock_result.0;
             if lock_result.1.timed_out() {
@@ -138,5 +140,25 @@ impl LockTable {
                 Lock::None => {}
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_lock_table() {
+        let mut lock_table = LockTable::new(10);
+        assert!(lock_table.lock_shared(BlockId::new(0, 0)));
+        assert!(lock_table.lock_shared(BlockId::new(0, 0)));
+
+        assert!(!lock_table.lock_exclusive(BlockId::new(0, 0)));
+
+        lock_table.unlock(BlockId::new(0, 0));
+        assert!(!lock_table.lock_exclusive(BlockId::new(0, 0)));
+
+        lock_table.unlock(BlockId::new(0, 0));
+        assert!(lock_table.lock_exclusive(BlockId::new(0, 0)));
     }
 }
