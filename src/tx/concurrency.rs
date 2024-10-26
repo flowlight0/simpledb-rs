@@ -13,7 +13,7 @@ enum Lock {
     Shared(usize),
 }
 
-struct LockGiveUpError {}
+pub struct LockGiveUpError {}
 
 // We assume that each transaction always gets a shared lock before getting an exclusive lock.
 // When some transaction tries to get an exclusive lock and there is only one shared lock,
@@ -64,7 +64,7 @@ impl LockTable {
         }
     }
 
-    fn lock_shared(&mut self, block: BlockId) -> Result<(), LockGiveUpError> {
+    fn lock_shared(&self, block: BlockId) -> Result<(), LockGiveUpError> {
         let start_time = Instant::now();
         let mut locks = self.locks.lock().unwrap();
         while has_exclusive_lock(&locks, block) {
@@ -90,7 +90,7 @@ impl LockTable {
         Ok(())
     }
 
-    fn lock_exclusive(&mut self, block: BlockId) -> Result<(), LockGiveUpError> {
+    fn lock_exclusive(&self, block: BlockId) -> Result<(), LockGiveUpError> {
         let start_time = Instant::now();
         let mut locks = self.locks.lock().unwrap();
         while has_multiple_shared_locks(&locks, block) {
@@ -116,7 +116,7 @@ impl LockTable {
         Ok(())
     }
 
-    fn unlock(&mut self, block: BlockId) {
+    fn unlock(&self, block: BlockId) {
         let mut locks = self.locks.lock().unwrap();
 
         match locks.get(&block) {
@@ -152,29 +152,35 @@ impl ConcurrencyManager {
         }
     }
 
-    // pub fn lock_shared(&mut self, block: BlockId) -> Result<(), LockGiveUpError> {
-    //     match self.my_locks.get(&block) {
-    //         Some(Lock::Shared(_)) => {}
-    //         Some(Lock::Exclusive) => {}
-    //         _ => {
-    //             if self.lock_table.lock_shared(block)? {
-    //                 self.my_locks.insert(block, Lock::Shared(1));
-    //             }
-    //         }
-    //         None => {
-    //             if self.lock_table.lock_shared(block) {
-    //                 self.my_locks.insert(block, Lock::Shared(1));
-    //             }
-    //         }
-    //     }
-    // }
+    pub fn lock_shared(&mut self, block: BlockId) -> Result<(), LockGiveUpError> {
+        match self.my_locks.get(&block) {
+            Some(Lock::Shared(_)) => Ok(()),
+            Some(Lock::Exclusive) => Ok(()),
+            _ => {
+                self.lock_table.lock_shared(block)?;
+                self.my_locks.insert(block, Lock::Shared(1));
+                Ok(())
+            }
+        }
+    }
 
-    pub fn lock_exclusive(&mut self, block: BlockId) {
-        unimplemented!()
+    pub fn lock_exclusive(&mut self, block: BlockId) -> Result<(), LockGiveUpError> {
+        match self.my_locks.get(&block) {
+            Some(Lock::Exclusive) => Ok(()),
+            _ => {
+                self.lock_shared(block)?;
+                self.lock_table.lock_exclusive(block)?;
+                self.my_locks.insert(block, Lock::Exclusive);
+                Ok(())
+            }
+        }
     }
 
     pub fn release(&mut self) {
-        unimplemented!()
+        for block in self.my_locks.keys() {
+            self.lock_table.unlock(*block);
+        }
+        self.my_locks.clear();
     }
 }
 
@@ -184,7 +190,7 @@ mod tests {
 
     #[test]
     fn test_lock_table() {
-        let mut lock_table = LockTable::new(10);
+        let lock_table = LockTable::new(10);
         assert!(lock_table.lock_shared(BlockId::new(0, 0)).is_ok());
         assert!(lock_table.lock_shared(BlockId::new(0, 0)).is_ok());
 
@@ -192,5 +198,27 @@ mod tests {
 
         lock_table.unlock(BlockId::new(0, 0));
         assert!(lock_table.lock_exclusive(BlockId::new(0, 0)).is_ok());
+    }
+
+    #[test]
+    fn test_concurrency_manager() {
+        let lock_table = Arc::new(LockTable::new(10));
+
+        // Imitate multiple threads by creating multiple ConcurrencyManager instances
+        let mut cm_thread_a = ConcurrencyManager::new(lock_table.clone());
+        let mut cm_thread_b = ConcurrencyManager::new(lock_table.clone());
+
+        assert!(cm_thread_a.lock_shared(BlockId::new(0, 0)).is_ok());
+        assert!(cm_thread_a.lock_shared(BlockId::new(0, 0)).is_ok());
+
+        // Multiple shared lock on the same block is allowed
+        assert!(cm_thread_b.lock_shared(BlockId::new(0, 0)).is_ok());
+
+        // Exclusive lock is not allowed
+        assert!(cm_thread_b.lock_exclusive(BlockId::new(0, 0)).is_err());
+
+        // Release the shared lock
+        cm_thread_a.release();
+        assert!(cm_thread_b.lock_exclusive(BlockId::new(0, 0)).is_ok());
     }
 }
