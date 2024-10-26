@@ -1,6 +1,6 @@
+use core::num;
 use std::{
     collections::HashMap,
-    f32::consts::LOG10_2,
     sync::{Arc, Condvar, Mutex},
     time::Instant,
 };
@@ -13,6 +13,11 @@ enum Lock {
     Shared(usize),
 }
 
+struct LockGiveUpError {}
+
+// We assume that each transaction always gets a shared lock before getting an exclusive lock.
+// When some transaction tries to get an exclusive lock and there is only one shared lock,
+// the shared lock belongs to that transaction.
 pub struct LockTable {
     locks: Mutex<HashMap<BlockId, Lock>>,
     condvar: Condvar,
@@ -32,14 +37,10 @@ fn has_exclusive_lock(locks: &HashMap<BlockId, Lock>, block: BlockId) -> bool {
     }
 }
 
-fn has_any_lock(locks: &HashMap<BlockId, Lock>, block: BlockId) -> bool {
-    if let Some(lock) = locks.get(&block) {
-        match lock {
-            Lock::None => false,
-            _ => true,
-        }
-    } else {
-        false
+fn has_multiple_shared_locks(locks: &HashMap<BlockId, Lock>, block: BlockId) -> bool {
+    match locks.get(&block) {
+        Some(Lock::Shared(num)) if *num > 1 => true,
+        _ => false,
     }
 }
 
@@ -63,24 +64,21 @@ impl LockTable {
         }
     }
 
-    fn lock_shared(&mut self, block: BlockId) -> bool {
+    fn lock_shared(&mut self, block: BlockId) -> Result<(), LockGiveUpError> {
         let start_time = Instant::now();
         let mut locks = self.locks.lock().unwrap();
         while has_exclusive_lock(&locks, block) {
             if start_time.elapsed().as_millis() > self.lock_maxtime {
-                return false;
+                return Err(LockGiveUpError {});
             }
             let duration = std::time::Duration::from_millis(self.lock_maxtime as u64);
             let lock_result = self.condvar.wait_timeout(locks, duration).unwrap();
             locks = lock_result.0;
             if lock_result.1.timed_out() {
-                return false;
+                return Err(LockGiveUpError {});
             }
         }
-
-        if has_exclusive_lock(&locks, block) {
-            return false;
-        }
+        assert!(!has_exclusive_lock(&locks, block));
 
         let new_lock = match locks.get(&block) {
             Some(Lock::Shared(num)) => Lock::Shared(num + 1),
@@ -89,57 +87,53 @@ impl LockTable {
             _ => unreachable!(),
         };
         locks.insert(block, new_lock);
-        true
+        Ok(())
     }
 
-    fn lock_exclusive(&mut self, block: BlockId) -> bool {
+    fn lock_exclusive(&mut self, block: BlockId) -> Result<(), LockGiveUpError> {
         let start_time = Instant::now();
         let mut locks = self.locks.lock().unwrap();
-        while has_any_lock(&locks, block) {
+        while has_multiple_shared_locks(&locks, block) {
             if start_time.elapsed().as_millis() > self.lock_maxtime {
-                return false;
+                return Err(LockGiveUpError {});
             }
 
             let duration = std::time::Duration::from_millis(self.lock_maxtime as u64);
             let lock_result = self.condvar.wait_timeout(locks, duration).unwrap();
             locks = lock_result.0;
             if lock_result.1.timed_out() {
-                return false;
+                return Err(LockGiveUpError {});
             }
         }
-
-        if has_any_lock(&locks, block) {
-            return false;
-        }
+        assert!(!has_multiple_shared_locks(&locks, block));
 
         let new_lock = match locks.get(&block) {
-            Some(Lock::None) => Lock::Exclusive,
-            None => Lock::Exclusive,
+            Some(Lock::None) | None => Lock::Exclusive,
+            Some(Lock::Shared(num)) if *num == 1 => Lock::Exclusive,
             _ => unreachable!(),
         };
         locks.insert(block, new_lock);
-        true
+        Ok(())
     }
 
     fn unlock(&mut self, block: BlockId) {
         let mut locks = self.locks.lock().unwrap();
-        if let Some(lock) = locks.get(&block) {
-            match lock {
-                Lock::Exclusive => {
-                    locks.remove(&block);
-                    self.condvar.notify_all();
-                }
-                Lock::Shared(num) => {
-                    if *num == 1 {
-                        locks.remove(&block);
-                    } else {
-                        let new_num = *num - 1;
-                        locks.insert(block, Lock::Shared(new_num));
-                    }
-                    self.condvar.notify_all();
-                }
-                Lock::None => {}
+
+        match locks.get(&block) {
+            Some(Lock::Exclusive) => {
+                locks.remove(&block);
+                self.condvar.notify_all();
             }
+            Some(Lock::Shared(num)) => {
+                if *num == 1 {
+                    locks.remove(&block);
+                } else {
+                    let new_num = *num - 1;
+                    locks.insert(block, Lock::Shared(new_num));
+                }
+                self.condvar.notify_all();
+            }
+            _ => {}
         }
     }
 }
@@ -149,6 +143,7 @@ pub struct ConcurrencyManager {
     my_locks: HashMap<BlockId, Lock>,
 }
 
+// NOTE: Unlike LockTable, ConcurrencyManager is tied with a transaction.
 impl ConcurrencyManager {
     pub fn new(lock_table: Arc<LockTable>) -> Self {
         ConcurrencyManager {
@@ -157,9 +152,22 @@ impl ConcurrencyManager {
         }
     }
 
-    pub fn lock_shared(&mut self, block: BlockId) {
-        unimplemented!()
-    }
+    // pub fn lock_shared(&mut self, block: BlockId) -> Result<(), LockGiveUpError> {
+    //     match self.my_locks.get(&block) {
+    //         Some(Lock::Shared(_)) => {}
+    //         Some(Lock::Exclusive) => {}
+    //         _ => {
+    //             if self.lock_table.lock_shared(block)? {
+    //                 self.my_locks.insert(block, Lock::Shared(1));
+    //             }
+    //         }
+    //         None => {
+    //             if self.lock_table.lock_shared(block) {
+    //                 self.my_locks.insert(block, Lock::Shared(1));
+    //             }
+    //         }
+    //     }
+    // }
 
     pub fn lock_exclusive(&mut self, block: BlockId) {
         unimplemented!()
@@ -177,15 +185,12 @@ mod tests {
     #[test]
     fn test_lock_table() {
         let mut lock_table = LockTable::new(10);
-        assert!(lock_table.lock_shared(BlockId::new(0, 0)));
-        assert!(lock_table.lock_shared(BlockId::new(0, 0)));
+        assert!(lock_table.lock_shared(BlockId::new(0, 0)).is_ok());
+        assert!(lock_table.lock_shared(BlockId::new(0, 0)).is_ok());
 
-        assert!(!lock_table.lock_exclusive(BlockId::new(0, 0)));
-
-        lock_table.unlock(BlockId::new(0, 0));
-        assert!(!lock_table.lock_exclusive(BlockId::new(0, 0)));
+        assert!(lock_table.lock_exclusive(BlockId::new(0, 0)).is_err());
 
         lock_table.unlock(BlockId::new(0, 0));
-        assert!(lock_table.lock_exclusive(BlockId::new(0, 0)));
+        assert!(lock_table.lock_exclusive(BlockId::new(0, 0)).is_ok());
     }
 }
