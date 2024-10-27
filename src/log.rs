@@ -1,7 +1,7 @@
 use std::{
     io::Result,
     mem,
-    sync::{Arc, Mutex},
+    sync::{Arc, Mutex, MutexGuard},
 };
 
 use crate::{
@@ -9,15 +9,63 @@ use crate::{
     page::Page,
 };
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LogRecord {
-    Start,
+    Start(usize),
     Commit(usize),
 }
+
 impl LogRecord {
-    fn to_bytes(&self) -> &[u8] {
+    fn to_bytes(&self) -> Vec<u8> {
         match self {
-            LogRecord::Start => &['S' as u8],
-            LogRecord::Commit(transaction_id) => !unimplemented!(),
+            LogRecord::Start(transaction_id) => {
+                let mut bytes = Vec::new();
+                bytes.push('S' as u8);
+                bytes.extend_from_slice(&transaction_id.to_ne_bytes());
+                bytes
+            }
+            LogRecord::Commit(transaction_id) => {
+                let mut bytes = Vec::new();
+                bytes.push('C' as u8);
+                bytes.extend_from_slice(&transaction_id.to_ne_bytes());
+                bytes
+            }
+        }
+    }
+
+    pub fn log_into(&self, log_manager: &mut LogManager) -> Result<usize> {
+        log_manager.append_record(self)
+    }
+
+    fn from_bytes(current_position: &[u8]) -> Self {
+        match current_position[0] as char {
+            'S' => {
+                let transaction_id = usize::from_ne_bytes([
+                    current_position[1],
+                    current_position[2],
+                    current_position[3],
+                    current_position[4],
+                    current_position[5],
+                    current_position[6],
+                    current_position[7],
+                    current_position[8],
+                ]);
+                LogRecord::Start(transaction_id)
+            }
+            'C' => {
+                let transaction_id = usize::from_ne_bytes([
+                    current_position[1],
+                    current_position[2],
+                    current_position[3],
+                    current_position[4],
+                    current_position[5],
+                    current_position[6],
+                    current_position[7],
+                    current_position[8],
+                ]);
+                LogRecord::Commit(transaction_id)
+            }
+            _ => panic!("Invalid log record"),
         }
     }
 }
@@ -91,7 +139,8 @@ impl LogManager {
         }
 
         let record_position = boundary - record_size;
-        self.log_page.set_bytes(record_position, record_bytes);
+        self.log_page
+            .set_bytes(record_position, record_bytes.as_slice());
         self.log_page.set_i32(0, record_position as i32);
         self.latest_log_sequence_number += 1;
         Ok(self.latest_log_sequence_number)
@@ -104,6 +153,18 @@ impl LogManager {
         Ok(())
     }
 
+    pub fn get_backward_iter(&self) -> BackwardLogIterator {
+        let mut file_manager = self.file_manager.lock().unwrap();
+        let mut page = Page::new(file_manager.block_size);
+        file_manager.read(&self.current_block, &mut page).unwrap();
+        BackwardLogIterator {
+            file_manager,
+            current_block: self.current_block,
+            current_position: self.log_page.get_i32(0) as usize,
+            page,
+        }
+    }
+
     fn do_flush(&mut self) -> Result<()> {
         self.file_manager
             .lock()
@@ -111,6 +172,36 @@ impl LogManager {
             .write(&self.current_block, &self.log_page)?;
         self.last_saved_log_sequence_number = self.latest_log_sequence_number;
         Ok(())
+    }
+}
+
+pub struct BackwardLogIterator<'a> {
+    file_manager: MutexGuard<'a, FileManager>,
+    current_position: usize,
+    current_block: BlockId,
+    page: Page,
+}
+
+impl<'a> Iterator for BackwardLogIterator<'a> {
+    type Item = LogRecord;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.current_position == self.file_manager.block_size {
+            if self.current_block.block_slot == 0 {
+                return None;
+            } else {
+                let next_block = BlockId::new(
+                    self.current_block.file_id,
+                    self.current_block.block_slot - 1,
+                );
+                self.file_manager.read(&next_block, &mut self.page).unwrap();
+                self.current_position = self.page.get_i32(0) as usize;
+                self.current_block = next_block;
+            }
+        }
+        let log_record = LogRecord::from_bytes(&self.page.byte_buffer[self.current_position..]);
+        self.current_position += log_record.to_bytes().len();
+        return Some(log_record);
     }
 }
 
@@ -123,8 +214,32 @@ mod tests {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let file_manager = FileManager::new(temp_dir, 1024);
         let mut log_manager = LogManager::new(Arc::new(Mutex::new(file_manager)), "log".into())?;
-        log_manager.append_record(&LogRecord::Start)?;
+        log_manager.append_record(&LogRecord::Start(0))?;
         log_manager.flush(1)?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_backward_log_iterator() -> Result<()> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let file_manager = FileManager::new(temp_dir, 20);
+        let mut log_manager = LogManager::new(Arc::new(Mutex::new(file_manager)), "log".into())?;
+        log_manager.append_record(&LogRecord::Start(0))?;
+        log_manager.append_record(&LogRecord::Commit(0))?;
+        log_manager.append_record(&LogRecord::Start(1))?;
+        log_manager.append_record(&LogRecord::Commit(1))?;
+        log_manager.append_record(&LogRecord::Start(2))?;
+        let lsn = log_manager.append_record(&LogRecord::Commit(2))?;
+        log_manager.flush(lsn)?;
+
+        let mut iter = log_manager.get_backward_iter();
+        assert_eq!(iter.next(), Some(LogRecord::Commit(2)));
+        assert_eq!(iter.next(), Some(LogRecord::Start(2)));
+        assert_eq!(iter.next(), Some(LogRecord::Commit(1)));
+        assert_eq!(iter.next(), Some(LogRecord::Start(1)));
+        assert_eq!(iter.next(), Some(LogRecord::Commit(0)));
+        assert_eq!(iter.next(), Some(LogRecord::Start(0)));
+        assert_eq!(iter.next(), None);
         Ok(())
     }
 }
