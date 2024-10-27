@@ -13,6 +13,8 @@ use crate::{
 pub enum LogRecord {
     Start(usize),
     Commit(usize),
+    Checkpoint(usize),
+    Rollback(usize),
 }
 
 impl LogRecord {
@@ -30,11 +32,32 @@ impl LogRecord {
                 bytes.extend_from_slice(&transaction_id.to_ne_bytes());
                 bytes
             }
+            LogRecord::Checkpoint(transaction_id) => {
+                let mut bytes = Vec::new();
+                bytes.push('K' as u8);
+                bytes.extend_from_slice(&transaction_id.to_ne_bytes());
+                bytes
+            }
+            LogRecord::Rollback(transaction_id) => {
+                let mut bytes = Vec::new();
+                bytes.push('R' as u8);
+                bytes.extend_from_slice(&transaction_id.to_ne_bytes());
+                bytes
+            }
         }
     }
 
     pub fn log_into(&self, log_manager: &mut LogManager) -> Result<usize> {
         log_manager.append_record(self)
+    }
+
+    pub fn get_transaction_id(&self) -> usize {
+        match self {
+            LogRecord::Start(transaction_id) => *transaction_id,
+            LogRecord::Commit(transaction_id) => *transaction_id,
+            LogRecord::Checkpoint(transaction_id) => *transaction_id,
+            LogRecord::Rollback(transaction_id) => *transaction_id,
+        }
     }
 
     fn from_bytes(current_position: &[u8]) -> Self {
@@ -64,6 +87,32 @@ impl LogRecord {
                     current_position[8],
                 ]);
                 LogRecord::Commit(transaction_id)
+            }
+            'K' => {
+                let transaction_id = usize::from_ne_bytes([
+                    current_position[1],
+                    current_position[2],
+                    current_position[3],
+                    current_position[4],
+                    current_position[5],
+                    current_position[6],
+                    current_position[7],
+                    current_position[8],
+                ]);
+                LogRecord::Checkpoint(transaction_id)
+            }
+            'R' => {
+                let transaction_id = usize::from_ne_bytes([
+                    current_position[1],
+                    current_position[2],
+                    current_position[3],
+                    current_position[4],
+                    current_position[5],
+                    current_position[6],
+                    current_position[7],
+                    current_position[8],
+                ]);
+                LogRecord::Rollback(transaction_id)
             }
             _ => panic!("Invalid log record"),
         }
