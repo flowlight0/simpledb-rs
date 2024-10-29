@@ -1,28 +1,32 @@
 use crate::{
-    buffer::BufferManager,
-    log::{self, LogManager, LogRecord},
+    buffer::{Buffer, BufferManager},
+    file::BlockId,
+    log::{LogManager, LogRecord},
     tx::transaction::Transaction,
 };
 
 use std::{
+    cell::RefCell,
     collections::HashSet,
     io::Result,
+    rc::Weak,
     sync::{Arc, Mutex},
 };
 
 pub struct RecoveryManager {
     buffer_manager: Arc<Mutex<BufferManager>>,
     log_manager: Arc<Mutex<LogManager>>,
-    transaction: Arc<Mutex<Transaction>>,
     transaction_id: usize,
+    transaction: RefCell<Weak<Transaction>>,
 }
 
 impl RecoveryManager {
     pub fn new(
-        transaction: Arc<Mutex<Transaction>>,
+        // transaction: Arc<Mutex<Transaction>>,
         buffer_manager: Arc<Mutex<BufferManager>>,
         log_manager: Arc<Mutex<LogManager>>,
         transaction_id: usize,
+        transaction: RefCell<Weak<Transaction>>,
     ) -> Result<Self> {
         let _log_sequence_number = {
             let mut log_manager = log_manager.lock().unwrap();
@@ -37,23 +41,22 @@ impl RecoveryManager {
         })
     }
 
-    pub fn commit(&mut self) -> Result<()> {
+    pub fn commit(&mut self, transaction_id: usize) -> Result<()> {
         let buffer_manager = self.buffer_manager.lock().unwrap();
         let mut log_manager = self.log_manager.lock().unwrap();
-        buffer_manager.flush_all(self.transaction_id)?;
-        let log_sequence_number =
-            log_manager.append_record(&LogRecord::Commit(self.transaction_id))?;
+        buffer_manager.flush_all(transaction_id)?;
+        let log_sequence_number = log_manager.append_record(&LogRecord::Commit(transaction_id))?;
         log_manager.flush(log_sequence_number)?;
         Ok(())
     }
 
-    pub fn rollback(&mut self) -> Result<()> {
+    pub fn rollback(&mut self, transaction_id: usize) -> Result<()> {
         self.do_rollback()?;
         let buffer_manager = self.buffer_manager.lock().unwrap();
-        buffer_manager.flush_all(self.transaction_id)?;
+        buffer_manager.flush_all(transaction_id)?;
         let mut log_manager = self.log_manager.lock().unwrap();
         let log_sequence_number =
-            log_manager.append_record(&LogRecord::Rollback(self.transaction_id))?;
+            log_manager.append_record(&LogRecord::Rollback(transaction_id))?;
         log_manager.flush(log_sequence_number)?;
         Ok(())
     }
@@ -72,14 +75,22 @@ impl RecoveryManager {
         Ok(())
     }
 
+    pub fn set_i32(&self, buffer: &mut Buffer, offset: usize, value: i32) -> Result<()> {
+        todo!()
+    }
+
     fn do_rollback(&mut self) -> Result<()> {
         let log_manager = self.log_manager.lock().unwrap();
         let log_iter = log_manager.get_backward_iter();
-        let mut transaction = self.transaction.lock().unwrap();
 
         for log_record in log_iter {
             if log_record.get_transaction_id() == self.transaction_id {
-                transaction.undo(log_record)?;
+                // transaction.undo(&log_record)?;
+                self.transaction
+                    .borrow()
+                    .upgrade()
+                    .unwrap()
+                    .undo(&log_record)?;
                 if let LogRecord::Start(_) = log_record {
                     break;
                 }
@@ -92,7 +103,6 @@ impl RecoveryManager {
         let log_manager = self.log_manager.lock().unwrap();
         let log_iter = log_manager.get_backward_iter();
         let mut finshed_transactions = HashSet::new();
-        let mut transaction = self.transaction.lock().unwrap();
 
         for log_record in log_iter {
             match log_record {
@@ -104,7 +114,11 @@ impl RecoveryManager {
                 }
                 _ => {
                     if log_record.get_transaction_id() == self.transaction_id {
-                        transaction.undo(log_record)?;
+                        self.transaction
+                            .borrow()
+                            .upgrade()
+                            .unwrap()
+                            .undo(&log_record)?;
                     }
                 }
             }

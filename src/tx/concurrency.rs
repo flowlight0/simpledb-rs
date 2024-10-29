@@ -1,9 +1,9 @@
-use core::num;
 use std::{
     collections::HashMap,
     sync::{Arc, Condvar, Mutex},
     time::Instant,
 };
+use thiserror::Error;
 
 use crate::file::BlockId;
 
@@ -13,7 +13,14 @@ enum Lock {
     Shared(usize),
 }
 
+#[derive(Error, Debug)]
 pub struct LockGiveUpError {}
+
+impl std::fmt::Display for LockGiveUpError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "LockGiveUpError")
+    }
+}
 
 // We assume that each transaction always gets a shared lock before getting an exclusive lock.
 // When some transaction tries to get an exclusive lock and there is only one shared lock,
@@ -139,13 +146,13 @@ impl LockTable {
 }
 
 pub struct ConcurrencyManager {
-    lock_table: Arc<LockTable>,
+    lock_table: Arc<Mutex<LockTable>>,
     my_locks: HashMap<BlockId, Lock>,
 }
 
 // NOTE: Unlike LockTable, ConcurrencyManager is tied with a transaction.
 impl ConcurrencyManager {
-    pub fn new(lock_table: Arc<LockTable>) -> Self {
+    pub fn new(lock_table: Arc<Mutex<LockTable>>) -> Self {
         ConcurrencyManager {
             lock_table: lock_table.clone(),
             my_locks: HashMap::new(),
@@ -157,7 +164,7 @@ impl ConcurrencyManager {
             Some(Lock::Shared(_)) => Ok(()),
             Some(Lock::Exclusive) => Ok(()),
             _ => {
-                self.lock_table.lock_shared(block)?;
+                self.lock_table.lock().unwrap().lock_shared(block)?;
                 self.my_locks.insert(block, Lock::Shared(1));
                 Ok(())
             }
@@ -169,7 +176,7 @@ impl ConcurrencyManager {
             Some(Lock::Exclusive) => Ok(()),
             _ => {
                 self.lock_shared(block)?;
-                self.lock_table.lock_exclusive(block)?;
+                self.lock_table.lock().unwrap().lock_exclusive(block)?;
                 self.my_locks.insert(block, Lock::Exclusive);
                 Ok(())
             }
@@ -178,7 +185,7 @@ impl ConcurrencyManager {
 
     pub fn release(&mut self) {
         for block in self.my_locks.keys() {
-            self.lock_table.unlock(*block);
+            self.lock_table.lock().unwrap().unlock(*block);
         }
         self.my_locks.clear();
     }
@@ -202,7 +209,7 @@ mod tests {
 
     #[test]
     fn test_concurrency_manager() {
-        let lock_table = Arc::new(LockTable::new(10));
+        let lock_table = Arc::new(Mutex::new(LockTable::new(10)));
 
         // Imitate multiple threads by creating multiple ConcurrencyManager instances
         let mut cm_thread_a = ConcurrencyManager::new(lock_table.clone());

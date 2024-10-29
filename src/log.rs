@@ -119,6 +119,13 @@ impl LogRecord {
     }
 }
 
+/// The log manager is responsible for writing log records to the log file.
+/// The log file is a sequence of blocks, and the log manager appends log records to the last block.
+/// The log records are written to the log file from right to left.
+/// The first byte of the block contains the offset to the most recent log record.
+///
+/// This struct is expected to be a singleton. Hence, it is not thread-safe.
+/// Other structs that use this struct should wrap it with Arc<Mutex<>>.
 pub struct LogManager {
     file_manager: Arc<Mutex<FileManager>>,
     log_file: String,
@@ -129,10 +136,6 @@ pub struct LogManager {
     last_saved_log_sequence_number: usize,
 }
 
-/// The log manager is responsible for writing log records to the log file.
-/// The log file is a sequence of blocks, and the log manager appends log records to the last block.
-/// The log records are written to the log file from right to left.
-/// The first byte of the block contains the offset to the most recent log record.
 impl LogManager {
     pub fn new(file_manager: Arc<Mutex<FileManager>>, log_file: String) -> Result<Self> {
         let mut file_manager_guard = file_manager.lock().unwrap();
