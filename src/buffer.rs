@@ -1,6 +1,6 @@
-use std::io::Result;
 use std::sync::{Arc, Condvar, Mutex};
 use std::time::{Duration, Instant};
+use thiserror::Error;
 
 use crate::file::{BlockId, FileManager};
 use crate::log::LogManager;
@@ -8,14 +8,23 @@ use crate::page::Page;
 
 const PIN_TIME_LIMIT_IN_MILLIS: u128 = 5_000;
 
-struct Buffer {
+pub struct Buffer {
     file_manager: Arc<Mutex<FileManager>>,
     log_manager: Arc<Mutex<LogManager>>,
-    page: Page,
+    pub page: Page,
     num_pins: usize,
-    block: Option<BlockId>,
+    pub block: Option<BlockId>,
     modifying_transaction_id: Option<usize>,
     log_sequence_number: usize,
+}
+
+#[derive(Error, Debug)]
+pub struct BufferAbortError {}
+
+impl std::fmt::Display for BufferAbortError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "BufferAbortError")
+    }
 }
 
 /// Buffer is a struct that represents a buffer in the buffer pool.
@@ -34,16 +43,16 @@ impl Buffer {
         }
     }
 
-    // fn set_modified(&mut self, transaction_id: usize, log_sequence_number: usize) {
-    //     self.modifying_transaction_id = Some(transaction_id);
-    //     self.log_sequence_number = log_sequence_number;
-    // }
+    pub fn set_modified(&mut self, transaction_id: usize, log_sequence_number: usize) {
+        self.modifying_transaction_id = Some(transaction_id);
+        self.log_sequence_number = log_sequence_number;
+    }
 
     fn is_pinned(&self) -> bool {
         self.num_pins > 0
     }
 
-    fn assign_to_block(&mut self, block_id: BlockId) -> Result<()> {
+    fn assign_to_block(&mut self, block_id: BlockId) -> Result<(), std::io::Error> {
         self.flush()?;
         self.block = Some(block_id);
         self.file_manager
@@ -54,13 +63,11 @@ impl Buffer {
         Ok(())
     }
 
-    fn flush(&mut self) -> Result<()> {
+    fn flush(&mut self) -> Result<(), std::io::Error> {
         // flush log and page if transaction_id is set
         if self.modifying_transaction_id.is_some() {
-            self.log_manager
-                .lock()
-                .unwrap()
-                .flush(self.log_sequence_number)?;
+            let mut log_manager = self.log_manager.lock().unwrap();
+            log_manager.flush(self.log_sequence_number)?;
             self.modifying_transaction_id = None;
         }
         Ok(())
@@ -76,7 +83,7 @@ impl Buffer {
 }
 
 pub struct BufferManager {
-    buffers: Mutex<Vec<Buffer>>,
+    pub buffers: Mutex<Vec<Buffer>>,
     num_availables: usize,
     condvar: Condvar,
 }
@@ -105,7 +112,7 @@ fn try_to_pin(
     buffers: &mut Vec<Buffer>,
     num_availables: &mut usize,
     block: BlockId,
-) -> Result<Option<usize>> {
+) -> Result<Option<usize>, std::io::Error> {
     if let Some(buffer_index) = find_existing_buffer(buffers, block) {
         if !buffers[buffer_index].is_pinned() {
             *num_availables -= 1;
@@ -157,12 +164,12 @@ impl BufferManager {
         self.condvar.notify_all();
     }
 
-    pub fn pin(&mut self, block: BlockId) -> Result<Option<usize>> {
+    pub fn pin(&mut self, block: BlockId) -> Result<usize, anyhow::Error> {
         let timestamp = Instant::now();
         while timestamp.elapsed().as_millis() < PIN_TIME_LIMIT_IN_MILLIS {
             let mut buffers = self.buffers.lock().unwrap();
             if let Some(buffer_index) = try_to_pin(&mut buffers, &mut self.num_availables, block)? {
-                return Ok(Some(buffer_index));
+                return Ok(buffer_index);
             } else {
                 let _lock = self
                     .condvar
@@ -173,7 +180,17 @@ impl BufferManager {
                     .unwrap();
             }
         }
-        Ok(None)
+        Err(anyhow::Error::new(BufferAbortError {}))
+    }
+
+    pub fn flush_all(&self, transaction_id: usize) -> Result<(), std::io::Error> {
+        let mut buffers = self.buffers.lock().unwrap();
+        for buffer in buffers.iter_mut() {
+            if buffer.modifying_transaction_id == Some(transaction_id) {
+                buffer.flush()?;
+            }
+        }
+        Ok(())
     }
 }
 
@@ -182,7 +199,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_buffer_manager() -> Result<()> {
+    fn test_buffer_manager() -> Result<(), anyhow::Error> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
 
