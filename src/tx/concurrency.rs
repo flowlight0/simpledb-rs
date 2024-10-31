@@ -8,7 +8,6 @@ use thiserror::Error;
 use crate::file::BlockId;
 
 enum Lock {
-    None,
     Exclusive,
     Shared(usize),
 }
@@ -31,8 +30,6 @@ pub struct LockTable {
     lock_maxtime: u128,
 }
 
-const DEFAULT_LOCK_MAXTIME_IN_MILLIS: u128 = 10_000;
-
 fn has_exclusive_lock(locks: &HashMap<BlockId, Lock>, block: BlockId) -> bool {
     if let Some(lock) = locks.get(&block) {
         match lock {
@@ -48,17 +45,6 @@ fn has_multiple_shared_locks(locks: &HashMap<BlockId, Lock>, block: BlockId) -> 
     match locks.get(&block) {
         Some(Lock::Shared(num)) if *num > 1 => true,
         _ => false,
-    }
-}
-
-fn get_num_shared_locks(locks: &HashMap<BlockId, Lock>, block: BlockId) -> Option<usize> {
-    if let Some(lock) = locks.get(&block) {
-        match lock {
-            Lock::Shared(num) => Some(*num),
-            _ => None,
-        }
-    } else {
-        None
     }
 }
 
@@ -89,7 +75,6 @@ impl LockTable {
 
         let new_lock = match locks.get(&block) {
             Some(Lock::Shared(num)) => Lock::Shared(num + 1),
-            Some(Lock::None) => Lock::Shared(1),
             None => Lock::Shared(1),
             _ => unreachable!(),
         };
@@ -115,7 +100,7 @@ impl LockTable {
         assert!(!has_multiple_shared_locks(&locks, block));
 
         let new_lock = match locks.get(&block) {
-            Some(Lock::None) | None => Lock::Exclusive,
+            None => Lock::Exclusive,
             Some(Lock::Shared(num)) if *num == 1 => Lock::Exclusive,
             _ => unreachable!(),
         };

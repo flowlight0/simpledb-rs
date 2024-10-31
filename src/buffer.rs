@@ -196,8 +196,6 @@ impl BufferManager {
 
 #[cfg(test)]
 mod tests {
-    use std::any;
-
     use super::*;
 
     #[test]

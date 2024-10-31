@@ -5,18 +5,15 @@ use std::sync::{Arc, Mutex};
 use crate::file::BlockId;
 use crate::{
     buffer::BufferManager,
-    file::FileManager,
     log::{LogManager, LogRecord},
 };
 
 use super::concurrency::{ConcurrencyManager, LockTable};
 
 pub struct Transaction {
-    file_manager: Arc<Mutex<FileManager>>,
     buffer_manager: Arc<Mutex<BufferManager>>,
     concurrency_manager: ConcurrencyManager,
     log_manager: Arc<Mutex<LogManager>>,
-    // recovery_manager: RecoveryManager,
     pub id: usize,
     block_to_buffer_map: HashMap<BlockId, usize>,
     pinned_blocks: Vec<BlockId>,
@@ -26,7 +23,6 @@ static TRANSACTION_ID: AtomicUsize = AtomicUsize::new(0);
 
 impl Transaction {
     pub fn new(
-        file_manager: Arc<Mutex<FileManager>>,
         log_manager: Arc<Mutex<LogManager>>,
         buffer_manager: Arc<Mutex<BufferManager>>,
         lock_table: Arc<Mutex<LockTable>>,
@@ -35,7 +31,6 @@ impl Transaction {
         let id = TRANSACTION_ID.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
 
         Ok(Transaction {
-            file_manager,
             buffer_manager,
             concurrency_manager,
             log_manager,
@@ -236,6 +231,8 @@ impl Transaction {
 
 #[cfg(test)]
 mod tests {
+    use crate::file::FileManager;
+
     use super::*;
 
     #[test]
@@ -255,7 +252,6 @@ mod tests {
 
         // tx1 just sets the initial values of the block, and we don't need to log it.
         let mut tx1 = Transaction::new(
-            file_manager.clone(),
             log_manager.clone(),
             buffer_manager.clone(),
             lock_table.clone(),
@@ -265,7 +261,6 @@ mod tests {
         tx1.commit()?;
 
         let mut tx2 = Transaction::new(
-            file_manager.clone(),
             log_manager.clone(),
             buffer_manager.clone(),
             lock_table.clone(),
@@ -277,7 +272,6 @@ mod tests {
         tx2.commit()?;
 
         let mut tx3 = Transaction::new(
-            file_manager.clone(),
             log_manager.clone(),
             buffer_manager.clone(),
             lock_table.clone(),
@@ -289,7 +283,6 @@ mod tests {
         tx3.rollback()?;
 
         let mut tx4 = Transaction::new(
-            file_manager.clone(),
             log_manager.clone(),
             buffer_manager.clone(),
             lock_table.clone(),
