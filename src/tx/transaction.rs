@@ -1,6 +1,4 @@
-use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
-use std::rc::{Rc, Weak};
 use std::sync::atomic::AtomicUsize;
 use std::sync::{Arc, Mutex};
 
@@ -146,7 +144,6 @@ impl Transaction {
     ) -> Result<(), anyhow::Error> {
         self.concurrency_manager.lock_exclusive(block)?;
         let &buffer_index = self.block_to_buffer_map.get(&block).unwrap();
-        dbg!(buffer_index);
         let buffer_manager = self.buffer_manager.lock().unwrap();
         let buffer = &mut buffer_manager.buffers.lock().unwrap()[buffer_index];
         let log_sequence_number = if is_log_needed {
@@ -164,46 +161,64 @@ impl Transaction {
         Ok(())
     }
 
-    pub fn undo(&self, log_record: &LogRecord) -> Result<(), std::io::Error> {
-        todo!()
-    }
-
-    fn do_rollback(&mut self) -> Result<(), std::io::Error> {
-        let mut log_manager = self.log_manager.lock().unwrap();
-        let log_iter = log_manager.get_backward_iter()?;
-
-        dbg!("foo");
-        for log_record in log_iter {
-            dbg!(&log_record);
-            if log_record.get_transaction_id() == self.id {
-                self.undo(&log_record)?;
-                if let LogRecord::Start(_) = log_record {
-                    break;
-                }
+    pub fn undo_update(&mut self, log_record: &LogRecord) -> Result<(), anyhow::Error> {
+        match log_record {
+            &LogRecord::SetI32(_, block, offset, old_value, _) => {
+                self.pin(block)?;
+                self.set_i32(block, offset, old_value, false)?;
+                self.unpin(block);
+            }
+            _ => {
+                panic!("unexpected log record: {:?}", log_record);
             }
         }
         Ok(())
     }
 
-    fn do_recover(&mut self) -> Result<(), std::io::Error> {
+    fn do_rollback(&mut self) -> Result<(), anyhow::Error> {
+        let mut log_manager = self.log_manager.lock().unwrap();
+        let log_iter = log_manager.get_backward_iter()?;
+        let mut log_records = vec![];
+
+        for log_record in log_iter {
+            if log_record.get_transaction_id() == self.id {
+                log_records.push(log_record);
+                if let LogRecord::Start(_) = log_record {
+                    break;
+                }
+            }
+        }
+        drop(log_manager);
+        for log_record in log_records.iter() {
+            self.undo_update(&log_record)?;
+        }
+        Ok(())
+    }
+
+    fn do_recover(&mut self) -> Result<(), anyhow::Error> {
         let mut log_manager = self.log_manager.lock().unwrap();
         let log_iter = log_manager.get_backward_iter()?;
         let mut finshed_transactions = HashSet::new();
+        let mut log_records = vec![];
 
         for log_record in log_iter {
             match log_record {
-                LogRecord::Start(transaction_id) | LogRecord::Commit(transaction_id) => {
+                LogRecord::Commit(transaction_id) | LogRecord::Rollback(transaction_id) => {
                     finshed_transactions.insert(transaction_id);
                 }
                 LogRecord::Checkpoint(_) => {
                     break;
                 }
                 _ => {
-                    if log_record.get_transaction_id() == self.id {
-                        self.undo(&log_record)?;
+                    if !finshed_transactions.contains(&log_record.get_transaction_id()) {
+                        log_records.push(log_record);
                     }
                 }
             }
+        }
+        drop(log_manager);
+        for log_record in log_records.iter() {
+            self.undo_update(&log_record)?;
         }
         Ok(())
     }
