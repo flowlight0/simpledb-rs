@@ -15,6 +15,7 @@ pub enum LogRecord {
     Commit(usize),
     Checkpoint(usize),
     Rollback(usize),
+    SetI32(usize, BlockId, usize, i32, i32),
 }
 
 impl LogRecord {
@@ -44,6 +45,17 @@ impl LogRecord {
                 bytes.extend_from_slice(&transaction_id.to_ne_bytes());
                 bytes
             }
+            LogRecord::SetI32(transaction_id, block_id, offset, old_value, new_value) => {
+                let mut bytes = Vec::new();
+                bytes.push('I' as u8);
+                bytes.extend_from_slice(&transaction_id.to_ne_bytes());
+                bytes.extend_from_slice(&block_id.file_id.to_ne_bytes());
+                bytes.extend_from_slice(&block_id.block_slot.to_ne_bytes());
+                bytes.extend_from_slice(&offset.to_ne_bytes());
+                bytes.extend_from_slice(&old_value.to_ne_bytes());
+                bytes.extend_from_slice(&new_value.to_ne_bytes());
+                bytes
+            }
         }
     }
 
@@ -57,6 +69,7 @@ impl LogRecord {
             LogRecord::Commit(transaction_id) => *transaction_id,
             LogRecord::Checkpoint(transaction_id) => *transaction_id,
             LogRecord::Rollback(transaction_id) => *transaction_id,
+            LogRecord::SetI32(transaction_id, _, _, _, _) => *transaction_id,
         }
     }
 
@@ -113,6 +126,67 @@ impl LogRecord {
                     current_position[8],
                 ]);
                 LogRecord::Rollback(transaction_id)
+            }
+            'I' => {
+                let transaction_id = usize::from_ne_bytes([
+                    current_position[1],
+                    current_position[2],
+                    current_position[3],
+                    current_position[4],
+                    current_position[5],
+                    current_position[6],
+                    current_position[7],
+                    current_position[8],
+                ]);
+                let file_id = usize::from_ne_bytes([
+                    current_position[9],
+                    current_position[10],
+                    current_position[11],
+                    current_position[12],
+                    current_position[13],
+                    current_position[14],
+                    current_position[15],
+                    current_position[16],
+                ]);
+                let block_slot = usize::from_ne_bytes([
+                    current_position[17],
+                    current_position[18],
+                    current_position[19],
+                    current_position[20],
+                    current_position[21],
+                    current_position[22],
+                    current_position[23],
+                    current_position[24],
+                ]);
+                let offset = usize::from_ne_bytes([
+                    current_position[25],
+                    current_position[26],
+                    current_position[27],
+                    current_position[28],
+                    current_position[29],
+                    current_position[30],
+                    current_position[31],
+                    current_position[32],
+                ]);
+                let old_value = i32::from_ne_bytes([
+                    current_position[33],
+                    current_position[34],
+                    current_position[35],
+                    current_position[36],
+                ]);
+                let new_value = i32::from_ne_bytes([
+                    current_position[37],
+                    current_position[38],
+                    current_position[39],
+                    current_position[40],
+                ]);
+                LogRecord::SetI32(
+                    transaction_id,
+                    BlockId::new(file_id, block_slot),
+                    offset,
+                    old_value,
+                    new_value,
+                )
             }
             _ => panic!("Invalid log record"),
         }
@@ -198,6 +272,7 @@ impl LogManager {
         Ok(self.latest_log_sequence_number)
     }
 
+    // Flushes the log records up to the least_log_sequence_number.
     pub fn flush(&mut self, least_log_sequence_number: usize) -> Result<()> {
         if least_log_sequence_number >= self.last_saved_log_sequence_number {
             self.do_flush()?;

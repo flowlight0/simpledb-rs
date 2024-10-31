@@ -131,7 +131,7 @@ impl Transaction {
     }
 
     pub fn undo(&self, log_record: &LogRecord) -> Result<(), std::io::Error> {
-        todo!();
+        todo!()
     }
 
     fn unpin_all(&mut self) {

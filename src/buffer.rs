@@ -13,7 +13,7 @@ pub struct Buffer {
     log_manager: Arc<Mutex<LogManager>>,
     pub page: Page,
     num_pins: usize,
-    block: Option<BlockId>,
+    pub block: Option<BlockId>,
     modifying_transaction_id: Option<usize>,
     log_sequence_number: usize,
 }
@@ -46,7 +46,6 @@ impl Buffer {
     pub fn set_modified(&mut self, transaction_id: usize, log_sequence_number: usize) {
         self.modifying_transaction_id = Some(transaction_id);
         self.log_sequence_number = log_sequence_number;
-        todo!()
     }
 
     fn is_pinned(&self) -> bool {
@@ -67,10 +66,8 @@ impl Buffer {
     fn flush(&mut self) -> Result<(), std::io::Error> {
         // flush log and page if transaction_id is set
         if self.modifying_transaction_id.is_some() {
-            self.log_manager
-                .lock()
-                .unwrap()
-                .flush(self.log_sequence_number)?;
+            let mut log_manager = self.log_manager.lock().unwrap();
+            log_manager.flush(self.log_sequence_number)?;
             self.modifying_transaction_id = None;
         }
         Ok(())

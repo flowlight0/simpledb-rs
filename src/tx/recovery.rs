@@ -1,6 +1,5 @@
 use crate::{
     buffer::{Buffer, BufferManager},
-    file::BlockId,
     log::{LogManager, LogRecord},
     tx::transaction::Transaction,
 };
@@ -43,8 +42,9 @@ impl RecoveryManager {
 
     pub fn commit(&mut self, transaction_id: usize) -> Result<()> {
         let buffer_manager = self.buffer_manager.lock().unwrap();
-        let mut log_manager = self.log_manager.lock().unwrap();
         buffer_manager.flush_all(transaction_id)?;
+
+        let mut log_manager = self.log_manager.lock().unwrap();
         let log_sequence_number = log_manager.append_record(&LogRecord::Commit(transaction_id))?;
         log_manager.flush(log_sequence_number)?;
         Ok(())
@@ -75,8 +75,13 @@ impl RecoveryManager {
         Ok(())
     }
 
-    pub fn set_i32(&self, buffer: &mut Buffer, offset: usize, value: i32) -> Result<()> {
-        todo!()
+    pub fn set_i32(&self, buffer: &mut Buffer, offset: usize, value: i32) -> Result<usize> {
+        let block = buffer.block.expect("buffer must be assigned to a block");
+        let old_value = buffer.page.get_i32(offset);
+        let record = LogRecord::SetI32(self.transaction_id, block, offset, old_value, value);
+
+        let mut log_manager = self.log_manager.lock().unwrap();
+        log_manager.append_record(&record)
     }
 
     fn do_rollback(&mut self) -> Result<()> {
