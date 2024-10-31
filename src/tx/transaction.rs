@@ -1,10 +1,8 @@
 use std::cell::RefCell;
-use std::collections::HashMap;
-use std::rc::Weak;
+use std::collections::{HashMap, HashSet};
+use std::rc::{Rc, Weak};
 use std::sync::atomic::AtomicUsize;
 use std::sync::{Arc, Mutex};
-
-use anyhow::Ok;
 
 use crate::file::BlockId;
 use crate::{
@@ -14,14 +12,13 @@ use crate::{
 };
 
 use super::concurrency::{ConcurrencyManager, LockTable};
-use super::recovery::RecoveryManager;
 
 pub struct Transaction {
     file_manager: Arc<Mutex<FileManager>>,
     buffer_manager: Arc<Mutex<BufferManager>>,
     concurrency_manager: ConcurrencyManager,
     log_manager: Arc<Mutex<LogManager>>,
-    recovery_manager: RecoveryManager,
+    // recovery_manager: RecoveryManager,
     pub id: usize,
     block_to_buffer_map: HashMap<BlockId, usize>,
     pinned_blocks: Vec<BlockId>,
@@ -38,19 +35,12 @@ impl Transaction {
     ) -> Result<Self, anyhow::Error> {
         let concurrency_manager = ConcurrencyManager::new(lock_table.clone());
         let id = TRANSACTION_ID.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
-        let recovery_manager = RecoveryManager::new(
-            buffer_manager.clone(),
-            log_manager.clone(),
-            id,
-            RefCell::new(Weak::new()),
-        )?;
 
         Ok(Transaction {
             file_manager,
             buffer_manager,
             concurrency_manager,
             log_manager,
-            recovery_manager,
             block_to_buffer_map: HashMap::new(),
             pinned_blocks: Vec::new(),
             id,
@@ -58,23 +48,59 @@ impl Transaction {
     }
 
     pub fn commit(&mut self) -> Result<(), anyhow::Error> {
-        self.recovery_manager.commit(self.id)?;
+        {
+            let buffer_manager = self.buffer_manager.lock().unwrap();
+            buffer_manager.flush_all(self.id)?;
+        }
+
+        {
+            let mut log_manager = self.log_manager.lock().unwrap();
+            let log_sequence_number = log_manager.append_record(&LogRecord::Commit(self.id))?;
+            log_manager.flush(log_sequence_number)?;
+        }
+
         self.concurrency_manager.release();
         self.unpin_all();
         Ok(())
     }
 
     pub fn rollback(&mut self) -> Result<(), anyhow::Error> {
-        self.recovery_manager.rollback(self.id)?;
+        self.do_rollback()?;
+
+        {
+            let buffer_manager = self.buffer_manager.lock().unwrap();
+            buffer_manager.flush_all(self.id)?;
+        }
+
+        {
+            let mut log_manager = self.log_manager.lock().unwrap();
+            let log_sequence_number = log_manager.append_record(&LogRecord::Rollback(self.id))?;
+            log_manager.flush(log_sequence_number)?;
+        }
+        // self.recovery_manager.rollback(self.id)?;
         self.concurrency_manager.release();
         self.unpin_all();
         Ok(())
     }
 
+    // "Quiescent Checkpointing" is currently implemented
+    // This method is not thread-safe.
+    // TODO: understand why we need to flush all buffers twice.
     pub fn recover(&mut self) -> Result<(), anyhow::Error> {
-        let buffer_manager = self.buffer_manager.lock().unwrap();
-        buffer_manager.flush_all(self.id)?;
-        self.recovery_manager.recover()?;
+        {
+            let buffer_manager = self.buffer_manager.lock().unwrap();
+            buffer_manager.flush_all(self.id)?;
+        }
+
+        self.do_recover()?;
+        {
+            let buffer_manager = self.buffer_manager.lock().unwrap();
+            buffer_manager.flush_all(self.id)?;
+        }
+
+        let mut log_manager = self.log_manager.lock().unwrap();
+        let log_sequence_number = log_manager.append_record(&LogRecord::Checkpoint(self.id))?;
+        log_manager.flush(log_sequence_number)?;
         Ok(())
     }
 
@@ -120,18 +146,66 @@ impl Transaction {
     ) -> Result<(), anyhow::Error> {
         self.concurrency_manager.lock_exclusive(block)?;
         let &buffer_index = self.block_to_buffer_map.get(&block).unwrap();
+        dbg!(buffer_index);
         let buffer_manager = self.buffer_manager.lock().unwrap();
         let buffer = &mut buffer_manager.buffers.lock().unwrap()[buffer_index];
-        if is_log_needed {
-            self.recovery_manager.set_i32(buffer, offset, value)?;
-        }
+        let log_sequence_number = if is_log_needed {
+            let block = buffer.block.expect("buffer must be assigned to a block");
+            let old_value = buffer.page.get_i32(offset);
+            let record = LogRecord::SetI32(self.id, block, offset, old_value, value);
+
+            let mut log_manager = self.log_manager.lock().unwrap();
+            log_manager.append_record(&record)?
+        } else {
+            0
+        };
         buffer.page.set_i32(offset, value);
-        buffer.set_modified(self.id, 0);
+        buffer.set_modified(self.id, log_sequence_number);
         Ok(())
     }
 
     pub fn undo(&self, log_record: &LogRecord) -> Result<(), std::io::Error> {
         todo!()
+    }
+
+    fn do_rollback(&mut self) -> Result<(), std::io::Error> {
+        let mut log_manager = self.log_manager.lock().unwrap();
+        let log_iter = log_manager.get_backward_iter()?;
+
+        dbg!("foo");
+        for log_record in log_iter {
+            dbg!(&log_record);
+            if log_record.get_transaction_id() == self.id {
+                self.undo(&log_record)?;
+                if let LogRecord::Start(_) = log_record {
+                    break;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn do_recover(&mut self) -> Result<(), std::io::Error> {
+        let mut log_manager = self.log_manager.lock().unwrap();
+        let log_iter = log_manager.get_backward_iter()?;
+        let mut finshed_transactions = HashSet::new();
+
+        for log_record in log_iter {
+            match log_record {
+                LogRecord::Start(transaction_id) | LogRecord::Commit(transaction_id) => {
+                    finshed_transactions.insert(transaction_id);
+                }
+                LogRecord::Checkpoint(_) => {
+                    break;
+                }
+                _ => {
+                    if log_record.get_transaction_id() == self.id {
+                        self.undo(&log_record)?;
+                    }
+                }
+            }
+        }
+        Ok(())
     }
 
     fn unpin_all(&mut self) {
@@ -184,7 +258,7 @@ mod tests {
         tx2.pin(block)?;
         let value = tx2.get_i32(block, 80)?;
         assert_eq!(value, 1);
-        tx2.set_i32(block, 80, 2, false)?;
+        tx2.set_i32(block, 80, 2, true)?;
         tx2.commit()?;
 
         let mut tx3 = Transaction::new(

@@ -20,6 +20,7 @@ pub enum LogRecord {
 
 impl LogRecord {
     fn to_bytes(&self) -> Vec<u8> {
+        dbg!(&self);
         match self {
             LogRecord::Start(transaction_id) => {
                 let mut bytes = Vec::new();
@@ -74,6 +75,9 @@ impl LogRecord {
     }
 
     fn from_bytes(current_position: &[u8]) -> Self {
+        for i in 0..current_position.len() {
+            dbg!(current_position[i] as char);
+        }
         match current_position[0] as char {
             'S' => {
                 let transaction_id = usize::from_ne_bytes([
@@ -250,6 +254,7 @@ impl LogManager {
         let mut file_manager = self.file_manager.lock().unwrap();
 
         if boundary < record_size + boundary_size {
+            assert!(false);
             // The record does not fit in the current block
 
             // Save the current page into the file
@@ -265,6 +270,7 @@ impl LogManager {
         }
 
         let record_position = boundary - record_size;
+        dbg!(record_position, record_size, boundary);
         self.log_page
             .set_bytes(record_position, record_bytes.as_slice());
         self.log_page.set_i32(0, record_position as i32);
@@ -280,16 +286,18 @@ impl LogManager {
         Ok(())
     }
 
-    pub fn get_backward_iter(&self) -> BackwardLogIterator {
+    pub fn get_backward_iter(&mut self) -> Result<BackwardLogIterator> {
+        self.do_flush()?;
         let mut file_manager = self.file_manager.lock().unwrap();
         let mut page = Page::new(file_manager.block_size);
+        dbg!(self.current_block);
         file_manager.read(&self.current_block, &mut page).unwrap();
-        BackwardLogIterator {
+        Ok(BackwardLogIterator {
             file_manager,
             current_block: self.current_block,
             current_position: self.log_page.get_i32(0) as usize,
             page,
-        }
+        })
     }
 
     fn do_flush(&mut self) -> Result<()> {
@@ -349,18 +357,23 @@ mod tests {
     #[test]
     fn test_backward_log_iterator() -> Result<()> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
-        let file_manager = FileManager::new(temp_dir, 20);
+        let file_manager = FileManager::new(temp_dir, 50);
         let mut log_manager = LogManager::new(Arc::new(Mutex::new(file_manager)), "log".into())?;
         log_manager.append_record(&LogRecord::Start(0))?;
         log_manager.append_record(&LogRecord::Commit(0))?;
         log_manager.append_record(&LogRecord::Start(1))?;
         log_manager.append_record(&LogRecord::Commit(1))?;
         log_manager.append_record(&LogRecord::Start(2))?;
+        log_manager.append_record(&LogRecord::SetI32(2, BlockId::new(0, 0), 0, 0, 0))?;
         let lsn = log_manager.append_record(&LogRecord::Commit(2))?;
         log_manager.flush(lsn)?;
 
-        let mut iter = log_manager.get_backward_iter();
+        let mut iter = log_manager.get_backward_iter()?;
         assert_eq!(iter.next(), Some(LogRecord::Commit(2)));
+        assert_eq!(
+            iter.next(),
+            Some(LogRecord::SetI32(2, BlockId::new(0, 0), 0, 0, 0))
+        );
         assert_eq!(iter.next(), Some(LogRecord::Start(2)));
         assert_eq!(iter.next(), Some(LogRecord::Commit(1)));
         assert_eq!(iter.next(), Some(LogRecord::Start(1)));
