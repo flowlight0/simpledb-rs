@@ -170,7 +170,7 @@ impl LogRecord {
 
 /// The log manager is responsible for writing log records to the log file.
 /// The log file is a sequence of blocks, and the log manager appends log records to the last block.
-/// The log records are written to the log file from right to left.
+/// The log records are written to the block file from right to left.
 /// The first byte of the block contains the offset to the most recent log record.
 ///
 /// This struct is expected to be a singleton. Hence, it is not thread-safe.
@@ -180,7 +180,6 @@ pub struct LogManager {
     log_file: String,
     log_page: Page,
     current_block: BlockId,
-    append_lock: Mutex<()>,
     latest_log_sequence_number: usize,
     last_saved_log_sequence_number: usize,
 }
@@ -210,14 +209,12 @@ impl LogManager {
             log_file,
             log_page,
             current_block,
-            append_lock: Mutex::new(()),
             latest_log_sequence_number: 0,
             last_saved_log_sequence_number: 0,
         })
     }
 
     pub fn append_record(&mut self, log_record: &LogRecord) -> Result<usize> {
-        let _lock = self.append_lock.lock().unwrap();
         let mut boundary = self.log_page.get_i32(0) as usize;
         let record_bytes = log_record.to_bytes();
         let record_size = record_bytes.len();
