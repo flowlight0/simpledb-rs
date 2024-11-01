@@ -30,8 +30,8 @@ pub struct LockTable {
     lock_maxtime: u128,
 }
 
-fn has_exclusive_lock(locks: &HashMap<BlockId, Lock>, block: BlockId) -> bool {
-    if let Some(lock) = locks.get(&block) {
+fn has_exclusive_lock(locks: &HashMap<BlockId, Lock>, block: &BlockId) -> bool {
+    if let Some(lock) = locks.get(block) {
         match lock {
             Lock::Exclusive => true,
             _ => false,
@@ -41,8 +41,8 @@ fn has_exclusive_lock(locks: &HashMap<BlockId, Lock>, block: BlockId) -> bool {
     }
 }
 
-fn has_multiple_shared_locks(locks: &HashMap<BlockId, Lock>, block: BlockId) -> bool {
-    match locks.get(&block) {
+fn has_multiple_shared_locks(locks: &HashMap<BlockId, Lock>, block: &BlockId) -> bool {
+    match locks.get(block) {
         Some(Lock::Shared(num)) if *num > 1 => true,
         _ => false,
     }
@@ -57,7 +57,7 @@ impl LockTable {
         }
     }
 
-    fn lock_shared(&self, block: BlockId) -> Result<(), LockGiveUpError> {
+    fn lock_shared(&self, block: &BlockId) -> Result<(), LockGiveUpError> {
         let start_time = Instant::now();
         let mut locks = self.locks.lock().unwrap();
         while has_exclusive_lock(&locks, block) {
@@ -78,11 +78,11 @@ impl LockTable {
             None => Lock::Shared(1),
             _ => unreachable!(),
         };
-        locks.insert(block, new_lock);
+        locks.insert(block.clone(), new_lock);
         Ok(())
     }
 
-    fn lock_exclusive(&self, block: BlockId) -> Result<(), LockGiveUpError> {
+    fn lock_exclusive(&self, block: &BlockId) -> Result<(), LockGiveUpError> {
         let start_time = Instant::now();
         let mut locks = self.locks.lock().unwrap();
         while has_multiple_shared_locks(&locks, block) {
@@ -104,11 +104,11 @@ impl LockTable {
             Some(Lock::Shared(num)) if *num == 1 => Lock::Exclusive,
             _ => unreachable!(),
         };
-        locks.insert(block, new_lock);
+        locks.insert(block.clone(), new_lock);
         Ok(())
     }
 
-    fn unlock(&self, block: BlockId) {
+    fn unlock(&self, block: &BlockId) {
         let mut locks = self.locks.lock().unwrap();
 
         match locks.get(&block) {
@@ -118,10 +118,10 @@ impl LockTable {
             }
             Some(Lock::Shared(num)) => {
                 if *num == 1 {
-                    locks.remove(&block);
+                    locks.remove(block);
                 } else {
                     let new_num = *num - 1;
-                    locks.insert(block, Lock::Shared(new_num));
+                    locks.insert(block.clone(), Lock::Shared(new_num));
                 }
                 self.condvar.notify_all();
             }
@@ -144,25 +144,25 @@ impl ConcurrencyManager {
         }
     }
 
-    pub fn lock_shared(&mut self, block: BlockId) -> Result<(), LockGiveUpError> {
+    pub fn lock_shared(&mut self, block: &BlockId) -> Result<(), LockGiveUpError> {
         match self.my_locks.get(&block) {
             Some(Lock::Shared(_)) => Ok(()),
             Some(Lock::Exclusive) => Ok(()),
             _ => {
                 self.lock_table.lock().unwrap().lock_shared(block)?;
-                self.my_locks.insert(block, Lock::Shared(1));
+                self.my_locks.insert(block.clone(), Lock::Shared(1));
                 Ok(())
             }
         }
     }
 
-    pub fn lock_exclusive(&mut self, block: BlockId) -> Result<(), LockGiveUpError> {
-        match self.my_locks.get(&block) {
+    pub fn lock_exclusive(&mut self, block: &BlockId) -> Result<(), LockGiveUpError> {
+        match self.my_locks.get(block) {
             Some(Lock::Exclusive) => Ok(()),
             _ => {
                 self.lock_shared(block)?;
                 self.lock_table.lock().unwrap().lock_exclusive(block)?;
-                self.my_locks.insert(block, Lock::Exclusive);
+                self.my_locks.insert(block.clone(), Lock::Exclusive);
                 Ok(())
             }
         }
@@ -170,7 +170,7 @@ impl ConcurrencyManager {
 
     pub fn release(&mut self) {
         for block in self.my_locks.keys() {
-            self.lock_table.lock().unwrap().unlock(*block);
+            self.lock_table.lock().unwrap().unlock(block);
         }
         self.my_locks.clear();
     }
@@ -183,13 +183,14 @@ mod tests {
     #[test]
     fn test_lock_table() {
         let lock_table = LockTable::new(10);
-        assert!(lock_table.lock_shared(BlockId::new(0, 0)).is_ok());
-        assert!(lock_table.lock_shared(BlockId::new(0, 0)).is_ok());
+        let block = BlockId::new("dummy", 0);
+        assert!(lock_table.lock_shared(&block).is_ok());
+        assert!(lock_table.lock_shared(&block).is_ok());
 
-        assert!(lock_table.lock_exclusive(BlockId::new(0, 0)).is_err());
+        assert!(lock_table.lock_exclusive(&block).is_err());
 
-        lock_table.unlock(BlockId::new(0, 0));
-        assert!(lock_table.lock_exclusive(BlockId::new(0, 0)).is_ok());
+        lock_table.unlock(&block);
+        assert!(lock_table.lock_exclusive(&block).is_ok());
     }
 
     #[test]
@@ -200,17 +201,18 @@ mod tests {
         let mut cm_thread_a = ConcurrencyManager::new(lock_table.clone());
         let mut cm_thread_b = ConcurrencyManager::new(lock_table.clone());
 
-        assert!(cm_thread_a.lock_shared(BlockId::new(0, 0)).is_ok());
-        assert!(cm_thread_a.lock_shared(BlockId::new(0, 0)).is_ok());
+        let block = BlockId::new("dummy", 0);
+        assert!(cm_thread_a.lock_shared(&block).is_ok());
+        assert!(cm_thread_a.lock_shared(&block).is_ok());
 
         // Multiple shared lock on the same block is allowed
-        assert!(cm_thread_b.lock_shared(BlockId::new(0, 0)).is_ok());
+        assert!(cm_thread_b.lock_shared(&block).is_ok());
 
         // Exclusive lock is not allowed
-        assert!(cm_thread_b.lock_exclusive(BlockId::new(0, 0)).is_err());
+        assert!(cm_thread_b.lock_exclusive(&block).is_err());
 
         // Release the shared lock
         cm_thread_a.release();
-        assert!(cm_thread_b.lock_exclusive(BlockId::new(0, 0)).is_ok());
+        assert!(cm_thread_b.lock_exclusive(&block).is_ok());
     }
 }
