@@ -2,11 +2,9 @@ use std::collections::{HashMap, HashSet};
 use std::sync::atomic::AtomicUsize;
 use std::sync::{Arc, Mutex};
 
+use crate::buffer::BufferManager;
 use crate::file::BlockId;
-use crate::{
-    buffer::BufferManager,
-    log::{LogManager, LogRecord},
-};
+use crate::log::log::{LogManager, LogRecord};
 
 use super::concurrency::{ConcurrencyManager, LockTable};
 

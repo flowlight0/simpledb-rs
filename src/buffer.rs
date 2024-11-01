@@ -3,7 +3,7 @@ use std::time::{Duration, Instant};
 use thiserror::Error;
 
 use crate::file::{BlockId, FileManager};
-use crate::log::LogManager;
+use crate::log::log::LogManager;
 use crate::page::Page;
 
 const PIN_TIME_LIMIT_IN_MILLIS: u128 = 5_000;
