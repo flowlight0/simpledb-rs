@@ -290,16 +290,12 @@ impl<'a> Iterator for BackwardLogIterator<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.current_position == self.file_manager.block_size {
-            if self.current_block.block_slot == 0 {
-                return None;
-            } else {
-                let next_block = BlockId::new(
-                    &self.current_block.file_name,
-                    self.current_block.block_slot - 1,
-                );
+            if let Some(next_block) = self.current_block.get_previous_block() {
                 self.file_manager.read(&next_block, &mut self.page).unwrap();
                 self.current_position = self.page.get_i32(0) as usize;
                 self.current_block = next_block;
+            } else {
+                return None;
             }
         }
         let log_record = LogRecord::from_bytes(&self.page.byte_buffer[self.current_position..]);

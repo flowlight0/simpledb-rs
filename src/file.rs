@@ -7,8 +7,8 @@ use crate::page::Page;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct BlockId {
-    pub file_name: String,
-    pub block_slot: usize,
+    file_name: String,
+    block_slot: usize,
 }
 
 impl BlockId {
@@ -17,6 +17,16 @@ impl BlockId {
             file_name: file_name.to_string(),
             block_slot,
         }
+    }
+
+    pub fn get_previous_block(&self) -> Option<BlockId> {
+        if self.block_slot == 0 {
+            return None;
+        }
+        Some(BlockId {
+            file_name: self.file_name.clone(),
+            block_slot: self.block_slot - 1,
+        })
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
@@ -89,7 +99,6 @@ impl FileManager {
         Ok(())
     }
 
-    // This method is not expcted to be concurrently called
     pub fn get_last_block(&mut self, file_name: &str) -> BlockId {
         let num_blocks = self.get_num_blocks(file_name);
         BlockId::new(file_name, num_blocks - 1)
