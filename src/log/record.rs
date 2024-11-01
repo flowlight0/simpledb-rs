@@ -13,6 +13,16 @@ pub enum LogRecord {
     SetI32(usize, BlockId, usize, i32, i32),
 }
 
+fn from_ne_bytes_to_usize(bytes: &[u8]) -> usize {
+    usize::from_ne_bytes([
+        bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6], bytes[7],
+    ])
+}
+
+fn from_ne_bytes_to_i32(bytes: &[u8]) -> i32 {
+    i32::from_ne_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])
+}
+
 impl LogRecord {
     pub fn to_bytes(&self) -> Vec<u8> {
         match self {
@@ -70,91 +80,26 @@ impl LogRecord {
     pub fn from_bytes(current_position: &[u8]) -> Self {
         match current_position[0] as char {
             'S' => {
-                let transaction_id = usize::from_ne_bytes([
-                    current_position[1],
-                    current_position[2],
-                    current_position[3],
-                    current_position[4],
-                    current_position[5],
-                    current_position[6],
-                    current_position[7],
-                    current_position[8],
-                ]);
+                let transaction_id = from_ne_bytes_to_usize(&current_position[1..9]);
                 LogRecord::Start(transaction_id)
             }
             'C' => {
-                let transaction_id = usize::from_ne_bytes([
-                    current_position[1],
-                    current_position[2],
-                    current_position[3],
-                    current_position[4],
-                    current_position[5],
-                    current_position[6],
-                    current_position[7],
-                    current_position[8],
-                ]);
+                let transaction_id = from_ne_bytes_to_usize(&current_position[1..9]);
                 LogRecord::Commit(transaction_id)
             }
             'K' => {
-                let transaction_id = usize::from_ne_bytes([
-                    current_position[1],
-                    current_position[2],
-                    current_position[3],
-                    current_position[4],
-                    current_position[5],
-                    current_position[6],
-                    current_position[7],
-                    current_position[8],
-                ]);
+                let transaction_id = from_ne_bytes_to_usize(&current_position[1..9]);
                 LogRecord::Checkpoint(transaction_id)
             }
             'R' => {
-                let transaction_id = usize::from_ne_bytes([
-                    current_position[1],
-                    current_position[2],
-                    current_position[3],
-                    current_position[4],
-                    current_position[5],
-                    current_position[6],
-                    current_position[7],
-                    current_position[8],
-                ]);
+                let transaction_id = from_ne_bytes_to_usize(&current_position[1..9]);
                 LogRecord::Rollback(transaction_id)
             }
             'I' => {
-                let transaction_id = usize::from_ne_bytes([
-                    current_position[1],
-                    current_position[2],
-                    current_position[3],
-                    current_position[4],
-                    current_position[5],
-                    current_position[6],
-                    current_position[7],
-                    current_position[8],
-                ]);
-
-                let offset = usize::from_ne_bytes([
-                    current_position[9],
-                    current_position[10],
-                    current_position[11],
-                    current_position[12],
-                    current_position[13],
-                    current_position[14],
-                    current_position[15],
-                    current_position[16],
-                ]);
-                let old_value = i32::from_ne_bytes([
-                    current_position[17],
-                    current_position[18],
-                    current_position[19],
-                    current_position[20],
-                ]);
-                let new_value = i32::from_ne_bytes([
-                    current_position[21],
-                    current_position[22],
-                    current_position[23],
-                    current_position[24],
-                ]);
+                let transaction_id = from_ne_bytes_to_usize(&current_position[1..9]);
+                let offset = from_ne_bytes_to_usize(&current_position[9..17]);
+                let old_value = from_ne_bytes_to_i32(&current_position[17..21]);
+                let new_value = from_ne_bytes_to_i32(&current_position[21..25]);
                 let (_, block) = BlockId::from_bytes(&current_position[25..]);
                 LogRecord::SetI32(transaction_id, block, offset, old_value, new_value)
             }
