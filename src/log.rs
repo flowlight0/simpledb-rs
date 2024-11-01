@@ -9,7 +9,7 @@ use crate::{
     page::Page,
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum LogRecord {
     Start(usize),
     Commit(usize),
@@ -49,11 +49,10 @@ impl LogRecord {
                 let mut bytes = Vec::new();
                 bytes.push('I' as u8);
                 bytes.extend_from_slice(&transaction_id.to_ne_bytes());
-                bytes.extend_from_slice(&block_id.file_id.to_ne_bytes());
-                bytes.extend_from_slice(&block_id.block_slot.to_ne_bytes());
                 bytes.extend_from_slice(&offset.to_ne_bytes());
                 bytes.extend_from_slice(&old_value.to_ne_bytes());
                 bytes.extend_from_slice(&new_value.to_ne_bytes());
+                bytes.extend_from_slice(&block_id.to_bytes());
                 bytes
             }
         }
@@ -138,7 +137,8 @@ impl LogRecord {
                     current_position[7],
                     current_position[8],
                 ]);
-                let file_id = usize::from_ne_bytes([
+
+                let offset = usize::from_ne_bytes([
                     current_position[9],
                     current_position[10],
                     current_position[11],
@@ -148,45 +148,20 @@ impl LogRecord {
                     current_position[15],
                     current_position[16],
                 ]);
-                let block_slot = usize::from_ne_bytes([
+                let old_value = i32::from_ne_bytes([
                     current_position[17],
                     current_position[18],
                     current_position[19],
                     current_position[20],
+                ]);
+                let new_value = i32::from_ne_bytes([
                     current_position[21],
                     current_position[22],
                     current_position[23],
                     current_position[24],
                 ]);
-                let offset = usize::from_ne_bytes([
-                    current_position[25],
-                    current_position[26],
-                    current_position[27],
-                    current_position[28],
-                    current_position[29],
-                    current_position[30],
-                    current_position[31],
-                    current_position[32],
-                ]);
-                let old_value = i32::from_ne_bytes([
-                    current_position[33],
-                    current_position[34],
-                    current_position[35],
-                    current_position[36],
-                ]);
-                let new_value = i32::from_ne_bytes([
-                    current_position[37],
-                    current_position[38],
-                    current_position[39],
-                    current_position[40],
-                ]);
-                LogRecord::SetI32(
-                    transaction_id,
-                    BlockId::new(file_id, block_slot),
-                    offset,
-                    old_value,
-                    new_value,
-                )
+                let (_, block) = BlockId::from_bytes(&current_position[25..]);
+                LogRecord::SetI32(transaction_id, block, offset, old_value, new_value)
             }
             _ => panic!("Invalid log record"),
         }
@@ -287,7 +262,7 @@ impl LogManager {
         file_manager.read(&self.current_block, &mut page).unwrap();
         Ok(BackwardLogIterator {
             file_manager,
-            current_block: self.current_block,
+            current_block: self.current_block.clone(),
             current_position: self.log_page.get_i32(0) as usize,
             page,
         })
@@ -315,16 +290,12 @@ impl<'a> Iterator for BackwardLogIterator<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.current_position == self.file_manager.block_size {
-            if self.current_block.block_slot == 0 {
-                return None;
-            } else {
-                let next_block = BlockId::new(
-                    self.current_block.file_id,
-                    self.current_block.block_slot - 1,
-                );
+            if let Some(next_block) = self.current_block.get_previous_block() {
                 self.file_manager.read(&next_block, &mut self.page).unwrap();
                 self.current_position = self.page.get_i32(0) as usize;
                 self.current_block = next_block;
+            } else {
+                return None;
             }
         }
         let log_record = LogRecord::from_bytes(&self.page.byte_buffer[self.current_position..]);
@@ -352,12 +323,14 @@ mod tests {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let file_manager = FileManager::new(temp_dir, 50);
         let mut log_manager = LogManager::new(Arc::new(Mutex::new(file_manager)), "log".into())?;
+
+        let block = BlockId::new("dummy", 0);
         log_manager.append_record(&LogRecord::Start(0))?;
         log_manager.append_record(&LogRecord::Commit(0))?;
         log_manager.append_record(&LogRecord::Start(1))?;
         log_manager.append_record(&LogRecord::Commit(1))?;
         log_manager.append_record(&LogRecord::Start(2))?;
-        log_manager.append_record(&LogRecord::SetI32(2, BlockId::new(0, 0), 0, 0, 0))?;
+        log_manager.append_record(&LogRecord::SetI32(2, block.clone(), 0, 0, 0))?;
         let lsn = log_manager.append_record(&LogRecord::Commit(2))?;
         log_manager.flush(lsn)?;
 
@@ -365,7 +338,7 @@ mod tests {
         assert_eq!(iter.next(), Some(LogRecord::Commit(2)));
         assert_eq!(
             iter.next(),
-            Some(LogRecord::SetI32(2, BlockId::new(0, 0), 0, 0, 0))
+            Some(LogRecord::SetI32(2, block.clone(), 0, 0, 0))
         );
         assert_eq!(iter.next(), Some(LogRecord::Start(2)));
         assert_eq!(iter.next(), Some(LogRecord::Commit(1)));

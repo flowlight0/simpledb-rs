@@ -52,13 +52,13 @@ impl Buffer {
         self.num_pins > 0
     }
 
-    fn assign_to_block(&mut self, block_id: BlockId) -> Result<(), std::io::Error> {
+    fn assign_to_block(&mut self, block: &BlockId) -> Result<(), std::io::Error> {
         self.flush()?;
-        self.block = Some(block_id);
+        self.block = Some(block.clone());
         self.file_manager
             .lock()
             .unwrap()
-            .read(&block_id, &mut self.page)?;
+            .read(&block, &mut self.page)?;
         self.num_pins = 0;
         Ok(())
     }
@@ -88,9 +88,9 @@ pub struct BufferManager {
     condvar: Condvar,
 }
 
-fn find_existing_buffer(buffers: &Vec<Buffer>, block: BlockId) -> Option<usize> {
+fn find_existing_buffer(buffers: &Vec<Buffer>, block: &BlockId) -> Option<usize> {
     for i in 0..buffers.len() {
-        if let Some(b) = buffers[i].block {
+        if let Some(b) = &buffers[i].block {
             if b == block {
                 return Some(i);
             }
@@ -111,7 +111,7 @@ fn choose_unpinned_buffer(buffers: &Vec<Buffer>) -> Option<usize> {
 fn try_to_pin(
     buffers: &mut Vec<Buffer>,
     num_availables: &mut usize,
-    block: BlockId,
+    block: &BlockId,
 ) -> Result<Option<usize>, std::io::Error> {
     if let Some(buffer_index) = find_existing_buffer(buffers, block) {
         if !buffers[buffer_index].is_pinned() {
@@ -164,7 +164,7 @@ impl BufferManager {
         self.condvar.notify_all();
     }
 
-    pub fn pin(&mut self, block: BlockId) -> Result<usize, anyhow::Error> {
+    pub fn pin(&mut self, block: &BlockId) -> Result<usize, anyhow::Error> {
         let timestamp = Instant::now();
         while timestamp.elapsed().as_millis() < PIN_TIME_LIMIT_IN_MILLIS {
             let mut buffers = self.buffers.lock().unwrap();
@@ -212,9 +212,9 @@ mod tests {
         let block1 = file_manager.lock().unwrap().append_block("log")?;
         let block2 = file_manager.lock().unwrap().append_block("log")?;
 
-        buffer_manager.pin(block0)?;
-        buffer_manager.pin(block1)?;
-        buffer_manager.pin(block2)?;
+        buffer_manager.pin(&block0)?;
+        buffer_manager.pin(&block1)?;
+        buffer_manager.pin(&block2)?;
         assert_eq!(buffer_manager.num_availables, 0);
 
         Ok(())

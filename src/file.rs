@@ -5,31 +5,69 @@ use std::{collections::HashMap, path::PathBuf};
 
 use crate::page::Page;
 
-type FileId = usize;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct BlockId {
-    pub file_id: FileId,
-    pub block_slot: usize,
+    file_name: String,
+    block_slot: usize,
 }
 
 impl BlockId {
-    pub fn new(file_id: usize, block_slot: usize) -> Self {
+    pub fn new(file_name: &str, block_slot: usize) -> Self {
         BlockId {
-            file_id,
+            file_name: file_name.to_string(),
             block_slot,
         }
+    }
+
+    pub fn get_previous_block(&self) -> Option<BlockId> {
+        if self.block_slot == 0 {
+            return None;
+        }
+        Some(BlockId {
+            file_name: self.file_name.clone(),
+            block_slot: self.block_slot - 1,
+        })
+    }
+
+    pub fn to_bytes(&self) -> Vec<u8> {
+        let file_name_bytes = self.file_name.as_bytes();
+        let file_name_length = file_name_bytes.len();
+
+        let block_slot_bytes = self.block_slot.to_le_bytes().to_vec();
+        assert_eq!(block_slot_bytes.len(), 8);
+
+        let total_length = 8 + 8 + file_name_length;
+        let mut bytes = vec![];
+        bytes.extend(total_length.to_le_bytes());
+        bytes.extend(block_slot_bytes);
+        bytes.extend(file_name_bytes);
+        assert_eq!(bytes.len(), total_length);
+        bytes
+    }
+
+    pub fn from_bytes(bytes: &[u8]) -> (usize, Self) {
+        let total_length = usize::from_le_bytes([
+            bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6], bytes[7],
+        ]);
+        let block_slot = usize::from_le_bytes([
+            bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15],
+        ]);
+
+        let file_name = String::from_utf8(bytes[16..total_length].to_vec()).unwrap();
+        (
+            total_length,
+            BlockId {
+                file_name,
+                block_slot,
+            },
+        )
     }
 }
 
 pub struct FileManager {
     directory: PathBuf,
     pub block_size: usize,
-    opened_files: RwLock<HashMap<usize, Arc<Mutex<File>>>>,
-
-    file_id_mapping_lock: RwLock<()>,
-    file_id_to_file_name: HashMap<FileId, String>,
-    file_name_to_file_id: HashMap<String, FileId>,
+    opened_files: RwLock<HashMap<String, Arc<Mutex<File>>>>,
 }
 
 impl FileManager {
@@ -42,68 +80,56 @@ impl FileManager {
             directory,
             block_size,
             opened_files: RwLock::new(HashMap::new()),
-            file_id_mapping_lock: RwLock::new(()),
-            file_id_to_file_name: HashMap::new(),
-            file_name_to_file_id: HashMap::new(),
         }
     }
 
-    pub fn write(&mut self, block_id: &BlockId, page: &Page) -> Result<()> {
-        let binding = self.load_and_cache_file(block_id.file_id);
+    pub fn write(&mut self, block: &BlockId, page: &Page) -> Result<()> {
+        let binding = self.load_and_cache_file(&block.file_name);
         let mut file = binding.lock().unwrap();
-        file.seek(SeekFrom::Start(
-            (block_id.block_slot * self.block_size) as u64,
-        ))?;
+        file.seek(SeekFrom::Start((block.block_slot * self.block_size) as u64))?;
         file.write(page.byte_buffer.as_slice())?;
         Ok(())
     }
 
-    pub fn read(&mut self, block_id: &BlockId, page: &mut Page) -> Result<()> {
-        let binding = self.load_and_cache_file(block_id.file_id);
+    pub fn read(&mut self, block: &BlockId, page: &mut Page) -> Result<()> {
+        let binding = self.load_and_cache_file(&block.file_name);
         let mut file = binding.lock().unwrap();
-        file.seek(SeekFrom::Start(
-            (block_id.block_slot * self.block_size) as u64,
-        ))?;
+        file.seek(SeekFrom::Start((block.block_slot * self.block_size) as u64))?;
         file.read_exact(&mut page.byte_buffer)?;
         Ok(())
     }
 
-    // This method is not expcted to be concurrently called
     pub fn get_last_block(&mut self, file_name: &str) -> BlockId {
-        let file_id = self.get_file_id(file_name);
         let num_blocks = self.get_num_blocks(file_name);
-        BlockId::new(file_id, num_blocks - 1)
+        BlockId::new(file_name, num_blocks - 1)
     }
 
     pub fn get_num_blocks(&mut self, file_name: &str) -> usize {
-        let file_id = self.get_file_id(file_name);
-        let binding = self.load_and_cache_file(file_id);
+        let binding = self.load_and_cache_file(file_name);
         let file = binding.lock().unwrap();
         file.metadata().unwrap().len() as usize / self.block_size
     }
 
     pub fn append_block(&mut self, file_name: &str) -> Result<BlockId> {
-        let file_id = self.get_file_id(file_name);
-        let binding = self.load_and_cache_file(file_id);
+        let binding = self.load_and_cache_file(file_name);
         let mut file = binding.lock().unwrap();
         let num_blocks = file.metadata().unwrap().len() as usize / self.block_size;
         let new_block_contents = vec![0; self.block_size];
         file.write(new_block_contents.as_slice())?;
-        Ok(BlockId::new(file_id, num_blocks))
+        Ok(BlockId::new(file_name, num_blocks))
     }
 
-    fn load_and_cache_file(&mut self, file_id: FileId) -> Arc<Mutex<File>> {
-        if let Some(file) = self.opened_files.try_read().unwrap().get(&file_id) {
+    fn load_and_cache_file(&mut self, file_name: &str) -> Arc<Mutex<File>> {
+        if let Some(file) = self.opened_files.try_read().unwrap().get(file_name) {
             return file.clone();
         }
 
         // Check if the file is added before acquiring the write lock
         let mut hash_map = self.opened_files.try_write().unwrap();
-        if hash_map.contains_key(&file_id) {
-            return hash_map.get(&file_id).unwrap().clone();
+        if hash_map.contains_key(file_name) {
+            return hash_map.get(file_name).unwrap().clone();
         }
 
-        let file_name = self.get_file_name(file_id);
         let file_path = self.directory.join(file_name);
         let file = std::fs::OpenOptions::new()
             .read(true)
@@ -112,37 +138,8 @@ impl FileManager {
             .open(file_path)
             .unwrap();
         let value = Arc::new(Mutex::new(file));
-        hash_map.insert(file_id, value.clone());
+        hash_map.insert(file_name.to_string(), value.clone());
         return value;
-    }
-
-    pub fn get_file_id(&mut self, file_name: &str) -> FileId {
-        {
-            let _lookup_lock = self.file_id_mapping_lock.read().unwrap();
-            if let Some(file_id) = self.file_name_to_file_id.get(file_name) {
-                return *file_id;
-            }
-        }
-
-        let _update_lock = self.file_id_mapping_lock.write().unwrap();
-        if let Some(file_id) = self.file_name_to_file_id.get(file_name) {
-            return *file_id;
-        }
-
-        let file_id = self.file_name_to_file_id.len();
-        self.file_name_to_file_id
-            .insert(file_name.to_string(), file_id);
-        self.file_id_to_file_name
-            .insert(file_id, file_name.to_string());
-        file_id
-    }
-
-    fn get_file_name(&self, file_id: usize) -> &str {
-        let _lock = self.file_id_mapping_lock.read().unwrap();
-        return self
-            .file_id_to_file_name
-            .get(&file_id)
-            .expect("File ID must be registered before we reach here");
     }
 }
 
@@ -178,8 +175,8 @@ mod tests {
 
         assert_eq!(file_manager.get_num_blocks("testfile"), 0);
         for i in 0..10 {
-            let block_id = file_manager.append_block("testfile")?;
-            assert_eq!(block_id, BlockId::new(0, i));
+            let block = file_manager.append_block("testfile")?;
+            assert_eq!(block, BlockId::new("testfile", i));
             assert_eq!(file_manager.get_num_blocks("testfile"), i + 1);
         }
         Ok(())
