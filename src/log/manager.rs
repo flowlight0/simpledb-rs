@@ -9,168 +9,11 @@ use crate::{
     page::Page,
 };
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum LogRecord {
-    Start(usize),
-    Commit(usize),
-    Checkpoint(usize),
-    Rollback(usize),
-    SetI32(usize, BlockId, usize, i32, i32),
-}
-
-impl LogRecord {
-    fn to_bytes(&self) -> Vec<u8> {
-        match self {
-            LogRecord::Start(transaction_id) => {
-                let mut bytes = Vec::new();
-                bytes.push('S' as u8);
-                bytes.extend_from_slice(&transaction_id.to_ne_bytes());
-                bytes
-            }
-            LogRecord::Commit(transaction_id) => {
-                let mut bytes = Vec::new();
-                bytes.push('C' as u8);
-                bytes.extend_from_slice(&transaction_id.to_ne_bytes());
-                bytes
-            }
-            LogRecord::Checkpoint(transaction_id) => {
-                let mut bytes = Vec::new();
-                bytes.push('K' as u8);
-                bytes.extend_from_slice(&transaction_id.to_ne_bytes());
-                bytes
-            }
-            LogRecord::Rollback(transaction_id) => {
-                let mut bytes = Vec::new();
-                bytes.push('R' as u8);
-                bytes.extend_from_slice(&transaction_id.to_ne_bytes());
-                bytes
-            }
-            LogRecord::SetI32(transaction_id, block_id, offset, old_value, new_value) => {
-                let mut bytes = Vec::new();
-                bytes.push('I' as u8);
-                bytes.extend_from_slice(&transaction_id.to_ne_bytes());
-                bytes.extend_from_slice(&offset.to_ne_bytes());
-                bytes.extend_from_slice(&old_value.to_ne_bytes());
-                bytes.extend_from_slice(&new_value.to_ne_bytes());
-                bytes.extend_from_slice(&block_id.to_bytes());
-                bytes
-            }
-        }
-    }
-
-    pub fn log_into(&self, log_manager: &mut LogManager) -> Result<usize> {
-        log_manager.append_record(self)
-    }
-
-    pub fn get_transaction_id(&self) -> usize {
-        match self {
-            LogRecord::Start(transaction_id) => *transaction_id,
-            LogRecord::Commit(transaction_id) => *transaction_id,
-            LogRecord::Checkpoint(transaction_id) => *transaction_id,
-            LogRecord::Rollback(transaction_id) => *transaction_id,
-            LogRecord::SetI32(transaction_id, _, _, _, _) => *transaction_id,
-        }
-    }
-
-    fn from_bytes(current_position: &[u8]) -> Self {
-        match current_position[0] as char {
-            'S' => {
-                let transaction_id = usize::from_ne_bytes([
-                    current_position[1],
-                    current_position[2],
-                    current_position[3],
-                    current_position[4],
-                    current_position[5],
-                    current_position[6],
-                    current_position[7],
-                    current_position[8],
-                ]);
-                LogRecord::Start(transaction_id)
-            }
-            'C' => {
-                let transaction_id = usize::from_ne_bytes([
-                    current_position[1],
-                    current_position[2],
-                    current_position[3],
-                    current_position[4],
-                    current_position[5],
-                    current_position[6],
-                    current_position[7],
-                    current_position[8],
-                ]);
-                LogRecord::Commit(transaction_id)
-            }
-            'K' => {
-                let transaction_id = usize::from_ne_bytes([
-                    current_position[1],
-                    current_position[2],
-                    current_position[3],
-                    current_position[4],
-                    current_position[5],
-                    current_position[6],
-                    current_position[7],
-                    current_position[8],
-                ]);
-                LogRecord::Checkpoint(transaction_id)
-            }
-            'R' => {
-                let transaction_id = usize::from_ne_bytes([
-                    current_position[1],
-                    current_position[2],
-                    current_position[3],
-                    current_position[4],
-                    current_position[5],
-                    current_position[6],
-                    current_position[7],
-                    current_position[8],
-                ]);
-                LogRecord::Rollback(transaction_id)
-            }
-            'I' => {
-                let transaction_id = usize::from_ne_bytes([
-                    current_position[1],
-                    current_position[2],
-                    current_position[3],
-                    current_position[4],
-                    current_position[5],
-                    current_position[6],
-                    current_position[7],
-                    current_position[8],
-                ]);
-
-                let offset = usize::from_ne_bytes([
-                    current_position[9],
-                    current_position[10],
-                    current_position[11],
-                    current_position[12],
-                    current_position[13],
-                    current_position[14],
-                    current_position[15],
-                    current_position[16],
-                ]);
-                let old_value = i32::from_ne_bytes([
-                    current_position[17],
-                    current_position[18],
-                    current_position[19],
-                    current_position[20],
-                ]);
-                let new_value = i32::from_ne_bytes([
-                    current_position[21],
-                    current_position[22],
-                    current_position[23],
-                    current_position[24],
-                ]);
-                let (_, block) = BlockId::from_bytes(&current_position[25..]);
-                LogRecord::SetI32(transaction_id, block, offset, old_value, new_value)
-            }
-            _ => panic!("Invalid log record"),
-        }
-    }
-}
+use super::record::LogRecord;
 
 /// The log manager is responsible for writing log records to the log file.
 /// The log file is a sequence of blocks, and the log manager appends log records to the last block.
-/// The log records are written to the log file from right to left.
+/// The log records are written to the block file from right to left.
 /// The first byte of the block contains the offset to the most recent log record.
 ///
 /// This struct is expected to be a singleton. Hence, it is not thread-safe.
@@ -180,7 +23,6 @@ pub struct LogManager {
     log_file: String,
     log_page: Page,
     current_block: BlockId,
-    append_lock: Mutex<()>,
     latest_log_sequence_number: usize,
     last_saved_log_sequence_number: usize,
 }
@@ -210,14 +52,12 @@ impl LogManager {
             log_file,
             log_page,
             current_block,
-            append_lock: Mutex::new(()),
             latest_log_sequence_number: 0,
             last_saved_log_sequence_number: 0,
         })
     }
 
     pub fn append_record(&mut self, log_record: &LogRecord) -> Result<usize> {
-        let _lock = self.append_lock.lock().unwrap();
         let mut boundary = self.log_page.get_i32(0) as usize;
         let record_bytes = log_record.to_bytes();
         let record_size = record_bytes.len();
@@ -306,6 +146,7 @@ impl<'a> Iterator for BackwardLogIterator<'a> {
 
 #[cfg(test)]
 mod tests {
+
     use super::*;
 
     #[test]
