@@ -60,7 +60,8 @@ impl LogManager {
     pub fn append_record(&mut self, log_record: &LogRecord) -> Result<usize> {
         let mut boundary = self.log_page.get_i32(0) as usize;
         let record_bytes = log_record.to_bytes();
-        let record_size = record_bytes.len();
+        // let record_size = record_bytes.len();
+        let record_size = self.log_page.get_required_size(&record_bytes);
         let boundary_size = mem::size_of::<i32>();
         let mut file_manager = self.file_manager.lock().unwrap();
 
@@ -79,9 +80,15 @@ impl LogManager {
             boundary = self.log_page.get_i32(0) as usize;
         }
 
+        if boundary < record_size + boundary_size {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                "Record size is larger than the block size",
+            ));
+        }
+
         let record_position = boundary - record_size;
-        self.log_page
-            .set_bytes(record_position, record_bytes.as_slice());
+        self.log_page.set_bytes(record_position, &record_bytes);
         self.log_page.set_i32(0, record_position as i32);
         self.latest_log_sequence_number += 1;
         Ok(self.latest_log_sequence_number)
@@ -138,8 +145,10 @@ impl<'a> Iterator for BackwardLogIterator<'a> {
                 return None;
             }
         }
-        let log_record = LogRecord::from_bytes(&self.page.byte_buffer[self.current_position..]);
-        self.current_position += log_record.to_bytes().len();
+
+        let (bytes, length) = self.page.get_bytes(self.current_position);
+        let log_record = LogRecord::from_bytes(bytes);
+        self.current_position += length;
         return Some(log_record);
     }
 }
@@ -162,7 +171,7 @@ mod tests {
     #[test]
     fn test_backward_log_iterator() -> Result<()> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
-        let file_manager = FileManager::new(temp_dir, 50);
+        let file_manager = FileManager::new(temp_dir, 80);
         let mut log_manager = LogManager::new(Arc::new(Mutex::new(file_manager)), "log".into())?;
 
         let block = BlockId::new("dummy", 0);

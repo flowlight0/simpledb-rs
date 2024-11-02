@@ -1,5 +1,10 @@
+use std::{
+    fs::File,
+    io::{Read, Write},
+};
+
 pub struct Page {
-    pub byte_buffer: Vec<u8>,
+    byte_buffer: Vec<u8>,
 }
 
 impl Page {
@@ -24,7 +29,34 @@ impl Page {
     }
 
     pub fn set_bytes(&mut self, offset: usize, bytes: &[u8]) -> () {
-        self.byte_buffer[offset..offset + bytes.len()].copy_from_slice(bytes);
+        assert!(bytes.len() < (1usize << 16));
+        // Use 2 bytes to store the length of the bytes.
+        self.byte_buffer[offset..offset + 2].copy_from_slice(&(bytes.len() as u16).to_le_bytes());
+        self.byte_buffer[offset + 2..offset + 2 + bytes.len()].copy_from_slice(bytes);
+    }
+
+    pub fn get_bytes(&self, offset: usize) -> (&[u8], usize) {
+        let length =
+            u16::from_le_bytes([self.byte_buffer[offset], self.byte_buffer[offset + 1]]) as usize;
+        (
+            &self.byte_buffer[offset + 2..offset + 2 + length],
+            length + 2,
+        )
+    }
+
+    pub fn write_to_file(&self, file: &mut File) -> Result<(), std::io::Error> {
+        file.write(self.byte_buffer.as_slice())?;
+        Ok(())
+    }
+
+    pub fn read_from_file(&mut self, file: &mut File) -> Result<(), std::io::Error> {
+        file.read_exact(&mut self.byte_buffer)?;
+        Ok(())
+    }
+
+    pub fn get_required_size(&self, bytes: &[u8]) -> usize {
+        assert!(bytes.len() < (1usize << 16));
+        bytes.len() + 2
     }
 }
 
