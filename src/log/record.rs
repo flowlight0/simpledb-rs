@@ -11,6 +11,7 @@ pub enum LogRecord {
     Checkpoint(usize),
     Rollback(usize),
     SetI32(usize, BlockId, usize, i32, i32),
+    SetString(usize, BlockId, usize, String, String),
 }
 
 fn from_ne_bytes_to_usize(bytes: &[u8]) -> usize {
@@ -60,6 +61,18 @@ impl LogRecord {
                 bytes.extend_from_slice(&block_id.to_bytes());
                 bytes
             }
+            LogRecord::SetString(transaction_id, block_id, offset, old_string, new_string) => {
+                let mut bytes = Vec::new();
+                bytes.push('T' as u8);
+                bytes.extend_from_slice(&transaction_id.to_ne_bytes());
+                bytes.extend_from_slice(&offset.to_ne_bytes());
+                bytes.extend_from_slice(&old_string.len().to_ne_bytes());
+                bytes.extend_from_slice(old_string.as_bytes());
+                bytes.extend_from_slice(&new_string.len().to_ne_bytes());
+                bytes.extend_from_slice(new_string.as_bytes());
+                bytes.extend_from_slice(&block_id.to_bytes());
+                bytes
+            }
         }
     }
 
@@ -74,6 +87,7 @@ impl LogRecord {
             LogRecord::Checkpoint(transaction_id) => *transaction_id,
             LogRecord::Rollback(transaction_id) => *transaction_id,
             LogRecord::SetI32(transaction_id, _, _, _, _) => *transaction_id,
+            LogRecord::SetString(transaction_id, _, _, _, _) => *transaction_id,
         }
     }
 
@@ -102,6 +116,27 @@ impl LogRecord {
                 let new_value = from_ne_bytes_to_i32(&current_position[21..25]);
                 let (_, block) = BlockId::from_bytes(&current_position[25..]);
                 LogRecord::SetI32(transaction_id, block, offset, old_value, new_value)
+            }
+            'T' => {
+                let transaction_id = from_ne_bytes_to_usize(&current_position[1..9]);
+                let offset = from_ne_bytes_to_usize(&current_position[9..17]);
+                let old_string_length = from_ne_bytes_to_usize(&current_position[17..25]);
+                let old_string =
+                    String::from_utf8(current_position[25..25 + old_string_length].to_vec())
+                        .unwrap();
+                let new_string_length = from_ne_bytes_to_usize(
+                    &current_position[25 + old_string_length..33 + old_string_length],
+                );
+                let new_string = String::from_utf8(
+                    current_position
+                        [33 + old_string_length..33 + old_string_length + new_string_length]
+                        .to_vec(),
+                )
+                .unwrap();
+                let (_, block) = BlockId::from_bytes(
+                    &current_position[33 + old_string_length + new_string_length..],
+                );
+                LogRecord::SetString(transaction_id, block, offset, old_string, new_string)
             }
             _ => panic!("Invalid log record"),
         }
