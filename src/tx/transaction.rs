@@ -158,11 +158,64 @@ impl Transaction {
         Ok(())
     }
 
+    // Block with block_id must be pinned before calling this method.
+    pub fn get_string(&mut self, block: &BlockId, offset: usize) -> Result<String, anyhow::Error> {
+        self.concurrency_manager.lock_shared(block)?;
+        let &buffer_index = self.block_to_buffer_map.get(&block).unwrap();
+        let buffer_manager = self.buffer_manager.lock().unwrap();
+        let buffer_lock = buffer_manager.buffers.lock().unwrap();
+        Ok(buffer_lock[buffer_index]
+            .page
+            .get_string(offset)
+            .0
+            .to_string())
+    }
+
+    // Block with block_id must be pinned before calling this method.
+    pub fn set_string(
+        &mut self,
+        block: &BlockId,
+        offset: usize,
+        value: &str,
+        is_log_needed: bool,
+    ) -> Result<(), anyhow::Error> {
+        self.concurrency_manager.lock_exclusive(block)?;
+        let &buffer_index = self.block_to_buffer_map.get(&block).unwrap();
+        let buffer_manager = self.buffer_manager.lock().unwrap();
+        let buffer = &mut buffer_manager.buffers.lock().unwrap()[buffer_index];
+        let log_sequence_number = if is_log_needed {
+            let block = buffer
+                .block
+                .clone()
+                .expect("buffer must be assigned to a block");
+            let (old_value, _) = buffer.page.get_string(offset);
+            let record = LogRecord::SetString(
+                self.id,
+                block,
+                offset,
+                old_value.to_string(),
+                value.to_string(),
+            );
+            let mut log_manager = self.log_manager.lock().unwrap();
+            log_manager.append_record(&record)?
+        } else {
+            0
+        };
+        buffer.page.set_string(offset, value);
+        buffer.set_modified(self.id, log_sequence_number);
+        Ok(())
+    }
+
     pub fn undo_update(&mut self, log_record: &LogRecord) -> Result<(), anyhow::Error> {
         match log_record {
             LogRecord::SetI32(_, block, offset, old_value, _) => {
                 self.pin(block)?;
                 self.set_i32(block, *offset, *old_value, false)?;
+                self.unpin(block);
+            }
+            LogRecord::SetString(_, block, offset, old_value, _) => {
+                self.pin(block)?;
+                self.set_string(block, *offset, old_value, false)?;
                 self.unpin(block);
             }
             _ => {
@@ -260,6 +313,7 @@ mod tests {
         )?;
         tx1.pin(&block)?;
         tx1.set_i32(&block, 80, 1, false)?;
+        tx1.set_string(&block, 40, "one", false)?;
         tx1.commit()?;
 
         let mut tx2 = Transaction::new(
@@ -268,9 +322,10 @@ mod tests {
             lock_table.clone(),
         )?;
         tx2.pin(&block)?;
-        let value = tx2.get_i32(&block, 80)?;
-        assert_eq!(value, 1);
+        assert_eq!(tx2.get_i32(&block, 80)?, 1);
+        assert_eq!(tx2.get_string(&block, 40)?, "one");
         tx2.set_i32(&block, 80, 2, true)?;
+        tx2.set_string(&block, 40, "two", true)?;
         tx2.commit()?;
 
         let mut tx3 = Transaction::new(
@@ -280,8 +335,11 @@ mod tests {
         )?;
         tx3.pin(&block)?;
         assert_eq!(tx3.get_i32(&block, 80)?, 2);
+        assert_eq!(tx3.get_string(&block, 40)?, "two");
         tx3.set_i32(&block, 80, 9999, true)?;
+        tx3.set_string(&block, 40, "dummy", true)?;
         assert_eq!(tx3.get_i32(&block, 80)?, 9999);
+        assert_eq!(tx3.get_string(&block, 40)?, "dummy");
         tx3.rollback()?;
 
         let mut tx4 = Transaction::new(
@@ -291,6 +349,7 @@ mod tests {
         )?;
         tx4.pin(&block)?;
         assert_eq!(tx4.get_i32(&block, 80)?, 2);
+        assert_eq!(tx4.get_string(&block, 40)?, "two");
         tx4.commit()?;
         Ok(())
     }

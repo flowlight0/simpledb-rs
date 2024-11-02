@@ -1,5 +1,6 @@
 use std::fs::File;
-use std::io::{Read, Result, Seek, SeekFrom, Write};
+use std::io::{Result, Seek, SeekFrom, Write};
+
 use std::sync::{Arc, Mutex, RwLock};
 use std::{collections::HashMap, path::PathBuf};
 
@@ -87,7 +88,7 @@ impl FileManager {
         let binding = self.load_and_cache_file(&block.file_name);
         let mut file = binding.lock().unwrap();
         file.seek(SeekFrom::Start((block.block_slot * self.block_size) as u64))?;
-        file.write(page.byte_buffer.as_slice())?;
+        page.write_to_file(&mut file)?;
         Ok(())
     }
 
@@ -95,7 +96,7 @@ impl FileManager {
         let binding = self.load_and_cache_file(&block.file_name);
         let mut file = binding.lock().unwrap();
         file.seek(SeekFrom::Start((block.block_slot * self.block_size) as u64))?;
-        file.read_exact(&mut page.byte_buffer)?;
+        page.read_from_file(&mut file)?;
         Ok(())
     }
 
