@@ -2,14 +2,14 @@ use std::collections::HashMap;
 
 use super::schema::{Schema, MAX_STRING_LENGTH_BYTES};
 
-pub struct Layout<'a> {
-    pub schema: &'a Schema,
+pub struct Layout {
+    pub schema: Schema,
     field_name_to_offsets: HashMap<String, usize>,
     pub slot_size: usize,
 }
 
-impl<'a> Layout<'a> {
-    pub fn new(schema: &'a Schema) -> Self {
+impl Layout {
+    pub fn new(schema: Schema) -> Self {
         let mut field_offsets = vec![];
         let mut field_name_to_offsets = HashMap::new();
         // 4 bytes is used for representing vacant or occupied slot.
@@ -29,6 +29,28 @@ impl<'a> Layout<'a> {
             schema,
             field_name_to_offsets,
             slot_size: offset,
+        }
+    }
+
+    pub fn get_type_code(&self, field_name: &str) -> i32 {
+        // TODO: write cleaner code here.
+        if self.schema.i32_field_to_index.contains_key(field_name) {
+            0
+        } else {
+            1
+        }
+    }
+
+    pub fn get_length(&self, field_name: &str) -> usize {
+        // TODO: write cleaner code here.
+        if self.schema.i32_field_to_index.contains_key(field_name) {
+            4
+        } else {
+            *self
+                .schema
+                .string_max_lengths
+                .get(*self.schema.string_field_to_index.get(field_name).unwrap())
+                .unwrap()
         }
     }
 

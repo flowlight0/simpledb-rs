@@ -315,43 +315,23 @@ impl Transaction {
 
 #[cfg(test)]
 mod tests {
-    use crate::file::FileManager;
-
-    use super::*;
+    use crate::db::SimpleDB;
 
     #[test]
     fn test_transaction() -> Result<(), anyhow::Error> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
-        let file_manager = Arc::new(Mutex::new(FileManager::new(temp_dir, block_size)));
-        let lock_table = Arc::new(Mutex::new(LockTable::new(10)));
-        let log_manager = LogManager::new(file_manager.clone(), "log".into())?;
-        let log_manager = Arc::new(Mutex::new(log_manager));
-        let buffer_manager = Arc::new(Mutex::new(BufferManager::new(
-            file_manager.clone(),
-            log_manager.clone(),
-            3,
-        )));
-        let block = file_manager.lock().unwrap().append_block("testfile")?;
+        let db = SimpleDB::new(temp_dir, block_size, 3)?;
+        let block = db.file_manager.lock().unwrap().append_block("testfile")?;
 
         // tx1 just sets the initial values of the block, and we don't need to log it.
-        let mut tx1 = Transaction::new(
-            file_manager.clone(),
-            log_manager.clone(),
-            buffer_manager.clone(),
-            lock_table.clone(),
-        )?;
+        let mut tx1 = db.new_transaction()?;
         tx1.pin(&block)?;
         tx1.set_i32(&block, 80, 1, false)?;
         tx1.set_string(&block, 40, "one", false)?;
         tx1.commit()?;
 
-        let mut tx2 = Transaction::new(
-            file_manager.clone(),
-            log_manager.clone(),
-            buffer_manager.clone(),
-            lock_table.clone(),
-        )?;
+        let mut tx2 = db.new_transaction()?;
         tx2.pin(&block)?;
         assert_eq!(tx2.get_i32(&block, 80)?, 1);
         assert_eq!(tx2.get_string(&block, 40)?, "one");
@@ -359,12 +339,7 @@ mod tests {
         tx2.set_string(&block, 40, "two", true)?;
         tx2.commit()?;
 
-        let mut tx3 = Transaction::new(
-            file_manager.clone(),
-            log_manager.clone(),
-            buffer_manager.clone(),
-            lock_table.clone(),
-        )?;
+        let mut tx3 = db.new_transaction()?;
         tx3.pin(&block)?;
         assert_eq!(tx3.get_i32(&block, 80)?, 2);
         assert_eq!(tx3.get_string(&block, 40)?, "two");
@@ -374,12 +349,7 @@ mod tests {
         assert_eq!(tx3.get_string(&block, 40)?, "dummy");
         tx3.rollback()?;
 
-        let mut tx4 = Transaction::new(
-            file_manager.clone(),
-            log_manager.clone(),
-            buffer_manager.clone(),
-            lock_table.clone(),
-        )?;
+        let mut tx4 = db.new_transaction()?;
         tx4.pin(&block)?;
         assert_eq!(tx4.get_i32(&block, 80)?, 2);
         assert_eq!(tx4.get_string(&block, 40)?, "two");

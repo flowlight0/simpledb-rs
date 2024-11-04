@@ -12,7 +12,7 @@ impl<'a> TableScan<'a> {
     pub fn new(
         tx: &'a mut Transaction,
         table_name: &str,
-        layout: &'a Layout<'a>,
+        layout: &'a Layout,
     ) -> Result<Self, anyhow::Error> {
         let file_name = format!("{}.tbl", table_name);
         let record_page = {
@@ -123,12 +123,8 @@ impl Drop for TableScan<'_> {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, Mutex};
 
-    use crate::{
-        buffer::BufferManager, file::FileManager, log::manager::LogManager, record::schema::Schema,
-        tx::concurrency::LockTable,
-    };
+    use crate::{db::SimpleDB, record::schema::Schema};
 
     use super::*;
 
@@ -137,26 +133,13 @@ mod tests {
         let mut schema = Schema::new();
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);
-        let layout = Layout::new(&schema);
+        let layout = Layout::new(schema);
 
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
-        let file_manager = Arc::new(Mutex::new(FileManager::new(temp_dir, block_size)));
-        let lock_table = Arc::new(Mutex::new(LockTable::new(10)));
-        let log_manager = LogManager::new(file_manager.clone(), "log".into())?;
-        let log_manager = Arc::new(Mutex::new(log_manager));
-        let buffer_manager = Arc::new(Mutex::new(BufferManager::new(
-            file_manager.clone(),
-            log_manager.clone(),
-            100,
-        )));
+        let db = SimpleDB::new(temp_dir, block_size, 3)?;
 
-        let mut tx = Transaction::new(
-            file_manager.clone(),
-            log_manager.clone(),
-            buffer_manager.clone(),
-            lock_table.clone(),
-        )?;
+        let mut tx = db.new_transaction()?;
 
         let mut table_scan = TableScan::new(&mut tx, "testtable", &layout)?;
         table_scan.before_first()?;

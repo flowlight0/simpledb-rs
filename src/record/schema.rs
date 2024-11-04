@@ -3,6 +3,7 @@ use std::collections::HashMap;
 const MAX_STRING_LENGTH: usize = 65535;
 pub const MAX_STRING_LENGTH_BYTES: usize = 2;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Schema {
     pub i32_fields: Vec<String>,
     pub i32_field_to_index: HashMap<String, usize>,
