@@ -86,6 +86,7 @@ pub struct BufferManager {
     pub buffers: Mutex<Vec<Buffer>>,
     num_availables: usize,
     condvar: Condvar,
+    pub block_size: usize,
 }
 
 fn find_existing_buffer(buffers: &Vec<Buffer>, block: &BlockId) -> Option<usize> {
@@ -139,6 +140,7 @@ impl BufferManager {
         log_manager: Arc<Mutex<LogManager>>,
         num_buffers: usize,
     ) -> Self {
+        let block_size = file_manager.lock().unwrap().block_size;
         let mut buffers = Vec::new();
         for _ in 0..num_buffers {
             buffers.push(Buffer::new(file_manager.clone(), log_manager.clone()));
@@ -148,6 +150,7 @@ impl BufferManager {
             buffers: Mutex::new(buffers),
             num_availables: num_buffers,
             condvar: Condvar::new(),
+            block_size,
         }
     }
 

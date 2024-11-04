@@ -16,6 +16,7 @@ pub struct Transaction {
     pub id: usize,
     block_to_buffer_map: HashMap<BlockId, usize>,
     pinned_blocks: Vec<BlockId>,
+    block_size: usize,
 }
 
 static TRANSACTION_ID: AtomicUsize = AtomicUsize::new(0);
@@ -28,6 +29,7 @@ impl Transaction {
     ) -> Result<Self, anyhow::Error> {
         let concurrency_manager = ConcurrencyManager::new(lock_table.clone());
         let id = TRANSACTION_ID.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        let block_size = buffer_manager.lock().unwrap().block_size;
 
         Ok(Transaction {
             buffer_manager,
@@ -36,6 +38,7 @@ impl Transaction {
             block_to_buffer_map: HashMap::new(),
             pinned_blocks: Vec::new(),
             id,
+            block_size,
         })
     }
 
@@ -135,7 +138,7 @@ impl Transaction {
         offset: usize,
         value: i32,
         is_log_needed: bool,
-    ) -> Result<(), anyhow::Error> {
+    ) -> Result<usize, anyhow::Error> {
         self.concurrency_manager.lock_exclusive(block)?;
         let &buffer_index = self.block_to_buffer_map.get(&block).unwrap();
         let buffer_manager = self.buffer_manager.lock().unwrap();
@@ -153,9 +156,9 @@ impl Transaction {
         } else {
             0
         };
-        buffer.page.set_i32(offset, value);
+        let written_length = buffer.page.set_i32(offset, value);
         buffer.set_modified(self.id, log_sequence_number);
-        Ok(())
+        Ok(written_length)
     }
 
     // Block with block_id must be pinned before calling this method.
@@ -178,7 +181,7 @@ impl Transaction {
         offset: usize,
         value: &str,
         is_log_needed: bool,
-    ) -> Result<(), anyhow::Error> {
+    ) -> Result<usize, anyhow::Error> {
         self.concurrency_manager.lock_exclusive(block)?;
         let &buffer_index = self.block_to_buffer_map.get(&block).unwrap();
         let buffer_manager = self.buffer_manager.lock().unwrap();
@@ -201,28 +204,13 @@ impl Transaction {
         } else {
             0
         };
-        buffer.page.set_string(offset, value);
+        let written_length = buffer.page.set_string(offset, value);
         buffer.set_modified(self.id, log_sequence_number);
-        Ok(())
+        Ok(written_length)
     }
 
-    pub fn undo_update(&mut self, log_record: &LogRecord) -> Result<(), anyhow::Error> {
-        match log_record {
-            LogRecord::SetI32(_, block, offset, old_value, _) => {
-                self.pin(block)?;
-                self.set_i32(block, *offset, *old_value, false)?;
-                self.unpin(block);
-            }
-            LogRecord::SetString(_, block, offset, old_value, _) => {
-                self.pin(block)?;
-                self.set_string(block, *offset, old_value, false)?;
-                self.unpin(block);
-            }
-            _ => {
-                panic!("unexpected log record: {:?}", log_record);
-            }
-        }
-        Ok(())
+    pub fn get_block_size(&self) -> usize {
+        self.block_size
     }
 
     fn do_rollback(&mut self) -> Result<(), anyhow::Error> {
@@ -269,6 +257,25 @@ impl Transaction {
         drop(log_manager);
         for log_record in log_records.iter() {
             self.undo_update(&log_record)?;
+        }
+        Ok(())
+    }
+
+    fn undo_update(&mut self, log_record: &LogRecord) -> Result<(), anyhow::Error> {
+        match log_record {
+            LogRecord::SetI32(_, block, offset, old_value, _) => {
+                self.pin(block)?;
+                self.set_i32(block, *offset, *old_value, false)?;
+                self.unpin(block);
+            }
+            LogRecord::SetString(_, block, offset, old_value, _) => {
+                self.pin(block)?;
+                self.set_string(block, *offset, old_value, false)?;
+                self.unpin(block);
+            }
+            _ => {
+                panic!("unexpected log record: {:?}", log_record);
+            }
         }
         Ok(())
     }
