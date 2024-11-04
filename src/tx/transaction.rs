@@ -3,13 +3,14 @@ use std::sync::atomic::AtomicUsize;
 use std::sync::{Arc, Mutex};
 
 use crate::buffer::BufferManager;
-use crate::file::BlockId;
+use crate::file::{BlockId, FileManager};
 use crate::log::manager::LogManager;
 use crate::log::record::LogRecord;
 
 use super::concurrency::{ConcurrencyManager, LockTable};
 
 pub struct Transaction {
+    file_manager: Arc<Mutex<FileManager>>,
     buffer_manager: Arc<Mutex<BufferManager>>,
     concurrency_manager: ConcurrencyManager,
     log_manager: Arc<Mutex<LogManager>>,
@@ -23,15 +24,17 @@ static TRANSACTION_ID: AtomicUsize = AtomicUsize::new(0);
 
 impl Transaction {
     pub fn new(
+        file_manager: Arc<Mutex<FileManager>>,
         log_manager: Arc<Mutex<LogManager>>,
         buffer_manager: Arc<Mutex<BufferManager>>,
         lock_table: Arc<Mutex<LockTable>>,
     ) -> Result<Self, anyhow::Error> {
         let concurrency_manager = ConcurrencyManager::new(lock_table.clone());
         let id = TRANSACTION_ID.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
-        let block_size = buffer_manager.lock().unwrap().block_size;
+        let block_size = file_manager.lock().unwrap().block_size;
 
         Ok(Transaction {
+            file_manager,
             buffer_manager,
             concurrency_manager,
             log_manager,
@@ -209,8 +212,27 @@ impl Transaction {
         Ok(written_length)
     }
 
+    pub fn append_block(&mut self, file_name: &str) -> Result<BlockId, anyhow::Error> {
+        let dummy = BlockId::create_dummy(file_name);
+        self.concurrency_manager.lock_exclusive(&dummy)?;
+        let block = self.file_manager.lock().unwrap().append_block(file_name)?;
+        Ok(block)
+    }
+
     pub fn get_block_size(&self) -> usize {
         self.block_size
+    }
+
+    pub fn is_last_block(&mut self, block: &BlockId) -> Result<bool, anyhow::Error> {
+        let dummy = BlockId::create_dummy(&block.file_name);
+        self.concurrency_manager.lock_shared(&dummy)?;
+        Ok(self.get_num_blocks(&block.file_name)? == block.block_slot + 1)
+    }
+
+    pub fn get_num_blocks(&mut self, file_name: &str) -> Result<usize, anyhow::Error> {
+        let dummy = BlockId::create_dummy(file_name);
+        self.concurrency_manager.lock_shared(&dummy)?;
+        Ok(self.file_manager.lock().unwrap().get_num_blocks(file_name))
     }
 
     fn do_rollback(&mut self) -> Result<(), anyhow::Error> {
@@ -314,6 +336,7 @@ mod tests {
 
         // tx1 just sets the initial values of the block, and we don't need to log it.
         let mut tx1 = Transaction::new(
+            file_manager.clone(),
             log_manager.clone(),
             buffer_manager.clone(),
             lock_table.clone(),
@@ -324,6 +347,7 @@ mod tests {
         tx1.commit()?;
 
         let mut tx2 = Transaction::new(
+            file_manager.clone(),
             log_manager.clone(),
             buffer_manager.clone(),
             lock_table.clone(),
@@ -336,6 +360,7 @@ mod tests {
         tx2.commit()?;
 
         let mut tx3 = Transaction::new(
+            file_manager.clone(),
             log_manager.clone(),
             buffer_manager.clone(),
             lock_table.clone(),
@@ -350,6 +375,7 @@ mod tests {
         tx3.rollback()?;
 
         let mut tx4 = Transaction::new(
+            file_manager.clone(),
             log_manager.clone(),
             buffer_manager.clone(),
             lock_table.clone(),

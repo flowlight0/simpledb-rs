@@ -6,10 +6,12 @@ use std::{collections::HashMap, path::PathBuf};
 
 use crate::page::Page;
 
+const DUMMY_BLOCK_SIZE: usize = usize::MAX;
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct BlockId {
-    file_name: String,
-    block_slot: usize,
+    pub file_name: String,
+    pub block_slot: usize,
 }
 
 impl BlockId {
@@ -17,6 +19,20 @@ impl BlockId {
         BlockId {
             file_name: file_name.to_string(),
             block_slot,
+        }
+    }
+
+    pub fn create_dummy(file_name: &str) -> Self {
+        BlockId {
+            file_name: file_name.to_string(),
+            block_slot: DUMMY_BLOCK_SIZE,
+        }
+    }
+
+    pub fn get_first_block(file_name: &str) -> Self {
+        BlockId {
+            file_name: file_name.to_string(),
+            block_slot: 0,
         }
     }
 
@@ -28,6 +44,13 @@ impl BlockId {
             file_name: self.file_name.clone(),
             block_slot: self.block_slot - 1,
         })
+    }
+
+    pub fn get_next_block(&self) -> BlockId {
+        BlockId {
+            file_name: self.file_name.clone(),
+            block_slot: self.block_slot + 1,
+        }
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {

@@ -6,12 +6,12 @@ const EMPTY: i32 = 0;
 const FULL: i32 = 1;
 
 pub struct RecordPage<'a> {
-    tx: &'a mut Transaction,
-    block: &'a BlockId,
+    pub tx: &'a mut Transaction,
+    pub block: BlockId,
     layout: &'a Layout<'a>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Slot {
     Index(usize),
     Start,
@@ -33,17 +33,28 @@ impl Slot {
             Slot::End => Slot::End,
         }
     }
+
+    pub fn get_index(&self) -> usize {
+        match self {
+            Slot::Index(index) => *index,
+            _ => panic!("Slot::get_index() called on Slot::Start or Slot::End"),
+        }
+    }
 }
 
 impl<'a> RecordPage<'a> {
-    pub fn new(tx: &'a mut Transaction, block: &'a BlockId, layout: &'a Layout) -> Self {
+    pub fn new(tx: &'a mut Transaction, block: BlockId, layout: &'a Layout) -> Self {
         RecordPage { tx, block, layout }
+    }
+
+    pub fn reset_block(&mut self, block: BlockId) {
+        self.block = block;
     }
 
     pub fn get_i32(&mut self, slot: usize, field_name: &str) -> Result<i32, anyhow::Error> {
         let field_offset = self.layout.get_offset(field_name);
         self.tx
-            .get_i32(self.block, self.offset(slot) + field_offset)
+            .get_i32(&self.block, self.offset(slot) + field_offset)
     }
 
     pub fn set_i32(
@@ -54,14 +65,14 @@ impl<'a> RecordPage<'a> {
     ) -> Result<(), anyhow::Error> {
         let field_offset = self.layout.get_offset(field_name);
         self.tx
-            .set_i32(self.block, self.offset(slot) + field_offset, value, true)?;
+            .set_i32(&self.block, self.offset(slot) + field_offset, value, true)?;
         Ok(())
     }
 
     pub fn get_string(&mut self, slot: usize, field_name: &str) -> Result<String, anyhow::Error> {
         let field_offset = self.layout.get_offset(field_name);
         self.tx
-            .get_string(self.block, self.offset(slot) + field_offset)
+            .get_string(&self.block, self.offset(slot) + field_offset)
     }
 
     pub fn set_string(
@@ -72,7 +83,7 @@ impl<'a> RecordPage<'a> {
     ) -> Result<(), anyhow::Error> {
         let field_offset = self.layout.get_offset(field_name);
         self.tx
-            .set_string(self.block, self.offset(slot) + field_offset, value, true)?;
+            .set_string(&self.block, self.offset(slot) + field_offset, value, true)?;
         Ok(())
     }
 
@@ -106,7 +117,7 @@ impl<'a> RecordPage<'a> {
         };
 
         while self.is_valid_slot(next_index) {
-            let slot_flag = self.tx.get_i32(self.block, self.offset(next_index))?;
+            let slot_flag = self.tx.get_i32(&self.block, self.offset(next_index))?;
             if slot_flag == flag {
                 return Ok(Slot::Index(next_index));
             }
@@ -120,12 +131,12 @@ impl<'a> RecordPage<'a> {
         while self.is_valid_slot(slot) {
             // while self.offset(slot + 1) <= self.tx.get_block_size() {
             self.tx
-                .set_i32(self.block, self.offset(slot), EMPTY, false)?;
+                .set_i32(&self.block, self.offset(slot), EMPTY, false)?;
 
             let schema = self.layout.schema;
             for field_name in &schema.i32_fields {
                 self.tx.set_i32(
-                    self.block,
+                    &self.block,
                     self.offset(slot) + self.layout.get_offset(field_name),
                     0,
                     false,
@@ -134,7 +145,7 @@ impl<'a> RecordPage<'a> {
 
             for field_name in &schema.string_fields {
                 self.tx.set_string(
-                    self.block,
+                    &self.block,
                     self.offset(slot) + self.layout.get_offset(field_name),
                     "",
                     false,
@@ -155,7 +166,7 @@ impl<'a> RecordPage<'a> {
 
     fn set_flag(&mut self, slot: usize, value: i32) -> Result<(), anyhow::Error> {
         self.tx
-            .set_i32(self.block, self.offset(slot), value, true)?;
+            .set_i32(&self.block, self.offset(slot), value, true)?;
         Ok(())
     }
 }
@@ -194,6 +205,7 @@ mod tests {
         )));
 
         let mut tx = Transaction::new(
+            file_manager.clone(),
             log_manager.clone(),
             buffer_manager.clone(),
             lock_table.clone(),
@@ -201,7 +213,7 @@ mod tests {
 
         let block = file_manager.lock().unwrap().append_block("testfile")?;
         tx.pin(&block)?;
-        let mut record_page = RecordPage::new(&mut tx, &block, &layout);
+        let mut record_page = RecordPage::new(&mut tx, block.clone(), &layout);
         record_page.format()?;
 
         let mut slot = Slot::Start;
