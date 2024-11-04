@@ -173,14 +173,10 @@ impl<'a> RecordPage<'a> {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, Mutex};
 
     use crate::{
-        buffer::BufferManager,
-        file::FileManager,
-        log::manager::LogManager,
+        db::SimpleDB,
         record::{layout::Layout, schema::Schema},
-        tx::{concurrency::LockTable, transaction::Transaction},
     };
 
     use super::{RecordPage, Slot};
@@ -194,24 +190,10 @@ mod tests {
 
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 4096;
-        let file_manager = Arc::new(Mutex::new(FileManager::new(temp_dir, block_size)));
-        let lock_table = Arc::new(Mutex::new(LockTable::new(10)));
-        let log_manager = LogManager::new(file_manager.clone(), "log".into())?;
-        let log_manager = Arc::new(Mutex::new(log_manager));
-        let buffer_manager = Arc::new(Mutex::new(BufferManager::new(
-            file_manager.clone(),
-            log_manager.clone(),
-            3,
-        )));
+        let db = SimpleDB::new(temp_dir, block_size, 3)?;
 
-        let mut tx = Transaction::new(
-            file_manager.clone(),
-            log_manager.clone(),
-            buffer_manager.clone(),
-            lock_table.clone(),
-        )?;
-
-        let block = file_manager.lock().unwrap().append_block("testfile")?;
+        let mut tx = db.new_transaction()?;
+        let block = db.file_manager.lock().unwrap().append_block("testfile")?;
         tx.pin(&block)?;
         let mut record_page = RecordPage::new(&mut tx, block.clone(), &layout);
         record_page.format()?;
