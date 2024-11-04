@@ -12,7 +12,7 @@ impl<'a> TableScan<'a> {
     pub fn new(
         tx: &'a mut Transaction,
         table_name: &str,
-        layout: &'a Layout<'a>,
+        layout: &'a Layout,
     ) -> Result<Self, anyhow::Error> {
         let file_name = format!("{}.tbl", table_name);
         let record_page = {
@@ -133,7 +133,7 @@ mod tests {
         let mut schema = Schema::new();
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);
-        let layout = Layout::new(&schema);
+        let layout = Layout::new(schema);
 
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;

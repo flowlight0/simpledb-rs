@@ -8,7 +8,7 @@ const FULL: i32 = 1;
 pub struct RecordPage<'a> {
     pub tx: &'a mut Transaction,
     pub block: BlockId,
-    layout: &'a Layout<'a>,
+    layout: &'a Layout,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -133,7 +133,7 @@ impl<'a> RecordPage<'a> {
             self.tx
                 .set_i32(&self.block, self.offset(slot), EMPTY, false)?;
 
-            let schema = self.layout.schema;
+            let schema = self.layout.schema.clone();
             for field_name in &schema.i32_fields {
                 self.tx.set_i32(
                     &self.block,
@@ -186,7 +186,7 @@ mod tests {
         let mut schema = Schema::new();
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);
-        let layout = Layout::new(&schema);
+        let layout = Layout::new(schema);
 
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 4096;
