@@ -5,4 +5,5 @@ pub mod log;
 pub mod metadata;
 pub mod page;
 pub mod record;
+pub mod scan;
 pub mod tx;

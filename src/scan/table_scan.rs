@@ -1,6 +1,13 @@
-use crate::{file::BlockId, record::layout::Layout, tx::transaction::Transaction};
+use crate::{
+    file::BlockId,
+    record::{
+        layout::Layout,
+        record_page::{RecordPage, Slot},
+    },
+    tx::transaction::Transaction,
+};
 
-use super::record_page::{RecordPage, Slot};
+use super::{Scan, UpdateScan};
 
 pub struct TableScan<'a> {
     file_name: String,
@@ -36,8 +43,16 @@ impl<'a> TableScan<'a> {
             current_slot: Slot::Start,
         })
     }
+}
 
-    pub fn before_first(&mut self) -> Result<(), anyhow::Error> {
+impl<'a> Drop for TableScan<'a> {
+    fn drop(&mut self) {
+        self.record_page.tx.unpin(&self.record_page.block);
+    }
+}
+
+impl<'a> Scan for TableScan<'a> {
+    fn before_first(&mut self) -> Result<(), anyhow::Error> {
         let block = BlockId::get_first_block(&self.file_name);
         self.record_page.tx.unpin(&self.record_page.block);
         self.record_page.tx.pin(&block)?;
@@ -46,7 +61,7 @@ impl<'a> TableScan<'a> {
         Ok(())
     }
 
-    pub fn next(&mut self) -> Result<bool, anyhow::Error> {
+    fn next(&mut self) -> Result<bool, anyhow::Error> {
         loop {
             self.current_slot = self.record_page.next_after(self.current_slot)?;
             match self.current_slot {
@@ -67,7 +82,33 @@ impl<'a> TableScan<'a> {
         }
     }
 
-    pub fn insert(&mut self) -> Result<(), anyhow::Error> {
+    fn get_i32(&mut self, field_name: &str) -> Result<i32, anyhow::Error> {
+        self.record_page
+            .get_i32(self.current_slot.get_index(), field_name)
+    }
+
+    fn get_string(&mut self, field_name: &str) -> Result<String, anyhow::Error> {
+        self.record_page
+            .get_string(self.current_slot.get_index(), field_name)
+    }
+}
+
+impl UpdateScan for TableScan<'_> {
+    fn set_i32(&mut self, field_name: &str, value: i32) -> Result<(), anyhow::Error> {
+        self.record_page
+            .set_i32(self.current_slot.get_index(), field_name, value)
+    }
+
+    fn set_string(&mut self, field_name: &str, value: &str) -> Result<(), anyhow::Error> {
+        self.record_page
+            .set_string(self.current_slot.get_index(), field_name, value)
+    }
+
+    fn delete(&mut self) -> Result<(), anyhow::Error> {
+        self.record_page.delete(self.current_slot.get_index())
+    }
+
+    fn insert(&mut self) -> Result<(), anyhow::Error> {
         loop {
             self.current_slot = self.record_page.insert_after(self.current_slot)?;
             match self.current_slot {
@@ -88,36 +129,6 @@ impl<'a> TableScan<'a> {
                 }
             }
         }
-    }
-
-    pub fn get_i32(&mut self, field_name: &str) -> Result<i32, anyhow::Error> {
-        self.record_page
-            .get_i32(self.current_slot.get_index(), field_name)
-    }
-
-    pub fn set_i32(&mut self, field_name: &str, value: i32) -> Result<(), anyhow::Error> {
-        self.record_page
-            .set_i32(self.current_slot.get_index(), field_name, value)
-    }
-
-    pub fn get_string(&mut self, field_name: &str) -> Result<String, anyhow::Error> {
-        self.record_page
-            .get_string(self.current_slot.get_index(), field_name)
-    }
-
-    pub fn set_string(&mut self, field_name: &str, value: &str) -> Result<(), anyhow::Error> {
-        self.record_page
-            .set_string(self.current_slot.get_index(), field_name, value)
-    }
-
-    pub fn delete(&mut self) -> Result<(), anyhow::Error> {
-        self.record_page.delete(self.current_slot.get_index())
-    }
-}
-
-impl Drop for TableScan<'_> {
-    fn drop(&mut self) {
-        self.record_page.tx.unpin(&self.record_page.block);
     }
 }
 
