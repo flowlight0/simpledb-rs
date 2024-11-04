@@ -14,9 +14,10 @@ impl Page {
         }
     }
 
-    pub fn set_i32(&mut self, offset: usize, value: i32) -> () {
+    pub fn set_i32(&mut self, offset: usize, value: i32) -> usize {
         let bytes = value.to_le_bytes();
         self.byte_buffer[offset..offset + 4].copy_from_slice(&bytes);
+        4
     }
 
     pub fn get_i32(&self, offset: usize) -> i32 {

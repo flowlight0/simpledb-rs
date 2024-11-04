@@ -3,39 +3,45 @@ use std::sync::atomic::AtomicUsize;
 use std::sync::{Arc, Mutex};
 
 use crate::buffer::BufferManager;
-use crate::file::BlockId;
+use crate::file::{BlockId, FileManager};
 use crate::log::manager::LogManager;
 use crate::log::record::LogRecord;
 
 use super::concurrency::{ConcurrencyManager, LockTable};
 
 pub struct Transaction {
+    file_manager: Arc<Mutex<FileManager>>,
     buffer_manager: Arc<Mutex<BufferManager>>,
     concurrency_manager: ConcurrencyManager,
     log_manager: Arc<Mutex<LogManager>>,
     pub id: usize,
     block_to_buffer_map: HashMap<BlockId, usize>,
     pinned_blocks: Vec<BlockId>,
+    block_size: usize,
 }
 
 static TRANSACTION_ID: AtomicUsize = AtomicUsize::new(0);
 
 impl Transaction {
     pub fn new(
+        file_manager: Arc<Mutex<FileManager>>,
         log_manager: Arc<Mutex<LogManager>>,
         buffer_manager: Arc<Mutex<BufferManager>>,
         lock_table: Arc<Mutex<LockTable>>,
     ) -> Result<Self, anyhow::Error> {
         let concurrency_manager = ConcurrencyManager::new(lock_table.clone());
         let id = TRANSACTION_ID.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        let block_size = file_manager.lock().unwrap().block_size;
 
         Ok(Transaction {
+            file_manager,
             buffer_manager,
             concurrency_manager,
             log_manager,
             block_to_buffer_map: HashMap::new(),
             pinned_blocks: Vec::new(),
             id,
+            block_size,
         })
     }
 
@@ -135,7 +141,7 @@ impl Transaction {
         offset: usize,
         value: i32,
         is_log_needed: bool,
-    ) -> Result<(), anyhow::Error> {
+    ) -> Result<usize, anyhow::Error> {
         self.concurrency_manager.lock_exclusive(block)?;
         let &buffer_index = self.block_to_buffer_map.get(&block).unwrap();
         let buffer_manager = self.buffer_manager.lock().unwrap();
@@ -153,9 +159,9 @@ impl Transaction {
         } else {
             0
         };
-        buffer.page.set_i32(offset, value);
+        let written_length = buffer.page.set_i32(offset, value);
         buffer.set_modified(self.id, log_sequence_number);
-        Ok(())
+        Ok(written_length)
     }
 
     // Block with block_id must be pinned before calling this method.
@@ -178,7 +184,7 @@ impl Transaction {
         offset: usize,
         value: &str,
         is_log_needed: bool,
-    ) -> Result<(), anyhow::Error> {
+    ) -> Result<usize, anyhow::Error> {
         self.concurrency_manager.lock_exclusive(block)?;
         let &buffer_index = self.block_to_buffer_map.get(&block).unwrap();
         let buffer_manager = self.buffer_manager.lock().unwrap();
@@ -201,28 +207,32 @@ impl Transaction {
         } else {
             0
         };
-        buffer.page.set_string(offset, value);
+        let written_length = buffer.page.set_string(offset, value);
         buffer.set_modified(self.id, log_sequence_number);
-        Ok(())
+        Ok(written_length)
     }
 
-    pub fn undo_update(&mut self, log_record: &LogRecord) -> Result<(), anyhow::Error> {
-        match log_record {
-            LogRecord::SetI32(_, block, offset, old_value, _) => {
-                self.pin(block)?;
-                self.set_i32(block, *offset, *old_value, false)?;
-                self.unpin(block);
-            }
-            LogRecord::SetString(_, block, offset, old_value, _) => {
-                self.pin(block)?;
-                self.set_string(block, *offset, old_value, false)?;
-                self.unpin(block);
-            }
-            _ => {
-                panic!("unexpected log record: {:?}", log_record);
-            }
-        }
-        Ok(())
+    pub fn append_block(&mut self, file_name: &str) -> Result<BlockId, anyhow::Error> {
+        let dummy = BlockId::create_dummy(file_name);
+        self.concurrency_manager.lock_exclusive(&dummy)?;
+        let block = self.file_manager.lock().unwrap().append_block(file_name)?;
+        Ok(block)
+    }
+
+    pub fn get_block_size(&self) -> usize {
+        self.block_size
+    }
+
+    pub fn is_last_block(&mut self, block: &BlockId) -> Result<bool, anyhow::Error> {
+        let dummy = BlockId::create_dummy(&block.file_name);
+        self.concurrency_manager.lock_shared(&dummy)?;
+        Ok(self.get_num_blocks(&block.file_name)? == block.block_slot + 1)
+    }
+
+    pub fn get_num_blocks(&mut self, file_name: &str) -> Result<usize, anyhow::Error> {
+        let dummy = BlockId::create_dummy(file_name);
+        self.concurrency_manager.lock_shared(&dummy)?;
+        Ok(self.file_manager.lock().unwrap().get_num_blocks(file_name))
     }
 
     fn do_rollback(&mut self) -> Result<(), anyhow::Error> {
@@ -273,6 +283,25 @@ impl Transaction {
         Ok(())
     }
 
+    fn undo_update(&mut self, log_record: &LogRecord) -> Result<(), anyhow::Error> {
+        match log_record {
+            LogRecord::SetI32(_, block, offset, old_value, _) => {
+                self.pin(block)?;
+                self.set_i32(block, *offset, *old_value, false)?;
+                self.unpin(block);
+            }
+            LogRecord::SetString(_, block, offset, old_value, _) => {
+                self.pin(block)?;
+                self.set_string(block, *offset, old_value, false)?;
+                self.unpin(block);
+            }
+            _ => {
+                panic!("unexpected log record: {:?}", log_record);
+            }
+        }
+        Ok(())
+    }
+
     fn unpin_all(&mut self) {
         let mut buffer_manager = self.buffer_manager.lock().unwrap();
         for block_index in self.pinned_blocks.iter() {
@@ -307,6 +336,7 @@ mod tests {
 
         // tx1 just sets the initial values of the block, and we don't need to log it.
         let mut tx1 = Transaction::new(
+            file_manager.clone(),
             log_manager.clone(),
             buffer_manager.clone(),
             lock_table.clone(),
@@ -317,6 +347,7 @@ mod tests {
         tx1.commit()?;
 
         let mut tx2 = Transaction::new(
+            file_manager.clone(),
             log_manager.clone(),
             buffer_manager.clone(),
             lock_table.clone(),
@@ -329,6 +360,7 @@ mod tests {
         tx2.commit()?;
 
         let mut tx3 = Transaction::new(
+            file_manager.clone(),
             log_manager.clone(),
             buffer_manager.clone(),
             lock_table.clone(),
@@ -343,6 +375,7 @@ mod tests {
         tx3.rollback()?;
 
         let mut tx4 = Transaction::new(
+            file_manager.clone(),
             log_manager.clone(),
             buffer_manager.clone(),
             lock_table.clone(),

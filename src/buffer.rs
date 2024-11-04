@@ -68,6 +68,10 @@ impl Buffer {
         if self.modifying_transaction_id.is_some() {
             let mut log_manager = self.log_manager.lock().unwrap();
             log_manager.flush(self.log_sequence_number)?;
+            let mut file_manager = self.file_manager.lock().unwrap();
+            if let Some(block) = &self.block {
+                file_manager.write(block, &self.page)?;
+            }
             self.modifying_transaction_id = None;
         }
         Ok(())
