@@ -10,4 +10,5 @@ pub trait UpdateScan: Scan {
     fn delete(&mut self) -> Result<(), anyhow::Error>;
     fn insert(&mut self) -> Result<(), anyhow::Error>;
 }
+pub mod select_scan;
 pub mod table_scan;
