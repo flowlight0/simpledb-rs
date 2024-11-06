@@ -8,7 +8,7 @@ const FULL: i32 = 1;
 pub struct RecordPage<'a> {
     pub tx: &'a mut Transaction,
     pub block: BlockId,
-    layout: &'a Layout,
+    pub layout: &'a Layout,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]

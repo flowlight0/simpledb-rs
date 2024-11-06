@@ -91,6 +91,10 @@ impl<'a> Scan for TableScan<'a> {
         self.record_page
             .get_string(self.current_slot.get_index(), field_name)
     }
+
+    fn has_field(&self, field_name: &str) -> bool {
+        self.record_page.layout.has_field(field_name)
+    }
 }
 
 impl UpdateScan for TableScan<'_> {
