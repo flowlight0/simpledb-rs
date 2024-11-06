@@ -57,4 +57,8 @@ impl Layout {
     pub fn get_offset(&self, field_name: &str) -> usize {
         *self.field_name_to_offsets.get(field_name).unwrap()
     }
+
+    pub fn has_field(&self, field_name: &str) -> bool {
+        self.field_name_to_offsets.contains_key(field_name)
+    }
 }

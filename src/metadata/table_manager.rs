@@ -1,5 +1,6 @@
 use crate::{
-    record::{layout::Layout, schema::Schema, table_scan::TableScan},
+    record::{layout::Layout, schema::Schema},
+    scan::{table_scan::TableScan, Scan, UpdateScan},
     tx::transaction::Transaction,
 };
 
