@@ -4,6 +4,7 @@ pub mod file;
 pub mod log;
 pub mod metadata;
 pub mod page;
+pub mod parser;
 pub mod record;
 pub mod scan;
 pub mod tx;

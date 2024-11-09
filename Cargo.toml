@@ -3,10 +3,14 @@ name = "simpledb-rs"
 version = "0.1.0"
 edition = "2021"
 
+[build-dependencies]
+lalrpop = "0.22.0"
+
 [dependencies]
 tempfile = "3"
 anyhow = "1.0.91"
 thiserror = "1.0.65"
+lalrpop-util = { version = "0.21.0", features = ["lexer", "unicode"] }
 
 [dependencies.uuid]
 version = "1.11.0"
