@@ -1,12 +1,5 @@
 mod ast;
-
-use lalrpop_util::lalrpop_mod;
-lalrpop_mod!(
-    #[allow(clippy::all)]
-    #[rustfmt::skip]
-    grammar,
-    "/parser/grammar.rs"
-);
+mod grammar;
 
 #[cfg(test)]
 mod tests {
