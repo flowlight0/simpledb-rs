@@ -1,5 +1,6 @@
 use std::str::FromStr;
 use super::ast;
+use crate::record::field::Type;
 
 grammar;
 
@@ -32,9 +33,9 @@ FieldDefinition: ast::FieldDefinition = {
     <n:IdToken> <t:FieldType> => ast::FieldDefinition::new(n, t),
 }
 
-FieldType: ast::FieldType = {
-    "INT" => ast::FieldType::I32,
-    "VARCHAR" "(" <i:I32Constant> ")" => ast::FieldType::VarChar(i as usize),
+FieldType: Type = {
+    "INT" => Type::I32,
+    "VARCHAR" "(" <i:I32Constant> ")" => Type::VarChar(i as usize),
 }
 
 pub Predicate: ast::Predicate = {
