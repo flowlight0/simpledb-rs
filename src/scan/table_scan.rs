@@ -7,7 +7,7 @@ use crate::{
     tx::transaction::Transaction,
 };
 
-use super::{Scan, UpdateScan};
+use super::Scan;
 
 pub struct TableScan<'a> {
     file_name: String,
@@ -95,9 +95,7 @@ impl<'a> Scan for TableScan<'a> {
     fn has_field(&self, field_name: &str) -> bool {
         self.record_page.layout.has_field(field_name)
     }
-}
 
-impl UpdateScan for TableScan<'_> {
     fn set_i32(&mut self, field_name: &str, value: i32) -> Result<(), anyhow::Error> {
         self.record_page
             .set_i32(self.current_slot.get_index(), field_name, value)

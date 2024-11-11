@@ -4,13 +4,29 @@ pub trait Scan {
     fn get_i32(&mut self, field_name: &str) -> Result<i32, anyhow::Error>;
     fn get_string(&mut self, field_name: &str) -> Result<String, anyhow::Error>;
     fn has_field(&self, field_name: &str) -> bool;
+
+    // Update operations
+    #[allow(unused_variables)]
+    fn set_i32(&mut self, field_name: &str, value: i32) -> Result<(), anyhow::Error> {
+        Err(anyhow::anyhow!("Update operation is not supported"))
+    }
+
+    #[allow(unused_variables)]
+    fn set_string(&mut self, field_name: &str, value: &str) -> Result<(), anyhow::Error> {
+        Err(anyhow::anyhow!("Update operation is not supported"))
+    }
+
+    #[allow(unused_variables)]
+    fn delete(&mut self) -> Result<(), anyhow::Error> {
+        Err(anyhow::anyhow!("Update operation is not supported"))
+    }
+
+    #[allow(unused_variables)]
+    fn insert(&mut self) -> Result<(), anyhow::Error> {
+        Err(anyhow::anyhow!("Update operation is not supported"))
+    }
 }
-pub trait UpdateScan: Scan {
-    fn set_i32(&mut self, field_name: &str, value: i32) -> Result<(), anyhow::Error>;
-    fn set_string(&mut self, field_name: &str, value: &str) -> Result<(), anyhow::Error>;
-    fn delete(&mut self) -> Result<(), anyhow::Error>;
-    fn insert(&mut self) -> Result<(), anyhow::Error>;
-}
+
 pub mod product_scan;
 pub mod project_scan;
 pub mod select_scan;

@@ -54,7 +54,7 @@ mod tests {
     use crate::{
         db::SimpleDB,
         record::{layout::Layout, schema::Schema},
-        scan::{table_scan::TableScan, UpdateScan},
+        scan::table_scan::TableScan,
     };
 
     use super::*;
