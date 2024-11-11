@@ -1,4 +1,4 @@
-use super::{Scan, UpdateScan};
+use super::Scan;
 
 pub trait Expression<T> {
     fn evaluate(&self, scan: &mut dyn Scan) -> Result<T, anyhow::Error>;
@@ -109,9 +109,7 @@ impl<'a, T: Scan> Scan for SelectScan<'a, T> {
     fn has_field(&self, field_name: &str) -> bool {
         self.base_scan.has_field(field_name)
     }
-}
 
-impl<'a, T: UpdateScan> UpdateScan for SelectScan<'a, T> {
     fn set_i32(&mut self, field_name: &str, value: i32) -> Result<(), anyhow::Error> {
         self.base_scan.set_i32(field_name, value)
     }

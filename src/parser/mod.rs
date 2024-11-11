@@ -3,12 +3,15 @@ mod grammar;
 
 #[cfg(test)]
 mod tests {
-    use crate::parser::{
-        ast::{
-            Constant, CreateCommand, Expression, FieldDefinition, FieldType, Predicate,
-            QueryCommand, Statement, Term, UpdateCommand,
+    use crate::{
+        parser::{
+            ast::{
+                Constant, CreateCommand, Expression, FieldDefinition, Predicate, QueryCommand,
+                Statement, Term, UpdateCommand,
+            },
+            grammar,
         },
-        grammar,
+        record::field::Type,
     };
 
     #[test]
@@ -144,8 +147,8 @@ mod tests {
             Statement::UpdateCommand(UpdateCommand::Create(CreateCommand::Table(
                 "table_name".to_string(),
                 vec![
-                    FieldDefinition::new("aaa".to_string(), FieldType::I32),
-                    FieldDefinition::new("bbb".to_string(), FieldType::VarChar(20))
+                    FieldDefinition::new("aaa".to_string(), Type::I32),
+                    FieldDefinition::new("bbb".to_string(), Type::VarChar(20))
                 ]
             )))
         );

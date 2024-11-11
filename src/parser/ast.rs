@@ -1,3 +1,5 @@
+use crate::record::field::Type;
+
 #[derive(Debug, PartialEq, Eq)]
 pub enum Statement {
     Query(QueryCommand),
@@ -39,19 +41,13 @@ pub enum CreateCommand {
 #[derive(Debug, PartialEq, Eq)]
 pub struct FieldDefinition {
     name: String,
-    field_type: FieldType,
+    field_type: Type,
 }
 
 impl FieldDefinition {
-    pub fn new(name: String, field_type: FieldType) -> Self {
+    pub fn new(name: String, field_type: Type) -> Self {
         FieldDefinition { name, field_type }
     }
-}
-
-#[derive(Debug, PartialEq, Eq)]
-pub enum FieldType {
-    I32,
-    VarChar(usize),
 }
 
 #[derive(Debug, PartialEq, Eq)]

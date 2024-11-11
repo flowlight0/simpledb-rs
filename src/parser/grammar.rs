@@ -1,7 +1,8 @@
 // auto-generated: "lalrpop 0.22.0"
-// sha3: 3e37215bc277289102151999b422eb00e72a85af83c6c92890b5ad6474e73110
+// sha3: 5c076415422693540cf2c5546ea0fe7f2817ff21d177088fb906e5037f95588b
 use std::str::FromStr;
 use super::ast;
+use crate::record::field::Type;
 #[allow(unused_extern_crates)]
 extern crate lalrpop_util as __lalrpop_util;
 #[allow(unused_imports)]
@@ -15,6 +16,7 @@ mod __parse__Predicate {
 
     use std::str::FromStr;
     use super::super::ast;
+    use crate::record::field::Type;
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -40,7 +42,7 @@ mod __parse__Predicate {
         Variant12(Vec<String>),
         Variant13(ast::CreateCommand),
         Variant14(ast::Expression),
-        Variant15(ast::FieldType),
+        Variant15(Type),
         Variant16(i32),
         Variant17(ast::Predicate),
         Variant18(ast::QueryCommand),
@@ -969,6 +971,17 @@ mod __parse__Predicate {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant15<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Type, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant12<
       'input,
     >(
@@ -1098,17 +1111,6 @@ mod __parse__Predicate {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant3(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant15<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::FieldType, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -2247,6 +2249,7 @@ mod __parse__Statement {
 
     use std::str::FromStr;
     use super::super::ast;
+    use crate::record::field::Type;
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -2272,7 +2275,7 @@ mod __parse__Statement {
         Variant12(Vec<String>),
         Variant13(ast::CreateCommand),
         Variant14(ast::Expression),
-        Variant15(ast::FieldType),
+        Variant15(Type),
         Variant16(i32),
         Variant17(ast::Predicate),
         Variant18(ast::QueryCommand),
@@ -3533,6 +3536,17 @@ mod __parse__Statement {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant15<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Type, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant12<
       'input,
     >(
@@ -3662,17 +3676,6 @@ mod __parse__Statement {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant3(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant15<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::FieldType, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -4811,6 +4814,7 @@ mod __parse__Term {
 
     use std::str::FromStr;
     use super::super::ast;
+    use crate::record::field::Type;
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -4836,7 +4840,7 @@ mod __parse__Term {
         Variant12(Vec<String>),
         Variant13(ast::CreateCommand),
         Variant14(ast::Expression),
-        Variant15(ast::FieldType),
+        Variant15(Type),
         Variant16(i32),
         Variant17(ast::Predicate),
         Variant18(ast::QueryCommand),
@@ -5735,6 +5739,17 @@ mod __parse__Term {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant15<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Type, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant12<
       'input,
     >(
@@ -5864,17 +5879,6 @@ mod __parse__Term {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant3(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant15<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::FieldType, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -7011,6 +7015,7 @@ mod __intern_token {
     #![allow(unused_imports)]
     use std::str::FromStr;
     use super::super::ast;
+    use crate::record::field::Type;
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -7293,7 +7298,7 @@ fn __action16<
 >(
     input: &'input str,
     (_, n, _): (usize, String, usize),
-    (_, t, _): (usize, ast::FieldType, usize),
+    (_, t, _): (usize, Type, usize),
 ) -> ast::FieldDefinition
 {
     ast::FieldDefinition::new(n, t)
@@ -7306,9 +7311,9 @@ fn __action17<
 >(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> ast::FieldType
+) -> Type
 {
-    ast::FieldType::I32
+    Type::I32
 }
 
 #[allow(unused_variables)]
@@ -7321,9 +7326,9 @@ fn __action18<
     (_, _, _): (usize, &'input str, usize),
     (_, i, _): (usize, i32, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::FieldType
+) -> Type
 {
-    ast::FieldType::VarChar(i as usize)
+    Type::VarChar(i as usize)
 }
 
 #[allow(unused_variables)]
