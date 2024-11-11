@@ -43,6 +43,10 @@ impl<'a> TableScan<'a> {
             current_slot: Slot::Start,
         })
     }
+
+    pub fn get_block_number(&self) -> usize {
+        self.record_page.block.block_slot
+    }
 }
 
 impl<'a> Drop for TableScan<'a> {
