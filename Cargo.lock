@@ -497,6 +497,7 @@ dependencies = [
  "anyhow",
  "lalrpop",
  "lalrpop-util 0.21.0",
+ "log",
  "tempfile",
  "thiserror",
  "uuid",

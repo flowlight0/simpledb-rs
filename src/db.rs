@@ -3,10 +3,13 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+use log::info;
+
 use crate::{
     buffer::BufferManager,
     file::FileManager,
     log::manager::LogManager,
+    metadata::MetadataManager,
     tx::{concurrency::LockTable, transaction::Transaction},
 };
 
@@ -15,6 +18,7 @@ pub struct SimpleDB {
     lock_table: Arc<Mutex<LockTable>>,
     log_manager: Arc<Mutex<LogManager>>,
     buffer_manager: Arc<Mutex<BufferManager>>,
+    pub metadata_manager: MetadataManager,
 }
 
 impl SimpleDB {
@@ -32,11 +36,30 @@ impl SimpleDB {
             log_manager.clone(),
             num_buffers,
         )));
+
+        let mut tx = Transaction::new(
+            file_manager.clone(),
+            log_manager.clone(),
+            buffer_manager.clone(),
+            lock_table.clone(),
+        )?;
+
+        let is_new = file_manager.lock().unwrap().is_new;
+        if is_new {
+            info!("Creating new database");
+        } else {
+            info!("Recovering new database");
+            tx.recover()?;
+        }
+        let metadata_manager = MetadataManager::new(is_new, &mut tx)?;
+        tx.commit()?;
+
         Ok(SimpleDB {
             file_manager,
             lock_table,
             log_manager,
             buffer_manager,
+            metadata_manager,
         })
     }
 

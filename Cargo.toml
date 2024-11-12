@@ -10,6 +10,7 @@ lalrpop = "0.22.0"
 tempfile = "3"
 anyhow = "1.0.91"
 thiserror = "1.0.65"
+log = "0.4.22"
 lalrpop-util = { version = "0.21.0", features = ["lexer", "unicode"] }
 
 [dependencies.uuid]
