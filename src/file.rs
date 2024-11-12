@@ -92,18 +92,23 @@ pub struct FileManager {
     directory: PathBuf,
     pub block_size: usize,
     opened_files: RwLock<HashMap<String, Arc<Mutex<File>>>>,
+    pub is_new: bool,
 }
 
 impl FileManager {
     pub fn new(directory: PathBuf, block_size: usize) -> Self {
-        if !directory.exists() {
+        let is_new = if !directory.exists() {
             std::fs::create_dir_all(&directory).unwrap();
-        }
+            true
+        } else {
+            false
+        };
 
         FileManager {
             directory,
             block_size,
             opened_files: RwLock::new(HashMap::new()),
+            is_new,
         }
     }
 
