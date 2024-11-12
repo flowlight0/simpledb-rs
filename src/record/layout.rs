@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use super::schema::{Schema, MAX_STRING_LENGTH_BYTES};
 
+#[derive(Clone)]
 pub struct Layout {
     pub schema: Schema,
     field_name_to_offsets: HashMap<String, usize>,

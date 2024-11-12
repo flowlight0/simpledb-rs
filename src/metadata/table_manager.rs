@@ -7,6 +7,7 @@ use crate::{
 const TABLE_NAME_MAX_LENGTH: usize = 50;
 const FIELD_NAME_MAX_LENGTH: usize = 50;
 
+#[derive(Clone)]
 pub struct TableManager {
     tcat_layout: Layout,
     fcat_layout: Layout,

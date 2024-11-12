@@ -11,14 +11,16 @@ pub mod table_manager;
 
 pub struct MetadataManager {
     table_manager: TableManager,
-    stat_manager: StatManager,
+    pub(crate) stat_manager: StatManager,
 }
 
 impl MetadataManager {
     pub fn new(is_new: bool, tx: &mut Transaction) -> Result<Self, anyhow::Error> {
+        let table_manager = TableManager::new(is_new, tx)?;
+        let stat_manager = StatManager::new(&table_manager)?;
         Ok(Self {
-            table_manager: TableManager::new(is_new, tx)?,
-            stat_manager: StatManager::new(is_new, tx)?,
+            table_manager,
+            stat_manager,
         })
     }
 

@@ -31,7 +31,7 @@ impl StatInfo {
     }
 
     #[allow(unused_variables)]
-    pub fn distinct_values(&self, field_name: &str) -> usize {
+    pub fn get_distinct_values(&self, field_name: &str) -> usize {
         1 + self.num_records / 3 // Fake it for now
     }
 }
@@ -43,9 +43,9 @@ pub struct StatManager {
 }
 
 impl StatManager {
-    pub fn new(is_new: bool, tx: &mut Transaction) -> Result<Self, anyhow::Error> {
+    pub fn new(table_manager: &TableManager) -> Result<Self, anyhow::Error> {
         Ok(Self {
-            table_manager: TableManager::new(is_new, tx)?,
+            table_manager: table_manager.clone(),
             table_stats: HashMap::new(),
             num_calls: 0,
         })
@@ -72,7 +72,7 @@ impl StatManager {
         }
     }
 
-    fn refresh_statistics(&mut self, tx: &mut Transaction) -> Result<(), anyhow::Error> {
+    pub(crate) fn refresh_statistics(&mut self, tx: &mut Transaction) -> Result<(), anyhow::Error> {
         self.table_stats.clear();
         self.num_calls = 0;
 
