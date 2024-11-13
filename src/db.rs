@@ -37,22 +37,22 @@ impl SimpleDB {
             num_buffers,
         )));
 
-        let mut tx = Transaction::new(
+        let tx = Arc::new(Mutex::new(Transaction::new(
             file_manager.clone(),
             log_manager.clone(),
             buffer_manager.clone(),
             lock_table.clone(),
-        )?;
+        )?));
 
         let is_new = file_manager.lock().unwrap().is_new;
         if is_new {
             info!("Creating new database");
         } else {
             info!("Recovering new database");
-            tx.recover()?;
+            tx.lock().unwrap().recover()?;
         }
-        let metadata_manager = MetadataManager::new(is_new, &mut tx)?;
-        tx.commit()?;
+        let metadata_manager = MetadataManager::new(is_new, tx.clone())?;
+        tx.lock().unwrap().commit()?;
 
         Ok(SimpleDB {
             file_manager,

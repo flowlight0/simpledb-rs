@@ -1,3 +1,8 @@
+use std::{
+    rc::Rc,
+    sync::{Arc, Mutex},
+};
+
 use crate::{file::BlockId, tx::transaction::Transaction};
 
 use super::layout::Layout;
@@ -5,10 +10,10 @@ use super::layout::Layout;
 const EMPTY: i32 = 0;
 const FULL: i32 = 1;
 
-pub struct RecordPage<'a> {
-    pub tx: &'a mut Transaction,
+pub struct RecordPage {
+    pub tx: Arc<Mutex<Transaction>>,
     pub block: BlockId,
-    pub layout: &'a Layout,
+    pub layout: Rc<Layout>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -42,8 +47,8 @@ impl Slot {
     }
 }
 
-impl<'a> RecordPage<'a> {
-    pub fn new(tx: &'a mut Transaction, block: BlockId, layout: &'a Layout) -> Self {
+impl RecordPage {
+    pub fn new(tx: Arc<Mutex<Transaction>>, block: BlockId, layout: Rc<Layout>) -> Self {
         RecordPage { tx, block, layout }
     }
 
@@ -54,6 +59,8 @@ impl<'a> RecordPage<'a> {
     pub fn get_i32(&mut self, slot: usize, field_name: &str) -> Result<i32, anyhow::Error> {
         let field_offset = self.layout.get_offset(field_name);
         self.tx
+            .lock()
+            .unwrap()
             .get_i32(&self.block, self.offset(slot) + field_offset)
     }
 
@@ -64,14 +71,20 @@ impl<'a> RecordPage<'a> {
         value: i32,
     ) -> Result<(), anyhow::Error> {
         let field_offset = self.layout.get_offset(field_name);
-        self.tx
-            .set_i32(&self.block, self.offset(slot) + field_offset, value, true)?;
+        self.tx.lock().unwrap().set_i32(
+            &self.block,
+            self.offset(slot) + field_offset,
+            value,
+            true,
+        )?;
         Ok(())
     }
 
     pub fn get_string(&mut self, slot: usize, field_name: &str) -> Result<String, anyhow::Error> {
         let field_offset = self.layout.get_offset(field_name);
         self.tx
+            .lock()
+            .unwrap()
             .get_string(&self.block, self.offset(slot) + field_offset)
     }
 
@@ -82,8 +95,12 @@ impl<'a> RecordPage<'a> {
         value: &str,
     ) -> Result<(), anyhow::Error> {
         let field_offset = self.layout.get_offset(field_name);
-        self.tx
-            .set_string(&self.block, self.offset(slot) + field_offset, value, true)?;
+        self.tx.lock().unwrap().set_string(
+            &self.block,
+            self.offset(slot) + field_offset,
+            value,
+            true,
+        )?;
         Ok(())
     }
 
@@ -117,7 +134,11 @@ impl<'a> RecordPage<'a> {
         };
 
         while self.is_valid_slot(next_index) {
-            let slot_flag = self.tx.get_i32(&self.block, self.offset(next_index))?;
+            let slot_flag = self
+                .tx
+                .lock()
+                .unwrap()
+                .get_i32(&self.block, self.offset(next_index))?;
             if slot_flag == flag {
                 return Ok(Slot::Index(next_index));
             }
@@ -128,14 +149,17 @@ impl<'a> RecordPage<'a> {
 
     pub fn format(&mut self) -> Result<(), anyhow::Error> {
         let mut slot = 0;
+
         while self.is_valid_slot(slot) {
             // while self.offset(slot + 1) <= self.tx.get_block_size() {
             self.tx
+                .lock()
+                .unwrap()
                 .set_i32(&self.block, self.offset(slot), EMPTY, false)?;
 
             let schema = self.layout.schema.clone();
             for field_name in &schema.i32_fields {
-                self.tx.set_i32(
+                self.tx.lock().unwrap().set_i32(
                     &self.block,
                     self.offset(slot) + self.layout.get_offset(field_name),
                     0,
@@ -144,7 +168,7 @@ impl<'a> RecordPage<'a> {
             }
 
             for field_name in &schema.string_fields {
-                self.tx.set_string(
+                self.tx.lock().unwrap().set_string(
                     &self.block,
                     self.offset(slot) + self.layout.get_offset(field_name),
                     "",
@@ -157,7 +181,7 @@ impl<'a> RecordPage<'a> {
     }
 
     fn is_valid_slot(&self, slot: usize) -> bool {
-        self.offset(slot + 1) <= self.tx.get_block_size()
+        self.offset(slot + 1) <= self.tx.lock().unwrap().get_block_size()
     }
 
     fn offset(&self, slot: usize) -> usize {
@@ -166,6 +190,8 @@ impl<'a> RecordPage<'a> {
 
     fn set_flag(&mut self, slot: usize, value: i32) -> Result<(), anyhow::Error> {
         self.tx
+            .lock()
+            .unwrap()
             .set_i32(&self.block, self.offset(slot), value, true)?;
         Ok(())
     }
@@ -173,6 +199,11 @@ impl<'a> RecordPage<'a> {
 
 #[cfg(test)]
 mod tests {
+
+    use std::{
+        rc::Rc,
+        sync::{Arc, Mutex},
+    };
 
     use crate::{
         db::SimpleDB,
@@ -186,16 +217,16 @@ mod tests {
         let mut schema = Schema::new();
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);
-        let layout = Layout::new(schema);
+        let layout = Rc::new(Layout::new(schema));
 
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 4096;
         let db = SimpleDB::new(temp_dir, block_size, 3)?;
 
-        let mut tx = db.new_transaction()?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
         let block = db.file_manager.lock().unwrap().append_block("testfile")?;
-        tx.pin(&block)?;
-        let mut record_page = RecordPage::new(&mut tx, block.clone(), &layout);
+        tx.lock().unwrap().pin(&block)?;
+        let mut record_page = RecordPage::new(tx.clone(), block.clone(), layout.clone());
         record_page.format()?;
 
         let mut slot = Slot::Start;
@@ -224,8 +255,8 @@ mod tests {
         }
         assert_eq!(record_page.next_after(slot)?, Slot::End);
 
-        tx.unpin(&block);
-        tx.commit()?;
+        tx.lock().unwrap().unpin(&block);
+        tx.lock().unwrap().commit()?;
         Ok(())
     }
 }

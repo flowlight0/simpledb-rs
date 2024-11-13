@@ -42,6 +42,11 @@ impl<'a> Scan for ProjectScan<'a> {
 #[cfg(test)]
 mod tests {
 
+    use std::{
+        rc::Rc,
+        sync::{Arc, Mutex},
+    };
+
     use crate::{
         db::SimpleDB,
         record::{layout::Layout, schema::Schema},
@@ -56,15 +61,15 @@ mod tests {
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);
         schema.add_i32_field("C");
-        let layout = Layout::new(schema);
+        let layout = Rc::new(Layout::new(schema));
 
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let db = SimpleDB::new(temp_dir, block_size, 3)?;
 
-        let mut tx = db.new_transaction()?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
 
-        let mut table_scan = TableScan::new(&mut tx, "testtable", &layout)?;
+        let mut table_scan = TableScan::new(tx.clone(), "testtable", layout.clone())?;
         table_scan.before_first()?;
         for i in 0..50 {
             table_scan.insert()?;
@@ -86,7 +91,7 @@ mod tests {
         }
         drop(project_scan);
         drop(table_scan);
-        tx.commit()?;
+        tx.lock().unwrap().commit()?;
         Ok(())
     }
 }

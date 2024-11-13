@@ -1,3 +1,8 @@
+use std::{
+    rc::Rc,
+    sync::{Arc, Mutex},
+};
+
 use crate::{
     record::{layout::Layout, schema::Schema},
     scan::{table_scan::TableScan, Scan},
@@ -9,8 +14,8 @@ const FIELD_NAME_MAX_LENGTH: usize = 50;
 
 #[derive(Clone)]
 pub struct TableManager {
-    tcat_layout: Layout,
-    fcat_layout: Layout,
+    tcat_layout: Rc<Layout>,
+    fcat_layout: Rc<Layout>,
 }
 
 fn create_tcat_layout() -> Layout {
@@ -33,13 +38,13 @@ fn create_fcat_layout() -> Layout {
 fn create_table(
     table_name: &str,
     schema: &Schema,
-    tx: &mut Transaction,
-    tcat_layout: &Layout,
-    fcat_layout: &Layout,
+    tx: Arc<Mutex<Transaction>>,
+    tcat_layout: Rc<Layout>,
+    fcat_layout: Rc<Layout>,
 ) -> Result<(), anyhow::Error> {
     let layout = Layout::new(schema.clone());
     {
-        let mut tcat = TableScan::new(tx, "tblcat", tcat_layout)?;
+        let mut tcat = TableScan::new(tx.clone(), "tblcat", tcat_layout)?;
         tcat.insert()?;
         tcat.set_string("tblname", table_name)?;
         tcat.set_i32("slotsize", layout.slot_size as i32)?;
@@ -65,24 +70,24 @@ fn create_table(
 }
 
 impl TableManager {
-    pub fn new(is_new: bool, tx: &mut Transaction) -> Result<Self, anyhow::Error> {
-        let tcat_layout = create_tcat_layout();
-        let fcat_layout = create_fcat_layout();
+    pub fn new(is_new: bool, tx: Arc<Mutex<Transaction>>) -> Result<Self, anyhow::Error> {
+        let tcat_layout = Rc::new(create_tcat_layout());
+        let fcat_layout = Rc::new(create_fcat_layout());
         if is_new {
             create_table(
                 "tblcat",
                 &tcat_layout.schema,
-                tx,
-                &tcat_layout,
-                &fcat_layout,
+                tx.clone(),
+                tcat_layout.clone(),
+                fcat_layout.clone(),
             )?;
 
             create_table(
                 "fldcat",
                 &fcat_layout.schema,
                 tx,
-                &tcat_layout,
-                &fcat_layout,
+                tcat_layout.clone(),
+                fcat_layout.clone(),
             )?;
         }
         Ok(Self {
@@ -95,24 +100,24 @@ impl TableManager {
         &self,
         table_name: &str,
         schema: &Schema,
-        tx: &mut Transaction,
+        tx: Arc<Mutex<Transaction>>,
     ) -> Result<(), anyhow::Error> {
         create_table(
             table_name,
             &schema,
             tx,
-            &self.tcat_layout,
-            &self.fcat_layout,
+            self.tcat_layout.clone(),
+            self.fcat_layout.clone(),
         )
     }
 
     pub fn get_layout(
         &self,
         table_name: &str,
-        tx: &mut Transaction,
+        tx: Arc<Mutex<Transaction>>,
     ) -> Result<Option<Layout>, anyhow::Error> {
         let mut schema = Schema::new();
-        let mut fcat = TableScan::new(tx, "fldcat", &self.fcat_layout)?;
+        let mut fcat = TableScan::new(tx, "fldcat", self.fcat_layout.clone())?;
         while fcat.next()? {
             if fcat.get_string("tblname")? != table_name {
                 continue;
@@ -146,16 +151,16 @@ mod tests {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let db = SimpleDB::new(temp_dir, block_size, 3)?;
-        let mut tx = db.new_transaction()?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
         let mut schema = Schema::new();
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);
 
-        let table_manager = TableManager::new(true, &mut tx)?;
-        table_manager.create_table("testtable", &schema, &mut tx)?;
-        let layout = table_manager.get_layout("testtable", &mut tx)?.unwrap();
+        let table_manager = TableManager::new(true, tx.clone())?;
+        table_manager.create_table("testtable", &schema, tx.clone())?;
+        let layout = table_manager.get_layout("testtable", tx.clone())?.unwrap();
         assert_eq!(schema, layout.schema);
-        tx.commit()?;
+        tx.lock().unwrap().commit()?;
         Ok(())
     }
 }
