@@ -1,15 +1,16 @@
 mod ast;
 mod grammar;
+pub mod predicate;
 
 #[cfg(test)]
 mod tests {
     use crate::{
         parser::{
             ast::{
-                Constant, CreateCommand, Expression, FieldDefinition, Predicate, QueryCommand,
-                Statement, Term, UpdateCommand,
+                Constant, CreateCommand, FieldDefinition, QueryCommand, Statement, UpdateCommand,
             },
             grammar,
+            predicate::{Expression, Predicate, Term},
         },
         record::field::Spec,
     };
@@ -18,19 +19,19 @@ mod tests {
     fn test_predicate() {
         assert_eq!(
             grammar::TermParser::new().parse("333 = 222").unwrap(),
-            Term::EqualityTerm(Expression::I32Constant(333), Expression::I32Constant(222))
+            Term::Equality(Expression::I32Constant(333), Expression::I32Constant(222))
         );
         assert_eq!(
             grammar::PredicateParser::new()
                 .parse("i32 = 222 AND string = '222'")
                 .unwrap(),
             Predicate::new(vec![
-                Term::EqualityTerm(
-                    Expression::FieldExpression("i32".to_string()),
+                Term::Equality(
+                    Expression::Field("i32".to_string()),
                     Expression::I32Constant(222)
                 ),
-                Term::EqualityTerm(
-                    Expression::FieldExpression("string".to_string()),
+                Term::Equality(
+                    Expression::Field("string".to_string()),
                     Expression::StringConstant("222".to_string())
                 ),
             ])
@@ -66,8 +67,8 @@ mod tests {
                 .unwrap(),
             Statement::UpdateCommand(UpdateCommand::Delete(
                 "table".to_string(),
-                Some(Predicate::new(vec![Term::EqualityTerm(
-                    Expression::FieldExpression("i32".to_string()),
+                Some(Predicate::new(vec![Term::Equality(
+                    Expression::Field("i32".to_string()),
                     Expression::I32Constant(222)
                 )]))
             ))
@@ -96,8 +97,8 @@ mod tests {
                 "table".to_string(),
                 "aaa".to_string(),
                 Expression::I32Constant(333),
-                Some(Predicate::new(vec![Term::EqualityTerm(
-                    Expression::FieldExpression("i32".to_string()),
+                Some(Predicate::new(vec![Term::Equality(
+                    Expression::Field("i32".to_string()),
                     Expression::I32Constant(222)
                 )]))
             ))
@@ -129,8 +130,8 @@ mod tests {
                 QueryCommand::new(
                     vec!["aaa".to_string(), "bbb".to_string()],
                     vec!["table_name".to_string()],
-                    Some(Predicate::new(vec![Term::EqualityTerm(
-                        Expression::FieldExpression("i32".to_string()),
+                    Some(Predicate::new(vec![Term::Equality(
+                        Expression::Field("i32".to_string()),
                         Expression::I32Constant(222)
                     )]))
                 )

@@ -1,5 +1,7 @@
 use crate::record::field::Spec;
 
+use super::predicate::{Expression, Predicate};
+
 #[derive(Debug, PartialEq, Eq)]
 pub enum Statement {
     Query(QueryCommand),
@@ -48,29 +50,6 @@ impl FieldDefinition {
     pub fn new(name: String, field_type: Spec) -> Self {
         FieldDefinition { name, field_type }
     }
-}
-
-#[derive(Debug, PartialEq, Eq)]
-pub struct Predicate {
-    terms: Vec<Term>,
-}
-
-impl Predicate {
-    pub fn new(terms: Vec<Term>) -> Self {
-        Predicate { terms }
-    }
-}
-
-#[derive(Debug, PartialEq, Eq)]
-pub enum Term {
-    EqualityTerm(Expression, Expression),
-}
-
-#[derive(Debug, PartialEq, Eq)]
-pub enum Expression {
-    I32Constant(i32),
-    StringConstant(String),
-    FieldExpression(String),
 }
 
 #[derive(Debug, PartialEq, Eq)]

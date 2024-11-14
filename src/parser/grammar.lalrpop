@@ -1,5 +1,6 @@
 use std::str::FromStr;
 use super::ast;
+use super::predicate;
 use crate::record::field::Spec;
 
 grammar;
@@ -38,18 +39,18 @@ FieldType: Spec = {
     "VARCHAR" "(" <i:I32Constant> ")" => Spec::VarChar(i as usize),
 }
 
-pub Predicate: ast::Predicate = {
-    <ts:And<Term>> => ast::Predicate::new(ts),
+pub Predicate: predicate::Predicate = {
+    <ts:And<Term>> => predicate::Predicate::new(ts),
 }
 
-pub Term: ast::Term = {
-    <l:Expression> "=" <r:Expression> => ast::Term::EqualityTerm(l, r),
+pub Term: predicate::Term = {
+    <l:Expression> "=" <r:Expression> => predicate::Term::Equality(l, r),
 }
 
-Expression: ast::Expression = {
-    <i:I32Constant> => ast::Expression::I32Constant(i),
-    <s:StringConstant> => ast::Expression::StringConstant(s),
-    <t:IdToken> => ast::Expression::FieldExpression(t),
+Expression: predicate::Expression = {
+    <i:I32Constant> => predicate::Expression::I32Constant(i),
+    <s:StringConstant> => predicate::Expression::StringConstant(s),
+    <t:IdToken> => predicate::Expression::Field(t),
 }
 
 Constant: ast::Constant = {
