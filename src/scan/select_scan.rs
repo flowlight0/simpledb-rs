@@ -1,72 +1,76 @@
+use crate::{plan::Plan, record::field::Value};
+
 use super::Scan;
 
-pub trait Expression<T> {
-    fn evaluate(&self, scan: &mut dyn Scan) -> Result<T, anyhow::Error>;
+#[derive(Clone)]
+pub enum Expression {
+    I32Constant(i32),
+    StringConstant(String),
+    Field(String),
 }
 
-pub struct ConstantExpression<T> {
-    value: T,
-}
-
-impl<T: Clone> Expression<T> for ConstantExpression<T> {
-    fn evaluate(&self, _scan: &mut dyn Scan) -> Result<T, anyhow::Error> {
-        Ok(self.value.clone())
+impl Expression {
+    pub fn evaluate(&self, scan: &mut Box<dyn Scan>) -> Result<Value, anyhow::Error> {
+        match self {
+            Expression::I32Constant(value) => Ok(Value::I32(*value)),
+            Expression::StringConstant(value) => Ok(Value::String(value.clone())),
+            Expression::Field(field_name) => {
+                if scan.has_field(field_name) {
+                    scan.get_value(field_name)
+                } else {
+                    Err(anyhow::anyhow!("Field {} not found", field_name))
+                }
+            }
+        }
     }
 }
 
-pub struct I32FieldExpression {
-    field_name: String,
+#[derive(Clone)]
+pub enum Term {
+    Equality(Expression, Expression),
 }
 
-impl Expression<i32> for I32FieldExpression {
-    fn evaluate(&self, scan: &mut dyn Scan) -> Result<i32, anyhow::Error> {
-        scan.get_i32(&self.field_name)
+impl Term {
+    pub fn is_satisfied(&self, scan: &mut Box<dyn Scan>) -> Result<bool, anyhow::Error> {
+        match self {
+            Term::Equality(lhs, rhs) => {
+                let lhs = lhs.evaluate(scan)?;
+                let rhs = rhs.evaluate(scan)?;
+                Ok(lhs == rhs)
+            }
+        }
+    }
+
+    pub fn get_reduction_factor(&self, plan: &Box<dyn Plan>) -> usize {
+        todo!()
     }
 }
 
-pub struct StringFieldExpression {
-    field_name: String,
-}
-
-impl Expression<String> for StringFieldExpression {
-    fn evaluate(&self, scan: &mut dyn Scan) -> Result<String, anyhow::Error> {
-        scan.get_string(&self.field_name)
-    }
-}
-
-pub trait Term {
-    fn is_satisfied(&self, scan: &mut dyn Scan) -> Result<bool, anyhow::Error>;
-}
-
-pub struct EqualityTerm<T> {
-    lhs: Box<dyn Expression<T>>,
-    rhs: Box<dyn Expression<T>>,
-}
-
-impl<T: Clone + Eq + PartialEq> Term for EqualityTerm<T> {
-    fn is_satisfied(&self, scan: &mut dyn Scan) -> Result<bool, anyhow::Error> {
-        let lhs = self.lhs.evaluate(scan)?;
-        let rhs = self.rhs.evaluate(scan)?;
-        Ok(lhs == rhs)
-    }
-}
-
+#[derive(Clone)]
 pub struct Predicate {
-    terms: Vec<Box<dyn Term>>,
+    terms: Vec<Term>,
 }
 
 impl Predicate {
-    pub fn new(terms: Vec<Box<dyn Term>>) -> Self {
+    pub fn new(terms: Vec<Term>) -> Self {
         Predicate { terms }
     }
 
-    fn is_satisfied(&self, scan: &mut dyn Scan) -> Result<bool, anyhow::Error> {
+    fn is_satisfied(&self, scan: &mut Box<dyn Scan>) -> Result<bool, anyhow::Error> {
         for term in &self.terms {
             if !term.is_satisfied(scan)? {
                 return Ok(false);
             }
         }
         Ok(true)
+    }
+
+    pub(crate) fn get_reduction_factor(&self, plan: &Box<dyn Plan>) -> usize {
+        let mut factor = 1;
+        for term in &self.terms {
+            factor *= term.get_reduction_factor(plan);
+        }
+        factor
     }
 }
 
@@ -91,7 +95,7 @@ impl Scan for SelectScan {
 
     fn next(&mut self) -> Result<bool, anyhow::Error> {
         while self.base_scan.next()? {
-            if self.predicate.is_satisfied(&mut *self.base_scan)? {
+            if self.predicate.is_satisfied(&mut self.base_scan)? {
                 return Ok(true);
             }
         }
@@ -104,6 +108,10 @@ impl Scan for SelectScan {
 
     fn get_string(&mut self, field_name: &str) -> Result<String, anyhow::Error> {
         self.base_scan.get_string(field_name)
+    }
+
+    fn get_value(&mut self, field_name: &str) -> Result<Value, anyhow::Error> {
+        self.base_scan.get_value(field_name)
     }
 
     fn has_field(&self, field_name: &str) -> bool {
@@ -151,9 +159,8 @@ mod tests {
         let db = SimpleDB::new(temp_dir, block_size, 3)?;
 
         let tx = Arc::new(Mutex::new(db.new_transaction()?));
-
-        let table_scan = TableScan::new(tx.clone(), "testtable", layout.clone())?;
-        let mut table_scan = Box::new(table_scan);
+        let mut table_scan: Box<dyn Scan> =
+            Box::new(TableScan::new(tx.clone(), "testtable", layout.clone())?);
         table_scan.before_first()?;
         for i in 0..50 {
             table_scan.insert()?;
@@ -165,20 +172,14 @@ mod tests {
         let mut select_scan = SelectScan::new(
             table_scan,
             Predicate::new(vec![
-                Box::new(EqualityTerm {
-                    lhs: Box::new(I32FieldExpression {
-                        field_name: "A".to_string(),
-                    }),
-                    rhs: Box::new(ConstantExpression { value: 1 }),
-                }),
-                Box::new(EqualityTerm {
-                    lhs: Box::new(StringFieldExpression {
-                        field_name: "B".to_string(),
-                    }),
-                    rhs: Box::new(ConstantExpression {
-                        value: "2".to_string(),
-                    }),
-                }),
+                Term::Equality(
+                    Expression::Field("A".to_string()),
+                    Expression::I32Constant(1),
+                ),
+                Term::Equality(
+                    Expression::Field("B".to_string()),
+                    Expression::StringConstant("2".to_string()),
+                ),
             ]),
         );
         select_scan.before_first()?;

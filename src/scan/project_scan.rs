@@ -1,3 +1,5 @@
+use crate::record::field::Value;
+
 use super::Scan;
 
 pub struct ProjectScan<'a> {
@@ -32,6 +34,11 @@ impl<'a> Scan for ProjectScan<'a> {
     fn get_string(&mut self, field_name: &str) -> Result<String, anyhow::Error> {
         assert!(self.fields.contains(&field_name.to_string()));
         self.base_scan.get_string(field_name)
+    }
+
+    fn get_value(&mut self, field_name: &str) -> Result<Value, anyhow::Error> {
+        assert!(self.fields.contains(&field_name.to_string()));
+        self.base_scan.get_value(field_name)
     }
 
     fn has_field(&self, field_name: &str) -> bool {

@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use super::field::Type;
+
 const MAX_STRING_LENGTH: usize = 65535;
 pub const MAX_STRING_LENGTH_BYTES: usize = 2;
 
@@ -39,5 +41,13 @@ impl Schema {
             .insert(field_name.to_string(), self.string_fields.len());
         self.string_fields.push(field_name.to_string());
         self.string_max_lengths.push(max_length);
+    }
+
+    pub fn get_field_type(&self, field_name: &str) -> Type {
+        if self.i32_field_to_index.contains_key(field_name) {
+            Type::I32
+        } else {
+            Type::String
+        }
     }
 }

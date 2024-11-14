@@ -6,6 +6,7 @@ use std::{
 use crate::{
     file::BlockId,
     record::{
+        field::{Type, Value},
         layout::Layout,
         record_page::{RecordPage, Slot},
     },
@@ -116,6 +117,13 @@ impl Scan for TableScan {
     fn get_string(&mut self, field_name: &str) -> Result<String, anyhow::Error> {
         self.record_page
             .get_string(self.current_slot.get_index(), field_name)
+    }
+
+    fn get_value(&mut self, field_name: &str) -> Result<Value, anyhow::Error> {
+        match self.record_page.layout.schema.get_field_type(field_name) {
+            Type::I32 => Ok(Value::I32(self.get_i32(field_name)?)),
+            Type::String => Ok(Value::String(self.get_string(field_name)?)),
+        }
     }
 
     fn has_field(&self, field_name: &str) -> bool {

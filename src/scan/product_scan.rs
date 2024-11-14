@@ -1,3 +1,5 @@
+use crate::record::field::Value;
+
 use super::Scan;
 
 pub struct ProductScan<'a> {
@@ -40,6 +42,14 @@ impl<'a> Scan for ProductScan<'a> {
             self.scan1.get_string(field_name)
         } else {
             self.scan2.get_string(field_name)
+        }
+    }
+
+    fn get_value(&mut self, field_name: &str) -> Result<Value, anyhow::Error> {
+        if self.scan1.has_field(field_name) {
+            self.scan1.get_value(field_name)
+        } else {
+            self.scan2.get_value(field_name)
         }
     }
 

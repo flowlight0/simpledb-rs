@@ -1,4 +1,4 @@
-use crate::record::field::Type;
+use crate::record::field::Spec;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Statement {
@@ -41,11 +41,11 @@ pub enum CreateCommand {
 #[derive(Debug, PartialEq, Eq)]
 pub struct FieldDefinition {
     name: String,
-    field_type: Type,
+    field_type: Spec,
 }
 
 impl FieldDefinition {
-    pub fn new(name: String, field_type: Type) -> Self {
+    pub fn new(name: String, field_type: Spec) -> Self {
         FieldDefinition { name, field_type }
     }
 }

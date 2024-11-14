@@ -1,8 +1,8 @@
 // auto-generated: "lalrpop 0.22.0"
-// sha3: 5c076415422693540cf2c5546ea0fe7f2817ff21d177088fb906e5037f95588b
+// sha3: 0e89e89b66983c20f64d7d2e4c33693b0f8aff041c92e31620d5dffde9fa40fc
 use std::str::FromStr;
 use super::ast;
-use crate::record::field::Type;
+use crate::record::field::Spec;
 #[allow(unused_extern_crates)]
 extern crate lalrpop_util as __lalrpop_util;
 #[allow(unused_imports)]
@@ -16,7 +16,7 @@ mod __parse__Predicate {
 
     use std::str::FromStr;
     use super::super::ast;
-    use crate::record::field::Type;
+    use crate::record::field::Spec;
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -42,7 +42,7 @@ mod __parse__Predicate {
         Variant12(Vec<String>),
         Variant13(ast::CreateCommand),
         Variant14(ast::Expression),
-        Variant15(Type),
+        Variant15(Spec),
         Variant16(i32),
         Variant17(ast::Predicate),
         Variant18(ast::QueryCommand),
@@ -960,6 +960,17 @@ mod __parse__Predicate {
     fn __symbol_type_mismatch() -> ! {
         panic!("symbol type mismatch")
     }
+    fn __pop_Variant15<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Spec, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant5<
       'input,
     >(
@@ -968,17 +979,6 @@ mod __parse__Predicate {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant5(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant15<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Type, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -2249,7 +2249,7 @@ mod __parse__Statement {
 
     use std::str::FromStr;
     use super::super::ast;
-    use crate::record::field::Type;
+    use crate::record::field::Spec;
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -2275,7 +2275,7 @@ mod __parse__Statement {
         Variant12(Vec<String>),
         Variant13(ast::CreateCommand),
         Variant14(ast::Expression),
-        Variant15(Type),
+        Variant15(Spec),
         Variant16(i32),
         Variant17(ast::Predicate),
         Variant18(ast::QueryCommand),
@@ -3525,6 +3525,17 @@ mod __parse__Statement {
     fn __symbol_type_mismatch() -> ! {
         panic!("symbol type mismatch")
     }
+    fn __pop_Variant15<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Spec, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant5<
       'input,
     >(
@@ -3533,17 +3544,6 @@ mod __parse__Statement {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant5(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant15<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Type, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -4814,7 +4814,7 @@ mod __parse__Term {
 
     use std::str::FromStr;
     use super::super::ast;
-    use crate::record::field::Type;
+    use crate::record::field::Spec;
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -4840,7 +4840,7 @@ mod __parse__Term {
         Variant12(Vec<String>),
         Variant13(ast::CreateCommand),
         Variant14(ast::Expression),
-        Variant15(Type),
+        Variant15(Spec),
         Variant16(i32),
         Variant17(ast::Predicate),
         Variant18(ast::QueryCommand),
@@ -5728,6 +5728,17 @@ mod __parse__Term {
     fn __symbol_type_mismatch() -> ! {
         panic!("symbol type mismatch")
     }
+    fn __pop_Variant15<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Spec, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant5<
       'input,
     >(
@@ -5736,17 +5747,6 @@ mod __parse__Term {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant5(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant15<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Type, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -7015,7 +7015,7 @@ mod __intern_token {
     #![allow(unused_imports)]
     use std::str::FromStr;
     use super::super::ast;
-    use crate::record::field::Type;
+    use crate::record::field::Spec;
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -7298,7 +7298,7 @@ fn __action16<
 >(
     input: &'input str,
     (_, n, _): (usize, String, usize),
-    (_, t, _): (usize, Type, usize),
+    (_, t, _): (usize, Spec, usize),
 ) -> ast::FieldDefinition
 {
     ast::FieldDefinition::new(n, t)
@@ -7311,9 +7311,9 @@ fn __action17<
 >(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> Type
+) -> Spec
 {
-    Type::I32
+    Spec::I32
 }
 
 #[allow(unused_variables)]
@@ -7326,9 +7326,9 @@ fn __action18<
     (_, _, _): (usize, &'input str, usize),
     (_, i, _): (usize, i32, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Type
+) -> Spec
 {
-    Type::VarChar(i as usize)
+    Spec::VarChar(i as usize)
 }
 
 #[allow(unused_variables)]

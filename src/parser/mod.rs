@@ -11,7 +11,7 @@ mod tests {
             },
             grammar,
         },
-        record::field::Type,
+        record::field::Spec,
     };
 
     #[test]
@@ -147,8 +147,8 @@ mod tests {
             Statement::UpdateCommand(UpdateCommand::Create(CreateCommand::Table(
                 "table_name".to_string(),
                 vec![
-                    FieldDefinition::new("aaa".to_string(), Type::I32),
-                    FieldDefinition::new("bbb".to_string(), Type::VarChar(20))
+                    FieldDefinition::new("aaa".to_string(), Spec::I32),
+                    FieldDefinition::new("bbb".to_string(), Spec::VarChar(20))
                 ]
             )))
         );
