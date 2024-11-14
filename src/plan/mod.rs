@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{record::schema::Schema, scan::Scan, tx::transaction::Transaction};
+pub mod project_plan;
 pub mod select_plan;
 pub mod table_plan;
 

@@ -2,13 +2,13 @@ use crate::record::field::Value;
 
 use super::Scan;
 
-pub struct ProjectScan<'a> {
-    base_scan: &'a mut dyn Scan,
+pub struct ProjectScan {
+    base_scan: Box<dyn Scan>,
     fields: Vec<String>,
 }
 
-impl<'a> ProjectScan<'a> {
-    pub fn new(base_scan: &'a mut dyn Scan, fields: Vec<String>) -> Self {
+impl ProjectScan {
+    pub fn new(base_scan: Box<dyn Scan>, fields: Vec<String>) -> Self {
         for field in &fields {
             assert!(base_scan.has_field(field));
         }
@@ -17,7 +17,7 @@ impl<'a> ProjectScan<'a> {
     }
 }
 
-impl<'a> Scan for ProjectScan<'a> {
+impl Scan for ProjectScan {
     fn before_first(&mut self) -> Result<(), anyhow::Error> {
         self.base_scan.before_first()
     }
@@ -86,7 +86,7 @@ mod tests {
         }
 
         let mut project_scan =
-            ProjectScan::new(&mut table_scan, vec!["A".to_string(), "C".to_string()]);
+            ProjectScan::new(Box::new(table_scan), vec!["A".to_string(), "C".to_string()]);
         project_scan.before_first()?;
         for i in 0..50 {
             assert!(project_scan.next()?);
@@ -97,7 +97,6 @@ mod tests {
             assert_eq!(project_scan.get_i32("C")?, i + 2);
         }
         drop(project_scan);
-        drop(table_scan);
         tx.lock().unwrap().commit()?;
         Ok(())
     }
