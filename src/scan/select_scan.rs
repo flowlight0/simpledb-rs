@@ -70,13 +70,13 @@ impl Predicate {
     }
 }
 
-pub struct SelectScan<'a, T: Scan> {
-    base_scan: &'a mut T,
+pub struct SelectScan {
+    base_scan: Box<dyn Scan>,
     predicate: Predicate,
 }
 
-impl<'a, T: Scan> SelectScan<'a, T> {
-    pub fn new(base_scan: &'a mut T, predicate: Predicate) -> Self {
+impl SelectScan {
+    pub fn new(base_scan: Box<dyn Scan>, predicate: Predicate) -> Self {
         SelectScan {
             base_scan,
             predicate,
@@ -84,7 +84,7 @@ impl<'a, T: Scan> SelectScan<'a, T> {
     }
 }
 
-impl<'a, T: Scan> Scan for SelectScan<'a, T> {
+impl Scan for SelectScan {
     fn before_first(&mut self) -> Result<(), anyhow::Error> {
         self.base_scan.before_first()
     }
@@ -152,7 +152,8 @@ mod tests {
 
         let tx = Arc::new(Mutex::new(db.new_transaction()?));
 
-        let mut table_scan = TableScan::new(tx.clone(), "testtable", layout.clone())?;
+        let table_scan = TableScan::new(tx.clone(), "testtable", layout.clone())?;
+        let mut table_scan = Box::new(table_scan);
         table_scan.before_first()?;
         for i in 0..50 {
             table_scan.insert()?;
@@ -162,7 +163,7 @@ mod tests {
         }
 
         let mut select_scan = SelectScan::new(
-            &mut table_scan,
+            table_scan,
             Predicate::new(vec![
                 Box::new(EqualityTerm {
                     lhs: Box::new(I32FieldExpression {
@@ -183,7 +184,6 @@ mod tests {
         select_scan.before_first()?;
         for i in 0..50 {
             if i % 3 == 1 && i % 4 == 2 {
-                dbg!(i);
                 assert!(select_scan.next()?);
                 assert_eq!(select_scan.get_i32("A")?, 1);
                 assert_eq!(select_scan.get_string("B")?, "2");
@@ -192,8 +192,9 @@ mod tests {
             }
         }
         assert!(!select_scan.next()?);
-
         drop(select_scan);
+
+        let mut table_scan = TableScan::new(tx.clone(), "testtable", layout.clone())?;
 
         table_scan.before_first()?;
         for i in 0..50 {
