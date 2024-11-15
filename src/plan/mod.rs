@@ -1,9 +1,13 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    parser::statement::QueryData, record::schema::Schema, scan::Scan, tx::transaction::Transaction,
+    parser::statement::{QueryData, UpdateCommand},
+    record::schema::Schema,
+    scan::Scan,
+    tx::transaction::Transaction,
 };
 pub mod basic_query_planner;
+pub mod basic_update_planner;
 pub mod product_plan;
 pub mod project_plan;
 pub mod select_plan;
@@ -23,4 +27,12 @@ pub trait QueryPlanner {
         query: &QueryData,
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<Box<dyn Plan>, anyhow::Error>;
+}
+
+pub trait UpdatePlanner {
+    fn execute_update(
+        &self,
+        update_command: &UpdateCommand,
+        tx: Arc<Mutex<Transaction>>,
+    ) -> Result<usize, anyhow::Error>;
 }

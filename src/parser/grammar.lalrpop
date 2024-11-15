@@ -1,7 +1,7 @@
 use std::str::FromStr;
 use super::statement;
 use super::predicate;
-use crate::record::field::Spec;
+use crate::record::field::{Spec, Value};
 
 grammar;
 
@@ -53,9 +53,9 @@ Expression: predicate::Expression = {
     <t:IdToken> => predicate::Expression::Field(t),
 }
 
-Constant: statement::Constant = {
-    <i:I32Constant> => statement::Constant::I32(i),
-    <s:StringConstant> => statement::Constant::String(s),
+Constant: Value = {
+    <i:I32Constant> => Value::I32(i),
+    <s:StringConstant> => Value::String(s),
 }
 
 I32Constant: i32 = {
