@@ -140,6 +140,13 @@ impl Scan for TableScan {
             .set_string(self.current_slot.get_index(), field_name, value)
     }
 
+    fn set_value(&mut self, field_name: &str, value: &Value) -> Result<(), anyhow::Error> {
+        match value {
+            Value::I32(i) => self.set_i32(field_name, *i),
+            Value::String(s) => self.set_string(field_name, s),
+        }
+    }
+
     fn delete(&mut self) -> Result<(), anyhow::Error> {
         self.record_page.delete(self.current_slot.get_index())
     }

@@ -1,4 +1,4 @@
-use crate::record::field::Spec;
+use crate::record::field::{Spec, Value};
 
 use super::predicate::{Expression, Predicate};
 
@@ -27,7 +27,7 @@ impl QueryData {
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum UpdateCommand {
-    Insert(String, Vec<String>, Vec<Constant>),
+    Insert(String, Vec<String>, Vec<Value>),
     Delete(String, Option<Predicate>),
     Modify(String, String, Expression, Option<Predicate>),
     Create(CreateCommand),
@@ -50,10 +50,4 @@ impl FieldDefinition {
     pub fn new(name: String, field_type: Spec) -> Self {
         FieldDefinition { name, field_type }
     }
-}
-
-#[derive(Debug, PartialEq, Eq)]
-pub enum Constant {
-    I32(i32),
-    String(String),
 }

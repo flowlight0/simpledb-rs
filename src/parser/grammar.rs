@@ -1,9 +1,9 @@
 // auto-generated: "lalrpop 0.22.0"
-// sha3: c30c1d2245d41dc555f140a3ad7ec44c061618d73fd4b29649a3a10bc4435fd3
+// sha3: f9c5a0919121d84067d1996ef3a2f035cb798f9ce2b31a1d706fe8e18c0f60c3
 use std::str::FromStr;
 use super::statement;
 use super::predicate;
-use crate::record::field::Spec;
+use crate::record::field::{Spec, Value};
 #[allow(unused_extern_crates)]
 extern crate lalrpop_util as __lalrpop_util;
 #[allow(unused_imports)]
@@ -18,7 +18,7 @@ mod __parse__Predicate {
     use std::str::FromStr;
     use super::super::statement;
     use super::super::predicate;
-    use crate::record::field::Spec;
+    use crate::record::field::{Spec, Value};
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -30,8 +30,8 @@ mod __parse__Predicate {
     pub(crate) enum __Symbol<'input>
      {
         Variant0(&'input str),
-        Variant1(statement::Constant),
-        Variant2(alloc::vec::Vec<statement::Constant>),
+        Variant1(Value),
+        Variant2(alloc::vec::Vec<Value>),
         Variant3(statement::FieldDefinition),
         Variant4(alloc::vec::Vec<statement::FieldDefinition>),
         Variant5(String),
@@ -39,7 +39,7 @@ mod __parse__Predicate {
         Variant7(predicate::Term),
         Variant8(alloc::vec::Vec<predicate::Term>),
         Variant9(Vec<predicate::Term>),
-        Variant10(Vec<statement::Constant>),
+        Variant10(Vec<Value>),
         Variant11(Vec<statement::FieldDefinition>),
         Variant12(Vec<String>),
         Variant13(statement::CreateCommand),
@@ -984,6 +984,17 @@ mod __parse__Predicate {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant1<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Value, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant1(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant12<
       'input,
     >(
@@ -995,6 +1006,17 @@ mod __parse__Predicate {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant10<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Vec<Value>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant9<
       'input,
     >(
@@ -1003,17 +1025,6 @@ mod __parse__Predicate {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant9(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant10<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<statement::Constant>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -1039,6 +1050,17 @@ mod __parse__Predicate {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant2<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, alloc::vec::Vec<Value>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant2(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant8<
       'input,
     >(
@@ -1047,17 +1069,6 @@ mod __parse__Predicate {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant2<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<statement::Constant>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant2(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -1113,17 +1124,6 @@ mod __parse__Predicate {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant1<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, statement::Constant, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant1(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -2252,7 +2252,7 @@ mod __parse__Statement {
     use std::str::FromStr;
     use super::super::statement;
     use super::super::predicate;
-    use crate::record::field::Spec;
+    use crate::record::field::{Spec, Value};
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -2264,8 +2264,8 @@ mod __parse__Statement {
     pub(crate) enum __Symbol<'input>
      {
         Variant0(&'input str),
-        Variant1(statement::Constant),
-        Variant2(alloc::vec::Vec<statement::Constant>),
+        Variant1(Value),
+        Variant2(alloc::vec::Vec<Value>),
         Variant3(statement::FieldDefinition),
         Variant4(alloc::vec::Vec<statement::FieldDefinition>),
         Variant5(String),
@@ -2273,7 +2273,7 @@ mod __parse__Statement {
         Variant7(predicate::Term),
         Variant8(alloc::vec::Vec<predicate::Term>),
         Variant9(Vec<predicate::Term>),
-        Variant10(Vec<statement::Constant>),
+        Variant10(Vec<Value>),
         Variant11(Vec<statement::FieldDefinition>),
         Variant12(Vec<String>),
         Variant13(statement::CreateCommand),
@@ -3550,6 +3550,17 @@ mod __parse__Statement {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant1<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Value, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant1(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant12<
       'input,
     >(
@@ -3561,6 +3572,17 @@ mod __parse__Statement {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant10<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Vec<Value>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant9<
       'input,
     >(
@@ -3569,17 +3591,6 @@ mod __parse__Statement {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant9(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant10<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<statement::Constant>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -3605,6 +3616,17 @@ mod __parse__Statement {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant2<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, alloc::vec::Vec<Value>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant2(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant8<
       'input,
     >(
@@ -3613,17 +3635,6 @@ mod __parse__Statement {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant2<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<statement::Constant>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant2(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -3679,17 +3690,6 @@ mod __parse__Statement {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant1<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, statement::Constant, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant1(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -4818,7 +4818,7 @@ mod __parse__Term {
     use std::str::FromStr;
     use super::super::statement;
     use super::super::predicate;
-    use crate::record::field::Spec;
+    use crate::record::field::{Spec, Value};
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -4830,8 +4830,8 @@ mod __parse__Term {
     pub(crate) enum __Symbol<'input>
      {
         Variant0(&'input str),
-        Variant1(statement::Constant),
-        Variant2(alloc::vec::Vec<statement::Constant>),
+        Variant1(Value),
+        Variant2(alloc::vec::Vec<Value>),
         Variant3(statement::FieldDefinition),
         Variant4(alloc::vec::Vec<statement::FieldDefinition>),
         Variant5(String),
@@ -4839,7 +4839,7 @@ mod __parse__Term {
         Variant7(predicate::Term),
         Variant8(alloc::vec::Vec<predicate::Term>),
         Variant9(Vec<predicate::Term>),
-        Variant10(Vec<statement::Constant>),
+        Variant10(Vec<Value>),
         Variant11(Vec<statement::FieldDefinition>),
         Variant12(Vec<String>),
         Variant13(statement::CreateCommand),
@@ -5754,6 +5754,17 @@ mod __parse__Term {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant1<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Value, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant1(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant12<
       'input,
     >(
@@ -5765,6 +5776,17 @@ mod __parse__Term {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant10<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Vec<Value>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant9<
       'input,
     >(
@@ -5773,17 +5795,6 @@ mod __parse__Term {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant9(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant10<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<statement::Constant>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -5809,6 +5820,17 @@ mod __parse__Term {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant2<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, alloc::vec::Vec<Value>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant2(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant8<
       'input,
     >(
@@ -5817,17 +5839,6 @@ mod __parse__Term {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant2<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<statement::Constant>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant2(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -5883,17 +5894,6 @@ mod __parse__Term {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant1<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, statement::Constant, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant1(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -7020,7 +7020,7 @@ mod __intern_token {
     use std::str::FromStr;
     use super::super::statement;
     use super::super::predicate;
-    use crate::record::field::Spec;
+    use crate::record::field::{Spec, Value};
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -7164,7 +7164,7 @@ fn __action7<
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, vs, _): (usize, Vec<statement::Constant>, usize),
+    (_, vs, _): (usize, Vec<Value>, usize),
     (_, _, _): (usize, &'input str, usize),
 ) -> statement::UpdateCommand
 {
@@ -7405,9 +7405,9 @@ fn __action24<
 >(
     input: &'input str,
     (_, i, _): (usize, i32, usize),
-) -> statement::Constant
+) -> Value
 {
-    statement::Constant::I32(i)
+    Value::I32(i)
 }
 
 #[allow(unused_variables)]
@@ -7417,9 +7417,9 @@ fn __action25<
 >(
     input: &'input str,
     (_, s, _): (usize, String, usize),
-) -> statement::Constant
+) -> Value
 {
-    statement::Constant::String(s)
+    Value::String(s)
 }
 
 #[allow(unused_variables)]
@@ -7496,9 +7496,9 @@ fn __action31<
     'input,
 >(
     input: &'input str,
-    (_, mut v, _): (usize, alloc::vec::Vec<statement::Constant>, usize),
-    (_, e, _): (usize, statement::Constant, usize),
-) -> Vec<statement::Constant>
+    (_, mut v, _): (usize, alloc::vec::Vec<Value>, usize),
+    (_, e, _): (usize, Value, usize),
+) -> Vec<Value>
 {
     {
         v.push(e);
@@ -7568,7 +7568,7 @@ fn __action36<
     input: &'input str,
     __lookbehind: &usize,
     __lookahead: &usize,
-) -> alloc::vec::Vec<statement::Constant>
+) -> alloc::vec::Vec<Value>
 {
     alloc::vec![]
 }
@@ -7579,8 +7579,8 @@ fn __action37<
     'input,
 >(
     input: &'input str,
-    (_, v, _): (usize, alloc::vec::Vec<statement::Constant>, usize),
-) -> alloc::vec::Vec<statement::Constant>
+    (_, v, _): (usize, alloc::vec::Vec<Value>, usize),
+) -> alloc::vec::Vec<Value>
 {
     v
 }
@@ -7591,9 +7591,9 @@ fn __action38<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, statement::Constant, usize),
+    (_, __0, _): (usize, Value, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> statement::Constant
+) -> Value
 {
     __0
 }
@@ -7730,8 +7730,8 @@ fn __action49<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, statement::Constant, usize),
-) -> alloc::vec::Vec<statement::Constant>
+    (_, __0, _): (usize, Value, usize),
+) -> alloc::vec::Vec<Value>
 {
     alloc::vec![__0]
 }
@@ -7742,9 +7742,9 @@ fn __action50<
     'input,
 >(
     input: &'input str,
-    (_, v, _): (usize, alloc::vec::Vec<statement::Constant>, usize),
-    (_, e, _): (usize, statement::Constant, usize),
-) -> alloc::vec::Vec<statement::Constant>
+    (_, v, _): (usize, alloc::vec::Vec<Value>, usize),
+    (_, e, _): (usize, Value, usize),
+) -> alloc::vec::Vec<Value>
 {
     { let mut v = v; v.push(e); v }
 }
@@ -7781,9 +7781,9 @@ fn __action53<
     'input,
 >(
     input: &'input str,
-    __0: (usize, statement::Constant, usize),
+    __0: (usize, Value, usize),
     __1: (usize, &'input str, usize),
-) -> alloc::vec::Vec<statement::Constant>
+) -> alloc::vec::Vec<Value>
 {
     let __start0 = __0.0;
     let __end0 = __1.2;
@@ -7806,10 +7806,10 @@ fn __action54<
     'input,
 >(
     input: &'input str,
-    __0: (usize, alloc::vec::Vec<statement::Constant>, usize),
-    __1: (usize, statement::Constant, usize),
+    __0: (usize, alloc::vec::Vec<Value>, usize),
+    __1: (usize, Value, usize),
     __2: (usize, &'input str, usize),
-) -> alloc::vec::Vec<statement::Constant>
+) -> alloc::vec::Vec<Value>
 {
     let __start0 = __1.0;
     let __end0 = __2.2;
@@ -7833,8 +7833,8 @@ fn __action55<
     'input,
 >(
     input: &'input str,
-    __0: (usize, statement::Constant, usize),
-) -> Vec<statement::Constant>
+    __0: (usize, Value, usize),
+) -> Vec<Value>
 {
     let __start0 = __0.0;
     let __end0 = __0.0;
@@ -7858,9 +7858,9 @@ fn __action56<
     'input,
 >(
     input: &'input str,
-    __0: (usize, alloc::vec::Vec<statement::Constant>, usize),
-    __1: (usize, statement::Constant, usize),
-) -> Vec<statement::Constant>
+    __0: (usize, alloc::vec::Vec<Value>, usize),
+    __1: (usize, Value, usize),
+) -> Vec<Value>
 {
     let __start0 = __0.0;
     let __end0 = __0.2;

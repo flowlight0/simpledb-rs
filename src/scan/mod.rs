@@ -20,6 +20,11 @@ pub trait Scan {
     }
 
     #[allow(unused_variables)]
+    fn set_value(&mut self, field_name: &str, value: &Value) -> Result<(), anyhow::Error> {
+        Err(anyhow::anyhow!("Update operation is not supported"))
+    }
+
+    #[allow(unused_variables)]
     fn delete(&mut self) -> Result<(), anyhow::Error> {
         Err(anyhow::anyhow!("Update operation is not supported"))
     }
