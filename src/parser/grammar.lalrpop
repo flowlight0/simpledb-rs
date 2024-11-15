@@ -10,12 +10,12 @@ pub Statement: statement::Statement = {
     <c:UpdateCommand> => statement::Statement::UpdateCommand(c),
 }
 
-Query: statement::QueryData = {
+pub Query: statement::QueryData = {
     "SELECT" <fs:Comma<IdToken>> "FROM" <ts:Comma<IdToken>> "WHERE" <p:Predicate> => statement::QueryData::new(fs, ts, Some(p)),
     "SELECT" <fs:Comma<IdToken>> "FROM" <ts:Comma<IdToken>> => statement::QueryData::new(fs, ts, None),
 }
 
-UpdateCommand: statement::UpdateCommand = {
+pub UpdateCommand: statement::UpdateCommand = {
     "INSERT INTO" <t:IdToken> "(" <fs:Comma<IdToken>> ")" "VALUES" "(" <vs:Comma<Constant>> ")" => statement::UpdateCommand::Insert(t, fs, vs),
     "DELETE FROM" <t:IdToken> => statement::UpdateCommand::Delete(t, None),
     "DELETE FROM" <t:IdToken> "WHERE" <p:Predicate> => statement::UpdateCommand::Delete(t, Some(p)),
@@ -35,7 +35,7 @@ FieldDefinition: statement::FieldDefinition = {
 }
 
 FieldType: Spec = {
-    "INT" => Spec::I32,
+    "I32" => Spec::I32,
     "VARCHAR" "(" <i:I32Constant> ")" => Spec::VarChar(i as usize),
 }
 
@@ -67,7 +67,7 @@ StringConstant: String = {
 }
 
 IdToken: String = {
-    r"[a-zA-Z][a-zA-Z0-9_]+" => String::from(<>),
+    r"[a-zA-Z][a-zA-Z0-9_]*" => String::from(<>),
 }
 
 

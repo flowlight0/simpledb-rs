@@ -8,6 +8,7 @@ use crate::{
 };
 pub mod basic_query_planner;
 pub mod basic_update_planner;
+pub mod planner;
 pub mod product_plan;
 pub mod project_plan;
 pub mod select_plan;

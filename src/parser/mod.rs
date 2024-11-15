@@ -1,4 +1,4 @@
-mod grammar;
+pub mod grammar;
 pub mod predicate;
 pub mod statement;
 
@@ -141,7 +141,7 @@ mod tests {
     fn test_create_table() {
         assert_eq!(
             grammar::StatementParser::new()
-                .parse("CREATE TABLE table_name (aaa INT, bbb VARCHAR(20))")
+                .parse("CREATE TABLE table_name (aaa I32, bbb VARCHAR(20))")
                 .unwrap(),
             Statement::UpdateCommand(UpdateCommand::Create(CreateCommand::Table(
                 "table_name".to_string(),

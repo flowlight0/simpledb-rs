@@ -10,6 +10,10 @@ use crate::{
     file::FileManager,
     log::manager::LogManager,
     metadata::MetadataManager,
+    plan::{
+        basic_query_planner::BasicQueryPlanner, basic_update_planner::BasicUpdatePlanner,
+        planner::Planner,
+    },
     tx::{concurrency::LockTable, transaction::Transaction},
 };
 
@@ -19,6 +23,7 @@ pub struct SimpleDB {
     log_manager: Arc<Mutex<LogManager>>,
     buffer_manager: Arc<Mutex<BufferManager>>,
     pub metadata_manager: Arc<Mutex<MetadataManager>>,
+    pub planner: Planner,
 }
 
 impl SimpleDB {
@@ -52,7 +57,12 @@ impl SimpleDB {
             tx.lock().unwrap().recover()?;
         }
         let metadata_manager = Arc::new(Mutex::new(MetadataManager::new(is_new, tx.clone())?));
+
         tx.lock().unwrap().commit()?;
+
+        let query_planner = Box::new(BasicQueryPlanner::new(metadata_manager.clone()));
+        let update_planner = Box::new(BasicUpdatePlanner::new(metadata_manager.clone()));
+        let planner = Planner::new(query_planner, update_planner);
 
         Ok(SimpleDB {
             file_manager,
@@ -60,6 +70,7 @@ impl SimpleDB {
             log_manager,
             buffer_manager,
             metadata_manager,
+            planner,
         })
     }
 
