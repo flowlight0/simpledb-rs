@@ -1,6 +1,12 @@
+use std::{
+    rc::Rc,
+    sync::{Arc, Mutex},
+};
+
 use crate::{
     file::BlockId,
     record::{
+        field::{Type, Value},
         layout::Layout,
         record_page::{RecordPage, Slot},
     },
@@ -9,27 +15,28 @@ use crate::{
 
 use super::Scan;
 
-pub struct TableScan<'a> {
+pub struct TableScan {
     file_name: String,
-    record_page: RecordPage<'a>,
+    record_page: RecordPage,
     current_slot: Slot,
 }
 
-impl<'a> TableScan<'a> {
+impl TableScan {
     pub fn new(
-        tx: &'a mut Transaction,
+        tx: Arc<Mutex<Transaction>>,
         table_name: &str,
-        layout: &'a Layout,
+        layout: Rc<Layout>,
     ) -> Result<Self, anyhow::Error> {
         let file_name = format!("{}.tbl", table_name);
+
         let record_page = {
-            let (block, is_new) = if tx.get_num_blocks(&file_name)? == 0 {
-                (tx.append_block(&file_name)?, true)
+            let num_blocks = tx.lock().unwrap().get_num_blocks(&file_name)?;
+            let (block, is_new) = if num_blocks == 0 {
+                (tx.lock().unwrap().append_block(&file_name)?, true)
             } else {
                 (BlockId::get_first_block(&file_name), false)
             };
-
-            tx.pin(&block)?;
+            tx.lock().unwrap().pin(&block)?;
             let mut rp = RecordPage::new(tx, block, layout);
             if is_new {
                 rp.format()?;
@@ -49,17 +56,25 @@ impl<'a> TableScan<'a> {
     }
 }
 
-impl<'a> Drop for TableScan<'a> {
+impl Drop for TableScan {
     fn drop(&mut self) {
-        self.record_page.tx.unpin(&self.record_page.block);
+        self.record_page
+            .tx
+            .lock()
+            .unwrap()
+            .unpin(&self.record_page.block);
     }
 }
 
-impl<'a> Scan for TableScan<'a> {
+impl Scan for TableScan {
     fn before_first(&mut self) -> Result<(), anyhow::Error> {
         let block = BlockId::get_first_block(&self.file_name);
-        self.record_page.tx.unpin(&self.record_page.block);
-        self.record_page.tx.pin(&block)?;
+        self.record_page
+            .tx
+            .lock()
+            .unwrap()
+            .unpin(&self.record_page.block);
+        self.record_page.tx.lock().unwrap().pin(&block)?;
         self.record_page.reset_block(block);
         self.current_slot = Slot::Start;
         Ok(())
@@ -72,12 +87,20 @@ impl<'a> Scan for TableScan<'a> {
                 Slot::Index(_) => return Ok(true),
                 Slot::Start => unreachable!(),
                 Slot::End => {
-                    if self.record_page.tx.is_last_block(&self.record_page.block)? {
+                    if self
+                        .record_page
+                        .tx
+                        .lock()
+                        .unwrap()
+                        .is_last_block(&self.record_page.block)?
+                    {
                         return Ok(false);
                     } else {
                         let new_block = self.record_page.block.get_next_block();
-                        self.record_page.tx.unpin(&self.record_page.block);
-                        self.record_page.tx.pin(&new_block)?;
+                        let mut lock = self.record_page.tx.lock().unwrap();
+                        lock.unpin(&self.record_page.block);
+                        lock.pin(&new_block)?;
+                        drop(lock);
                         self.record_page.reset_block(new_block);
                         self.current_slot = Slot::Start;
                     }
@@ -94,6 +117,13 @@ impl<'a> Scan for TableScan<'a> {
     fn get_string(&mut self, field_name: &str) -> Result<String, anyhow::Error> {
         self.record_page
             .get_string(self.current_slot.get_index(), field_name)
+    }
+
+    fn get_value(&mut self, field_name: &str) -> Result<Value, anyhow::Error> {
+        match self.record_page.layout.schema.get_field_type(field_name) {
+            Type::I32 => Ok(Value::I32(self.get_i32(field_name)?)),
+            Type::String => Ok(Value::String(self.get_string(field_name)?)),
+        }
     }
 
     fn has_field(&self, field_name: &str) -> bool {
@@ -121,15 +151,16 @@ impl<'a> Scan for TableScan<'a> {
                 Slot::Index(_) => return Ok(()),
                 Slot::Start => unreachable!(),
                 Slot::End => {
-                    let next_block =
-                        if self.record_page.tx.is_last_block(&self.record_page.block)? {
-                            self.record_page.tx.append_block(&self.file_name)?
-                        } else {
-                            self.record_page.block.get_next_block()
-                        };
+                    let mut lock = self.record_page.tx.lock().unwrap();
+                    let next_block = if lock.is_last_block(&self.record_page.block)? {
+                        lock.append_block(&self.file_name)?
+                    } else {
+                        self.record_page.block.get_next_block()
+                    };
 
-                    self.record_page.tx.unpin(&self.record_page.block);
-                    self.record_page.tx.pin(&next_block)?;
+                    lock.unpin(&self.record_page.block);
+                    lock.pin(&next_block)?;
+                    drop(lock);
                     self.record_page.reset_block(next_block);
                     self.current_slot = Slot::Start;
                 }
@@ -150,15 +181,14 @@ mod tests {
         let mut schema = Schema::new();
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);
-        let layout = Layout::new(schema);
+        let layout = Rc::new(Layout::new(schema));
 
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let db = SimpleDB::new(temp_dir, block_size, 3)?;
 
-        let mut tx = db.new_transaction()?;
-
-        let mut table_scan = TableScan::new(&mut tx, "testtable", &layout)?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+        let mut table_scan = TableScan::new(tx.clone(), "testtable", layout.clone())?;
         table_scan.before_first()?;
         for i in 0..50 {
             table_scan.insert()?;
@@ -170,6 +200,8 @@ mod tests {
             let value = table_scan
                 .record_page
                 .tx
+                .lock()
+                .unwrap()
                 .get_i32(&table_scan.record_page.block, 0)?;
             assert_eq!(value, 1);
         }
@@ -178,6 +210,8 @@ mod tests {
         let value = table_scan
             .record_page
             .tx
+            .lock()
+            .unwrap()
             .get_i32(&table_scan.record_page.block, 0)?;
         assert_eq!(value, 1);
 
@@ -204,7 +238,7 @@ mod tests {
         }
         assert!(!table_scan.next()?);
         drop(table_scan);
-        tx.commit()?;
+        tx.lock().unwrap().commit()?;
         Ok(())
     }
 }

@@ -1,4 +1,8 @@
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    rc::Rc,
+    sync::{Arc, Mutex},
+};
 
 use crate::{
     record::layout::Layout,
@@ -31,7 +35,7 @@ impl StatInfo {
     }
 
     #[allow(unused_variables)]
-    pub fn distinct_values(&self, field_name: &str) -> usize {
+    pub fn get_distinct_values(&self, field_name: &str) -> usize {
         1 + self.num_records / 3 // Fake it for now
     }
 }
@@ -43,9 +47,9 @@ pub struct StatManager {
 }
 
 impl StatManager {
-    pub fn new(is_new: bool, tx: &mut Transaction) -> Result<Self, anyhow::Error> {
+    pub fn new(table_manager: &TableManager) -> Result<Self, anyhow::Error> {
         Ok(Self {
-            table_manager: TableManager::new(is_new, tx)?,
+            table_manager: table_manager.clone(),
             table_stats: HashMap::new(),
             num_calls: 0,
         })
@@ -54,12 +58,12 @@ impl StatManager {
     pub fn get_stat_info(
         &mut self,
         table_name: &str,
-        layout: &Layout,
-        tx: &mut Transaction,
+        layout: Rc<Layout>,
+        tx: Arc<Mutex<Transaction>>,
     ) -> Result<StatInfo, anyhow::Error> {
         self.num_calls += 1;
         if self.num_calls % 100 == 0 {
-            self.refresh_statistics(tx)?;
+            self.refresh_statistics(tx.clone())?;
         }
 
         if let Some(stat_info) = self.table_stats.get(table_name) {
@@ -72,12 +76,19 @@ impl StatManager {
         }
     }
 
-    fn refresh_statistics(&mut self, tx: &mut Transaction) -> Result<(), anyhow::Error> {
+    pub(crate) fn refresh_statistics(
+        &mut self,
+        tx: Arc<Mutex<Transaction>>,
+    ) -> Result<(), anyhow::Error> {
         self.table_stats.clear();
         self.num_calls = 0;
 
-        let tcat_layout = self.table_manager.get_layout("tblcat", tx)?.unwrap();
-        let mut tcat_scan = TableScan::new(tx, "tblcat", &tcat_layout)?;
+        let tcat_layout = Rc::new(
+            self.table_manager
+                .get_layout("tblcat", tx.clone())?
+                .unwrap(),
+        );
+        let mut tcat_scan = TableScan::new(tx.clone(), "tblcat", tcat_layout.clone())?;
         let mut table_names = vec![];
         while tcat_scan.next()? {
             let table_name = tcat_scan.get_string("tblname")?;
@@ -86,8 +97,12 @@ impl StatManager {
         drop(tcat_scan);
 
         for table_name in table_names {
-            let layout = self.table_manager.get_layout(&table_name, tx)?.unwrap();
-            let stat_info = calculate_table_stat(&table_name, &layout, tx)?;
+            let layout = Rc::new(
+                self.table_manager
+                    .get_layout(&table_name, tx.clone())?
+                    .unwrap(),
+            );
+            let stat_info = calculate_table_stat(&table_name, layout, tx.clone())?;
             self.table_stats.insert(table_name, stat_info);
         }
         Ok(())
@@ -96,8 +111,8 @@ impl StatManager {
 
 fn calculate_table_stat(
     table_name: &str,
-    layout: &Layout,
-    tx: &mut Transaction,
+    layout: Rc<Layout>,
+    tx: Arc<Mutex<Transaction>>,
 ) -> Result<StatInfo, anyhow::Error> {
     let mut num_blocks = 0;
     let mut num_records = 0;

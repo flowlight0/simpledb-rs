@@ -1,21 +1,23 @@
-use crate::record::field::Type;
+use crate::record::field::Spec;
+
+use super::predicate::{Expression, Predicate};
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Statement {
-    Query(QueryCommand),
+    Query(QueryData),
     UpdateCommand(UpdateCommand),
 }
 
 #[derive(Debug, PartialEq, Eq)]
-pub struct QueryCommand {
-    fields: Vec<String>,
-    tables: Vec<String>,
-    predicate: Option<Predicate>,
+pub struct QueryData {
+    pub fields: Vec<String>,
+    pub tables: Vec<String>,
+    pub predicate: Option<Predicate>,
 }
 
-impl QueryCommand {
+impl QueryData {
     pub fn new(fields: Vec<String>, tables: Vec<String>, predicate: Option<Predicate>) -> Self {
-        QueryCommand {
+        QueryData {
             fields,
             tables,
             predicate,
@@ -34,43 +36,20 @@ pub enum UpdateCommand {
 #[derive(Debug, PartialEq, Eq)]
 pub enum CreateCommand {
     Table(String, Vec<FieldDefinition>),
-    View(String, QueryCommand),
+    View(String, QueryData),
     Index(String, String, String),
 }
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct FieldDefinition {
     name: String,
-    field_type: Type,
+    field_type: Spec,
 }
 
 impl FieldDefinition {
-    pub fn new(name: String, field_type: Type) -> Self {
+    pub fn new(name: String, field_type: Spec) -> Self {
         FieldDefinition { name, field_type }
     }
-}
-
-#[derive(Debug, PartialEq, Eq)]
-pub struct Predicate {
-    terms: Vec<Term>,
-}
-
-impl Predicate {
-    pub fn new(terms: Vec<Term>) -> Self {
-        Predicate { terms }
-    }
-}
-
-#[derive(Debug, PartialEq, Eq)]
-pub enum Term {
-    EqualityTerm(Expression, Expression),
-}
-
-#[derive(Debug, PartialEq, Eq)]
-pub enum Expression {
-    I32Constant(i32),
-    StringConstant(String),
-    FieldExpression(String),
 }
 
 #[derive(Debug, PartialEq, Eq)]

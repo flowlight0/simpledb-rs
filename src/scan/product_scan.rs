@@ -1,17 +1,19 @@
+use crate::record::field::Value;
+
 use super::Scan;
 
-pub struct ProductScan<'a> {
-    scan1: &'a mut dyn Scan,
-    scan2: &'a mut dyn Scan,
+pub struct ProductScan {
+    scan1: Box<dyn Scan>,
+    scan2: Box<dyn Scan>,
 }
 
-impl<'a> ProductScan<'a> {
-    pub fn new(scan1: &'a mut dyn Scan, scan2: &'a mut dyn Scan) -> Self {
+impl ProductScan {
+    pub fn new(scan1: Box<dyn Scan>, scan2: Box<dyn Scan>) -> Self {
         ProductScan { scan1, scan2 }
     }
 }
 
-impl<'a> Scan for ProductScan<'a> {
+impl Scan for ProductScan {
     fn before_first(&mut self) -> Result<(), anyhow::Error> {
         self.scan1.before_first()?;
         self.scan1.next()?;
@@ -43,6 +45,14 @@ impl<'a> Scan for ProductScan<'a> {
         }
     }
 
+    fn get_value(&mut self, field_name: &str) -> Result<Value, anyhow::Error> {
+        if self.scan1.has_field(field_name) {
+            self.scan1.get_value(field_name)
+        } else {
+            self.scan2.get_value(field_name)
+        }
+    }
+
     fn has_field(&self, field_name: &str) -> bool {
         self.scan1.has_field(field_name) || self.scan2.has_field(field_name)
     }
@@ -50,6 +60,11 @@ impl<'a> Scan for ProductScan<'a> {
 
 #[cfg(test)]
 mod tests {
+
+    use std::{
+        rc::Rc,
+        sync::{Arc, Mutex},
+    };
 
     use crate::{
         db::SimpleDB,
@@ -65,19 +80,19 @@ mod tests {
         schema1.add_i32_field("A");
         schema1.add_string_field("B", 20);
         schema1.add_i32_field("C");
-        let layout1 = Layout::new(schema1);
+        let layout1 = Rc::new(Layout::new(schema1));
 
         let mut schema2 = Schema::new();
         schema2.add_i32_field("D");
         schema2.add_string_field("E", 20);
-        let layout2 = Layout::new(schema2);
+        let layout2 = Rc::new(Layout::new(schema2));
 
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let db = SimpleDB::new(temp_dir, block_size, 3)?;
 
-        let mut tx1 = db.new_transaction()?;
-        let mut scan1 = TableScan::new(&mut tx1, "testtable1", &layout1)?;
+        let tx1 = Arc::new(Mutex::new(db.new_transaction()?));
+        let mut scan1 = TableScan::new(tx1.clone(), "testtable1", layout1.clone())?;
         scan1.before_first()?;
         for i in 0..10 {
             scan1.insert()?;
@@ -86,8 +101,8 @@ mod tests {
             scan1.set_i32("C", i + 2)?;
         }
 
-        let mut tx2 = db.new_transaction()?;
-        let mut scan2 = TableScan::new(&mut tx2, "testtable2", &layout2)?;
+        let tx2 = Arc::new(Mutex::new(db.new_transaction()?));
+        let mut scan2 = TableScan::new(tx2.clone(), "testtable2", layout2.clone())?;
         scan1.before_first()?;
         for i in 0..10 {
             scan2.insert()?;
@@ -95,7 +110,7 @@ mod tests {
             scan2.set_string("E", &i.to_string())?;
         }
 
-        let mut product_scan = ProductScan::new(&mut scan1, &mut scan2);
+        let mut product_scan = ProductScan::new(Box::new(scan1), Box::new(scan2));
         product_scan.before_first()?;
         for i in 0..10 {
             for j in 0..10 {
@@ -109,12 +124,8 @@ mod tests {
         }
         assert!(!product_scan.next()?);
         drop(product_scan);
-
-        drop(scan1);
-        tx1.commit()?;
-
-        drop(scan2);
-        tx2.commit()?;
+        tx1.lock().unwrap().commit()?;
+        tx2.lock().unwrap().commit()?;
         Ok(())
     }
 }

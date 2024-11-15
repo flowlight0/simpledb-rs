@@ -1,8 +1,9 @@
 // auto-generated: "lalrpop 0.22.0"
-// sha3: 5c076415422693540cf2c5546ea0fe7f2817ff21d177088fb906e5037f95588b
+// sha3: c30c1d2245d41dc555f140a3ad7ec44c061618d73fd4b29649a3a10bc4435fd3
 use std::str::FromStr;
-use super::ast;
-use crate::record::field::Type;
+use super::statement;
+use super::predicate;
+use crate::record::field::Spec;
 #[allow(unused_extern_crates)]
 extern crate lalrpop_util as __lalrpop_util;
 #[allow(unused_imports)]
@@ -15,8 +16,9 @@ extern crate alloc;
 mod __parse__Predicate {
 
     use std::str::FromStr;
-    use super::super::ast;
-    use crate::record::field::Type;
+    use super::super::statement;
+    use super::super::predicate;
+    use crate::record::field::Spec;
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -28,26 +30,26 @@ mod __parse__Predicate {
     pub(crate) enum __Symbol<'input>
      {
         Variant0(&'input str),
-        Variant1(ast::Constant),
-        Variant2(alloc::vec::Vec<ast::Constant>),
-        Variant3(ast::FieldDefinition),
-        Variant4(alloc::vec::Vec<ast::FieldDefinition>),
+        Variant1(statement::Constant),
+        Variant2(alloc::vec::Vec<statement::Constant>),
+        Variant3(statement::FieldDefinition),
+        Variant4(alloc::vec::Vec<statement::FieldDefinition>),
         Variant5(String),
         Variant6(alloc::vec::Vec<String>),
-        Variant7(ast::Term),
-        Variant8(alloc::vec::Vec<ast::Term>),
-        Variant9(Vec<ast::Term>),
-        Variant10(Vec<ast::Constant>),
-        Variant11(Vec<ast::FieldDefinition>),
+        Variant7(predicate::Term),
+        Variant8(alloc::vec::Vec<predicate::Term>),
+        Variant9(Vec<predicate::Term>),
+        Variant10(Vec<statement::Constant>),
+        Variant11(Vec<statement::FieldDefinition>),
         Variant12(Vec<String>),
-        Variant13(ast::CreateCommand),
-        Variant14(ast::Expression),
-        Variant15(Type),
+        Variant13(statement::CreateCommand),
+        Variant14(predicate::Expression),
+        Variant15(Spec),
         Variant16(i32),
-        Variant17(ast::Predicate),
-        Variant18(ast::QueryCommand),
-        Variant19(ast::Statement),
-        Variant20(ast::UpdateCommand),
+        Variant17(predicate::Predicate),
+        Variant18(statement::QueryData),
+        Variant19(statement::Statement),
+        Variant20(statement::UpdateCommand),
     }
     const __ACTION: &[i8] = &[
         // State 0
@@ -207,7 +209,7 @@ mod __parse__Predicate {
         type Token = Token<'input>;
         type TokenIndex = usize;
         type Symbol = __Symbol<'input>;
-        type Success = ast::Predicate;
+        type Success = predicate::Predicate;
         type StateIndex = i8;
         type Action = i8;
         type ReduceIndex = i8;
@@ -714,7 +716,7 @@ mod __parse__Predicate {
         >(
             &self,
             input: &'input str,
-        ) -> Result<ast::Predicate, __lalrpop_util::ParseError<usize, Token<'input>, &'static str>>
+        ) -> Result<predicate::Predicate, __lalrpop_util::ParseError<usize, Token<'input>, &'static str>>
         {
             let mut __tokens = self.builder.matcher(input);
             __state_machine::Parser::drive(
@@ -768,7 +770,7 @@ mod __parse__Predicate {
         __states: &mut alloc::vec::Vec<i8>,
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>,
         _: core::marker::PhantomData<(&'input ())>,
-    ) -> Option<Result<ast::Predicate,__lalrpop_util::ParseError<usize, Token<'input>, &'static str>>>
+    ) -> Option<Result<predicate::Predicate,__lalrpop_util::ParseError<usize, Token<'input>, &'static str>>>
     {
         let (__pop_states, __nonterminal) = match __action {
             0 => {
@@ -960,6 +962,17 @@ mod __parse__Predicate {
     fn __symbol_type_mismatch() -> ! {
         panic!("symbol type mismatch")
     }
+    fn __pop_Variant15<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Spec, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant5<
       'input,
     >(
@@ -968,17 +981,6 @@ mod __parse__Predicate {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant5(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant15<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Type, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -993,11 +995,22 @@ mod __parse__Predicate {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant9<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Vec<predicate::Term>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant9(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant10<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<ast::Constant>, usize)
+    ) -> (usize, Vec<statement::Constant>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
@@ -1008,21 +1021,10 @@ mod __parse__Predicate {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<ast::FieldDefinition>, usize)
+    ) -> (usize, Vec<statement::FieldDefinition>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant9<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<ast::Term>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant9(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -1037,11 +1039,22 @@ mod __parse__Predicate {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant8<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, alloc::vec::Vec<predicate::Term>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant2<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<ast::Constant>, usize)
+    ) -> (usize, alloc::vec::Vec<statement::Constant>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant2(__v), __r)) => (__l, __v, __r),
@@ -1052,120 +1065,10 @@ mod __parse__Predicate {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<ast::FieldDefinition>, usize)
+    ) -> (usize, alloc::vec::Vec<statement::FieldDefinition>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant4(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant8<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<ast::Term>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant1<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::Constant, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant1(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant13<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::CreateCommand, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant13(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant14<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::Expression, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant3<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::FieldDefinition, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant3(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant17<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::Predicate, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant17(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant18<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::QueryCommand, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant18(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant19<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::Statement, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant19(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant7<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::Term, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant20<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::UpdateCommand, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -1177,6 +1080,105 @@ mod __parse__Predicate {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant14<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Expression, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant17<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Predicate, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant17(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant7<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Term, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant1<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::Constant, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant1(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant13<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::CreateCommand, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant13(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant3<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::FieldDefinition, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant3(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant18<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::QueryData, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant18(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant19<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::Statement, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant19(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant20<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::UpdateCommand, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -2248,8 +2250,9 @@ pub use self::__parse__Predicate::PredicateParser;
 mod __parse__Statement {
 
     use std::str::FromStr;
-    use super::super::ast;
-    use crate::record::field::Type;
+    use super::super::statement;
+    use super::super::predicate;
+    use crate::record::field::Spec;
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -2261,26 +2264,26 @@ mod __parse__Statement {
     pub(crate) enum __Symbol<'input>
      {
         Variant0(&'input str),
-        Variant1(ast::Constant),
-        Variant2(alloc::vec::Vec<ast::Constant>),
-        Variant3(ast::FieldDefinition),
-        Variant4(alloc::vec::Vec<ast::FieldDefinition>),
+        Variant1(statement::Constant),
+        Variant2(alloc::vec::Vec<statement::Constant>),
+        Variant3(statement::FieldDefinition),
+        Variant4(alloc::vec::Vec<statement::FieldDefinition>),
         Variant5(String),
         Variant6(alloc::vec::Vec<String>),
-        Variant7(ast::Term),
-        Variant8(alloc::vec::Vec<ast::Term>),
-        Variant9(Vec<ast::Term>),
-        Variant10(Vec<ast::Constant>),
-        Variant11(Vec<ast::FieldDefinition>),
+        Variant7(predicate::Term),
+        Variant8(alloc::vec::Vec<predicate::Term>),
+        Variant9(Vec<predicate::Term>),
+        Variant10(Vec<statement::Constant>),
+        Variant11(Vec<statement::FieldDefinition>),
         Variant12(Vec<String>),
-        Variant13(ast::CreateCommand),
-        Variant14(ast::Expression),
-        Variant15(Type),
+        Variant13(statement::CreateCommand),
+        Variant14(predicate::Expression),
+        Variant15(Spec),
         Variant16(i32),
-        Variant17(ast::Predicate),
-        Variant18(ast::QueryCommand),
-        Variant19(ast::Statement),
-        Variant20(ast::UpdateCommand),
+        Variant17(predicate::Predicate),
+        Variant18(statement::QueryData),
+        Variant19(statement::Statement),
+        Variant20(statement::UpdateCommand),
     }
     const __ACTION: &[i8] = &[
         // State 0
@@ -2772,7 +2775,7 @@ mod __parse__Statement {
         type Token = Token<'input>;
         type TokenIndex = usize;
         type Symbol = __Symbol<'input>;
-        type Success = ast::Statement;
+        type Success = statement::Statement;
         type StateIndex = i8;
         type Action = i8;
         type ReduceIndex = i8;
@@ -3279,7 +3282,7 @@ mod __parse__Statement {
         >(
             &self,
             input: &'input str,
-        ) -> Result<ast::Statement, __lalrpop_util::ParseError<usize, Token<'input>, &'static str>>
+        ) -> Result<statement::Statement, __lalrpop_util::ParseError<usize, Token<'input>, &'static str>>
         {
             let mut __tokens = self.builder.matcher(input);
             __state_machine::Parser::drive(
@@ -3333,7 +3336,7 @@ mod __parse__Statement {
         __states: &mut alloc::vec::Vec<i8>,
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>,
         _: core::marker::PhantomData<(&'input ())>,
-    ) -> Option<Result<ast::Statement,__lalrpop_util::ParseError<usize, Token<'input>, &'static str>>>
+    ) -> Option<Result<statement::Statement,__lalrpop_util::ParseError<usize, Token<'input>, &'static str>>>
     {
         let (__pop_states, __nonterminal) = match __action {
             0 => {
@@ -3525,6 +3528,17 @@ mod __parse__Statement {
     fn __symbol_type_mismatch() -> ! {
         panic!("symbol type mismatch")
     }
+    fn __pop_Variant15<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Spec, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant5<
       'input,
     >(
@@ -3533,17 +3547,6 @@ mod __parse__Statement {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant5(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant15<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Type, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -3558,11 +3561,22 @@ mod __parse__Statement {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant9<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Vec<predicate::Term>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant9(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant10<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<ast::Constant>, usize)
+    ) -> (usize, Vec<statement::Constant>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
@@ -3573,21 +3587,10 @@ mod __parse__Statement {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<ast::FieldDefinition>, usize)
+    ) -> (usize, Vec<statement::FieldDefinition>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant9<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<ast::Term>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant9(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -3602,11 +3605,22 @@ mod __parse__Statement {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant8<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, alloc::vec::Vec<predicate::Term>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant2<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<ast::Constant>, usize)
+    ) -> (usize, alloc::vec::Vec<statement::Constant>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant2(__v), __r)) => (__l, __v, __r),
@@ -3617,120 +3631,10 @@ mod __parse__Statement {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<ast::FieldDefinition>, usize)
+    ) -> (usize, alloc::vec::Vec<statement::FieldDefinition>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant4(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant8<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<ast::Term>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant1<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::Constant, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant1(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant13<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::CreateCommand, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant13(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant14<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::Expression, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant3<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::FieldDefinition, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant3(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant17<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::Predicate, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant17(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant18<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::QueryCommand, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant18(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant19<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::Statement, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant19(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant7<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::Term, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant20<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::UpdateCommand, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -3742,6 +3646,105 @@ mod __parse__Statement {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant14<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Expression, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant17<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Predicate, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant17(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant7<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Term, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant1<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::Constant, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant1(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant13<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::CreateCommand, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant13(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant3<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::FieldDefinition, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant3(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant18<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::QueryData, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant18(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant19<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::Statement, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant19(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant20<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::UpdateCommand, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -4813,8 +4816,9 @@ pub use self::__parse__Statement::StatementParser;
 mod __parse__Term {
 
     use std::str::FromStr;
-    use super::super::ast;
-    use crate::record::field::Type;
+    use super::super::statement;
+    use super::super::predicate;
+    use crate::record::field::Spec;
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -4826,26 +4830,26 @@ mod __parse__Term {
     pub(crate) enum __Symbol<'input>
      {
         Variant0(&'input str),
-        Variant1(ast::Constant),
-        Variant2(alloc::vec::Vec<ast::Constant>),
-        Variant3(ast::FieldDefinition),
-        Variant4(alloc::vec::Vec<ast::FieldDefinition>),
+        Variant1(statement::Constant),
+        Variant2(alloc::vec::Vec<statement::Constant>),
+        Variant3(statement::FieldDefinition),
+        Variant4(alloc::vec::Vec<statement::FieldDefinition>),
         Variant5(String),
         Variant6(alloc::vec::Vec<String>),
-        Variant7(ast::Term),
-        Variant8(alloc::vec::Vec<ast::Term>),
-        Variant9(Vec<ast::Term>),
-        Variant10(Vec<ast::Constant>),
-        Variant11(Vec<ast::FieldDefinition>),
+        Variant7(predicate::Term),
+        Variant8(alloc::vec::Vec<predicate::Term>),
+        Variant9(Vec<predicate::Term>),
+        Variant10(Vec<statement::Constant>),
+        Variant11(Vec<statement::FieldDefinition>),
         Variant12(Vec<String>),
-        Variant13(ast::CreateCommand),
-        Variant14(ast::Expression),
-        Variant15(Type),
+        Variant13(statement::CreateCommand),
+        Variant14(predicate::Expression),
+        Variant15(Spec),
         Variant16(i32),
-        Variant17(ast::Predicate),
-        Variant18(ast::QueryCommand),
-        Variant19(ast::Statement),
-        Variant20(ast::UpdateCommand),
+        Variant17(predicate::Predicate),
+        Variant18(statement::QueryData),
+        Variant19(statement::Statement),
+        Variant20(statement::UpdateCommand),
     }
     const __ACTION: &[i8] = &[
         // State 0
@@ -4975,7 +4979,7 @@ mod __parse__Term {
         type Token = Token<'input>;
         type TokenIndex = usize;
         type Symbol = __Symbol<'input>;
-        type Success = ast::Term;
+        type Success = predicate::Term;
         type StateIndex = i8;
         type Action = i8;
         type ReduceIndex = i8;
@@ -5482,7 +5486,7 @@ mod __parse__Term {
         >(
             &self,
             input: &'input str,
-        ) -> Result<ast::Term, __lalrpop_util::ParseError<usize, Token<'input>, &'static str>>
+        ) -> Result<predicate::Term, __lalrpop_util::ParseError<usize, Token<'input>, &'static str>>
         {
             let mut __tokens = self.builder.matcher(input);
             __state_machine::Parser::drive(
@@ -5536,7 +5540,7 @@ mod __parse__Term {
         __states: &mut alloc::vec::Vec<i8>,
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>,
         _: core::marker::PhantomData<(&'input ())>,
-    ) -> Option<Result<ast::Term,__lalrpop_util::ParseError<usize, Token<'input>, &'static str>>>
+    ) -> Option<Result<predicate::Term,__lalrpop_util::ParseError<usize, Token<'input>, &'static str>>>
     {
         let (__pop_states, __nonterminal) = match __action {
             0 => {
@@ -5728,6 +5732,17 @@ mod __parse__Term {
     fn __symbol_type_mismatch() -> ! {
         panic!("symbol type mismatch")
     }
+    fn __pop_Variant15<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Spec, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant5<
       'input,
     >(
@@ -5736,17 +5751,6 @@ mod __parse__Term {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant5(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant15<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Type, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -5761,11 +5765,22 @@ mod __parse__Term {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant9<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Vec<predicate::Term>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant9(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant10<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<ast::Constant>, usize)
+    ) -> (usize, Vec<statement::Constant>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
@@ -5776,21 +5791,10 @@ mod __parse__Term {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<ast::FieldDefinition>, usize)
+    ) -> (usize, Vec<statement::FieldDefinition>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant9<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<ast::Term>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant9(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -5805,11 +5809,22 @@ mod __parse__Term {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant8<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, alloc::vec::Vec<predicate::Term>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant2<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<ast::Constant>, usize)
+    ) -> (usize, alloc::vec::Vec<statement::Constant>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant2(__v), __r)) => (__l, __v, __r),
@@ -5820,120 +5835,10 @@ mod __parse__Term {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<ast::FieldDefinition>, usize)
+    ) -> (usize, alloc::vec::Vec<statement::FieldDefinition>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant4(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant8<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<ast::Term>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant1<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::Constant, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant1(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant13<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::CreateCommand, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant13(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant14<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::Expression, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant3<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::FieldDefinition, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant3(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant17<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::Predicate, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant17(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant18<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::QueryCommand, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant18(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant19<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::Statement, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant19(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant7<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::Term, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant20<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, ast::UpdateCommand, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -5945,6 +5850,105 @@ mod __parse__Term {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant14<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Expression, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant17<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Predicate, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant17(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant7<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Term, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant1<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::Constant, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant1(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant13<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::CreateCommand, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant13(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant3<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::FieldDefinition, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant3(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant18<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::QueryData, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant18(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant19<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::Statement, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant19(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant20<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, statement::UpdateCommand, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -7014,8 +7018,9 @@ pub use self::__parse__Term::TermParser;
 mod __intern_token {
     #![allow(unused_imports)]
     use std::str::FromStr;
-    use super::super::ast;
-    use crate::record::field::Type;
+    use super::super::statement;
+    use super::super::predicate;
+    use crate::record::field::Spec;
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -7060,8 +7065,8 @@ fn __action0<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, ast::Statement, usize),
-) -> ast::Statement
+    (_, __0, _): (usize, statement::Statement, usize),
+) -> statement::Statement
 {
     __0
 }
@@ -7072,8 +7077,8 @@ fn __action1<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, ast::Predicate, usize),
-) -> ast::Predicate
+    (_, __0, _): (usize, predicate::Predicate, usize),
+) -> predicate::Predicate
 {
     __0
 }
@@ -7084,8 +7089,8 @@ fn __action2<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, ast::Term, usize),
-) -> ast::Term
+    (_, __0, _): (usize, predicate::Term, usize),
+) -> predicate::Term
 {
     __0
 }
@@ -7096,10 +7101,10 @@ fn __action3<
     'input,
 >(
     input: &'input str,
-    (_, q, _): (usize, ast::QueryCommand, usize),
-) -> ast::Statement
+    (_, q, _): (usize, statement::QueryData, usize),
+) -> statement::Statement
 {
-    ast::Statement::Query(q)
+    statement::Statement::Query(q)
 }
 
 #[allow(unused_variables)]
@@ -7108,10 +7113,10 @@ fn __action4<
     'input,
 >(
     input: &'input str,
-    (_, c, _): (usize, ast::UpdateCommand, usize),
-) -> ast::Statement
+    (_, c, _): (usize, statement::UpdateCommand, usize),
+) -> statement::Statement
 {
-    ast::Statement::UpdateCommand(c)
+    statement::Statement::UpdateCommand(c)
 }
 
 #[allow(unused_variables)]
@@ -7125,10 +7130,10 @@ fn __action5<
     (_, _, _): (usize, &'input str, usize),
     (_, ts, _): (usize, Vec<String>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, p, _): (usize, ast::Predicate, usize),
-) -> ast::QueryCommand
+    (_, p, _): (usize, predicate::Predicate, usize),
+) -> statement::QueryData
 {
-    ast::QueryCommand::new(fs, ts, Some(p))
+    statement::QueryData::new(fs, ts, Some(p))
 }
 
 #[allow(unused_variables)]
@@ -7141,9 +7146,9 @@ fn __action6<
     (_, fs, _): (usize, Vec<String>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, ts, _): (usize, Vec<String>, usize),
-) -> ast::QueryCommand
+) -> statement::QueryData
 {
-    ast::QueryCommand::new(fs, ts, None)
+    statement::QueryData::new(fs, ts, None)
 }
 
 #[allow(unused_variables)]
@@ -7159,11 +7164,11 @@ fn __action7<
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, vs, _): (usize, Vec<ast::Constant>, usize),
+    (_, vs, _): (usize, Vec<statement::Constant>, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::UpdateCommand
+) -> statement::UpdateCommand
 {
-    ast::UpdateCommand::Insert(t, fs, vs)
+    statement::UpdateCommand::Insert(t, fs, vs)
 }
 
 #[allow(unused_variables)]
@@ -7174,9 +7179,9 @@ fn __action8<
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, t, _): (usize, String, usize),
-) -> ast::UpdateCommand
+) -> statement::UpdateCommand
 {
-    ast::UpdateCommand::Delete(t, None)
+    statement::UpdateCommand::Delete(t, None)
 }
 
 #[allow(unused_variables)]
@@ -7188,10 +7193,10 @@ fn __action9<
     (_, _, _): (usize, &'input str, usize),
     (_, t, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, p, _): (usize, ast::Predicate, usize),
-) -> ast::UpdateCommand
+    (_, p, _): (usize, predicate::Predicate, usize),
+) -> statement::UpdateCommand
 {
-    ast::UpdateCommand::Delete(t, Some(p))
+    statement::UpdateCommand::Delete(t, Some(p))
 }
 
 #[allow(unused_variables)]
@@ -7205,10 +7210,10 @@ fn __action10<
     (_, _, _): (usize, &'input str, usize),
     (_, f, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, e, _): (usize, ast::Expression, usize),
-) -> ast::UpdateCommand
+    (_, e, _): (usize, predicate::Expression, usize),
+) -> statement::UpdateCommand
 {
-    ast::UpdateCommand::Modify(t, f, e, None)
+    statement::UpdateCommand::Modify(t, f, e, None)
 }
 
 #[allow(unused_variables)]
@@ -7222,12 +7227,12 @@ fn __action11<
     (_, _, _): (usize, &'input str, usize),
     (_, f, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, e, _): (usize, ast::Expression, usize),
+    (_, e, _): (usize, predicate::Expression, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, p, _): (usize, ast::Predicate, usize),
-) -> ast::UpdateCommand
+    (_, p, _): (usize, predicate::Predicate, usize),
+) -> statement::UpdateCommand
 {
-    ast::UpdateCommand::Modify(t, f, e, Some(p))
+    statement::UpdateCommand::Modify(t, f, e, Some(p))
 }
 
 #[allow(unused_variables)]
@@ -7236,10 +7241,10 @@ fn __action12<
     'input,
 >(
     input: &'input str,
-    (_, c, _): (usize, ast::CreateCommand, usize),
-) -> ast::UpdateCommand
+    (_, c, _): (usize, statement::CreateCommand, usize),
+) -> statement::UpdateCommand
 {
-    ast::UpdateCommand::Create(c)
+    statement::UpdateCommand::Create(c)
 }
 
 #[allow(unused_variables)]
@@ -7251,11 +7256,11 @@ fn __action13<
     (_, _, _): (usize, &'input str, usize),
     (_, t, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, ds, _): (usize, Vec<ast::FieldDefinition>, usize),
+    (_, ds, _): (usize, Vec<statement::FieldDefinition>, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::CreateCommand
+) -> statement::CreateCommand
 {
-    ast::CreateCommand::Table(t, ds)
+    statement::CreateCommand::Table(t, ds)
 }
 
 #[allow(unused_variables)]
@@ -7267,10 +7272,10 @@ fn __action14<
     (_, _, _): (usize, &'input str, usize),
     (_, t, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, q, _): (usize, ast::QueryCommand, usize),
-) -> ast::CreateCommand
+    (_, q, _): (usize, statement::QueryData, usize),
+) -> statement::CreateCommand
 {
-    ast::CreateCommand::View(t, q)
+    statement::CreateCommand::View(t, q)
 }
 
 #[allow(unused_variables)]
@@ -7286,9 +7291,9 @@ fn __action15<
     (_, _, _): (usize, &'input str, usize),
     (_, f, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::CreateCommand
+) -> statement::CreateCommand
 {
-    ast::CreateCommand::Index(t, n, f)
+    statement::CreateCommand::Index(t, n, f)
 }
 
 #[allow(unused_variables)]
@@ -7298,10 +7303,10 @@ fn __action16<
 >(
     input: &'input str,
     (_, n, _): (usize, String, usize),
-    (_, t, _): (usize, Type, usize),
-) -> ast::FieldDefinition
+    (_, t, _): (usize, Spec, usize),
+) -> statement::FieldDefinition
 {
-    ast::FieldDefinition::new(n, t)
+    statement::FieldDefinition::new(n, t)
 }
 
 #[allow(unused_variables)]
@@ -7311,9 +7316,9 @@ fn __action17<
 >(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> Type
+) -> Spec
 {
-    Type::I32
+    Spec::I32
 }
 
 #[allow(unused_variables)]
@@ -7326,9 +7331,9 @@ fn __action18<
     (_, _, _): (usize, &'input str, usize),
     (_, i, _): (usize, i32, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Type
+) -> Spec
 {
-    Type::VarChar(i as usize)
+    Spec::VarChar(i as usize)
 }
 
 #[allow(unused_variables)]
@@ -7337,10 +7342,10 @@ fn __action19<
     'input,
 >(
     input: &'input str,
-    (_, ts, _): (usize, Vec<ast::Term>, usize),
-) -> ast::Predicate
+    (_, ts, _): (usize, Vec<predicate::Term>, usize),
+) -> predicate::Predicate
 {
-    ast::Predicate::new(ts)
+    predicate::Predicate::new(ts)
 }
 
 #[allow(unused_variables)]
@@ -7349,12 +7354,12 @@ fn __action20<
     'input,
 >(
     input: &'input str,
-    (_, l, _): (usize, ast::Expression, usize),
+    (_, l, _): (usize, predicate::Expression, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, r, _): (usize, ast::Expression, usize),
-) -> ast::Term
+    (_, r, _): (usize, predicate::Expression, usize),
+) -> predicate::Term
 {
-    ast::Term::EqualityTerm(l, r)
+    predicate::Term::Equality(l, r)
 }
 
 #[allow(unused_variables)]
@@ -7364,9 +7369,9 @@ fn __action21<
 >(
     input: &'input str,
     (_, i, _): (usize, i32, usize),
-) -> ast::Expression
+) -> predicate::Expression
 {
-    ast::Expression::I32Constant(i)
+    predicate::Expression::I32Constant(i)
 }
 
 #[allow(unused_variables)]
@@ -7376,9 +7381,9 @@ fn __action22<
 >(
     input: &'input str,
     (_, s, _): (usize, String, usize),
-) -> ast::Expression
+) -> predicate::Expression
 {
-    ast::Expression::StringConstant(s)
+    predicate::Expression::StringConstant(s)
 }
 
 #[allow(unused_variables)]
@@ -7388,9 +7393,9 @@ fn __action23<
 >(
     input: &'input str,
     (_, t, _): (usize, String, usize),
-) -> ast::Expression
+) -> predicate::Expression
 {
-    ast::Expression::FieldExpression(t)
+    predicate::Expression::Field(t)
 }
 
 #[allow(unused_variables)]
@@ -7400,9 +7405,9 @@ fn __action24<
 >(
     input: &'input str,
     (_, i, _): (usize, i32, usize),
-) -> ast::Constant
+) -> statement::Constant
 {
-    ast::Constant::I32(i)
+    statement::Constant::I32(i)
 }
 
 #[allow(unused_variables)]
@@ -7412,9 +7417,9 @@ fn __action25<
 >(
     input: &'input str,
     (_, s, _): (usize, String, usize),
-) -> ast::Constant
+) -> statement::Constant
 {
-    ast::Constant::String(s)
+    statement::Constant::String(s)
 }
 
 #[allow(unused_variables)]
@@ -7459,9 +7464,9 @@ fn __action29<
     'input,
 >(
     input: &'input str,
-    (_, mut v, _): (usize, alloc::vec::Vec<ast::Term>, usize),
-    (_, e, _): (usize, ast::Term, usize),
-) -> Vec<ast::Term>
+    (_, mut v, _): (usize, alloc::vec::Vec<predicate::Term>, usize),
+    (_, e, _): (usize, predicate::Term, usize),
+) -> Vec<predicate::Term>
 {
     {
         v.push(e);
@@ -7475,9 +7480,9 @@ fn __action30<
     'input,
 >(
     input: &'input str,
-    (_, mut v, _): (usize, alloc::vec::Vec<ast::FieldDefinition>, usize),
-    (_, e, _): (usize, ast::FieldDefinition, usize),
-) -> Vec<ast::FieldDefinition>
+    (_, mut v, _): (usize, alloc::vec::Vec<statement::FieldDefinition>, usize),
+    (_, e, _): (usize, statement::FieldDefinition, usize),
+) -> Vec<statement::FieldDefinition>
 {
     {
         v.push(e);
@@ -7491,9 +7496,9 @@ fn __action31<
     'input,
 >(
     input: &'input str,
-    (_, mut v, _): (usize, alloc::vec::Vec<ast::Constant>, usize),
-    (_, e, _): (usize, ast::Constant, usize),
-) -> Vec<ast::Constant>
+    (_, mut v, _): (usize, alloc::vec::Vec<statement::Constant>, usize),
+    (_, e, _): (usize, statement::Constant, usize),
+) -> Vec<statement::Constant>
 {
     {
         v.push(e);
@@ -7563,7 +7568,7 @@ fn __action36<
     input: &'input str,
     __lookbehind: &usize,
     __lookahead: &usize,
-) -> alloc::vec::Vec<ast::Constant>
+) -> alloc::vec::Vec<statement::Constant>
 {
     alloc::vec![]
 }
@@ -7574,8 +7579,8 @@ fn __action37<
     'input,
 >(
     input: &'input str,
-    (_, v, _): (usize, alloc::vec::Vec<ast::Constant>, usize),
-) -> alloc::vec::Vec<ast::Constant>
+    (_, v, _): (usize, alloc::vec::Vec<statement::Constant>, usize),
+) -> alloc::vec::Vec<statement::Constant>
 {
     v
 }
@@ -7586,9 +7591,9 @@ fn __action38<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, ast::Constant, usize),
+    (_, __0, _): (usize, statement::Constant, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::Constant
+) -> statement::Constant
 {
     __0
 }
@@ -7601,7 +7606,7 @@ fn __action39<
     input: &'input str,
     __lookbehind: &usize,
     __lookahead: &usize,
-) -> alloc::vec::Vec<ast::FieldDefinition>
+) -> alloc::vec::Vec<statement::FieldDefinition>
 {
     alloc::vec![]
 }
@@ -7612,8 +7617,8 @@ fn __action40<
     'input,
 >(
     input: &'input str,
-    (_, v, _): (usize, alloc::vec::Vec<ast::FieldDefinition>, usize),
-) -> alloc::vec::Vec<ast::FieldDefinition>
+    (_, v, _): (usize, alloc::vec::Vec<statement::FieldDefinition>, usize),
+) -> alloc::vec::Vec<statement::FieldDefinition>
 {
     v
 }
@@ -7624,9 +7629,9 @@ fn __action41<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, ast::FieldDefinition, usize),
+    (_, __0, _): (usize, statement::FieldDefinition, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::FieldDefinition
+) -> statement::FieldDefinition
 {
     __0
 }
@@ -7639,7 +7644,7 @@ fn __action42<
     input: &'input str,
     __lookbehind: &usize,
     __lookahead: &usize,
-) -> alloc::vec::Vec<ast::Term>
+) -> alloc::vec::Vec<predicate::Term>
 {
     alloc::vec![]
 }
@@ -7650,8 +7655,8 @@ fn __action43<
     'input,
 >(
     input: &'input str,
-    (_, v, _): (usize, alloc::vec::Vec<ast::Term>, usize),
-) -> alloc::vec::Vec<ast::Term>
+    (_, v, _): (usize, alloc::vec::Vec<predicate::Term>, usize),
+) -> alloc::vec::Vec<predicate::Term>
 {
     v
 }
@@ -7662,9 +7667,9 @@ fn __action44<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, ast::Term, usize),
+    (_, __0, _): (usize, predicate::Term, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> ast::Term
+) -> predicate::Term
 {
     __0
 }
@@ -7675,8 +7680,8 @@ fn __action45<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, ast::Term, usize),
-) -> alloc::vec::Vec<ast::Term>
+    (_, __0, _): (usize, predicate::Term, usize),
+) -> alloc::vec::Vec<predicate::Term>
 {
     alloc::vec![__0]
 }
@@ -7687,9 +7692,9 @@ fn __action46<
     'input,
 >(
     input: &'input str,
-    (_, v, _): (usize, alloc::vec::Vec<ast::Term>, usize),
-    (_, e, _): (usize, ast::Term, usize),
-) -> alloc::vec::Vec<ast::Term>
+    (_, v, _): (usize, alloc::vec::Vec<predicate::Term>, usize),
+    (_, e, _): (usize, predicate::Term, usize),
+) -> alloc::vec::Vec<predicate::Term>
 {
     { let mut v = v; v.push(e); v }
 }
@@ -7700,8 +7705,8 @@ fn __action47<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, ast::FieldDefinition, usize),
-) -> alloc::vec::Vec<ast::FieldDefinition>
+    (_, __0, _): (usize, statement::FieldDefinition, usize),
+) -> alloc::vec::Vec<statement::FieldDefinition>
 {
     alloc::vec![__0]
 }
@@ -7712,9 +7717,9 @@ fn __action48<
     'input,
 >(
     input: &'input str,
-    (_, v, _): (usize, alloc::vec::Vec<ast::FieldDefinition>, usize),
-    (_, e, _): (usize, ast::FieldDefinition, usize),
-) -> alloc::vec::Vec<ast::FieldDefinition>
+    (_, v, _): (usize, alloc::vec::Vec<statement::FieldDefinition>, usize),
+    (_, e, _): (usize, statement::FieldDefinition, usize),
+) -> alloc::vec::Vec<statement::FieldDefinition>
 {
     { let mut v = v; v.push(e); v }
 }
@@ -7725,8 +7730,8 @@ fn __action49<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, ast::Constant, usize),
-) -> alloc::vec::Vec<ast::Constant>
+    (_, __0, _): (usize, statement::Constant, usize),
+) -> alloc::vec::Vec<statement::Constant>
 {
     alloc::vec![__0]
 }
@@ -7737,9 +7742,9 @@ fn __action50<
     'input,
 >(
     input: &'input str,
-    (_, v, _): (usize, alloc::vec::Vec<ast::Constant>, usize),
-    (_, e, _): (usize, ast::Constant, usize),
-) -> alloc::vec::Vec<ast::Constant>
+    (_, v, _): (usize, alloc::vec::Vec<statement::Constant>, usize),
+    (_, e, _): (usize, statement::Constant, usize),
+) -> alloc::vec::Vec<statement::Constant>
 {
     { let mut v = v; v.push(e); v }
 }
@@ -7776,9 +7781,9 @@ fn __action53<
     'input,
 >(
     input: &'input str,
-    __0: (usize, ast::Constant, usize),
+    __0: (usize, statement::Constant, usize),
     __1: (usize, &'input str, usize),
-) -> alloc::vec::Vec<ast::Constant>
+) -> alloc::vec::Vec<statement::Constant>
 {
     let __start0 = __0.0;
     let __end0 = __1.2;
@@ -7801,10 +7806,10 @@ fn __action54<
     'input,
 >(
     input: &'input str,
-    __0: (usize, alloc::vec::Vec<ast::Constant>, usize),
-    __1: (usize, ast::Constant, usize),
+    __0: (usize, alloc::vec::Vec<statement::Constant>, usize),
+    __1: (usize, statement::Constant, usize),
     __2: (usize, &'input str, usize),
-) -> alloc::vec::Vec<ast::Constant>
+) -> alloc::vec::Vec<statement::Constant>
 {
     let __start0 = __1.0;
     let __end0 = __2.2;
@@ -7828,8 +7833,8 @@ fn __action55<
     'input,
 >(
     input: &'input str,
-    __0: (usize, ast::Constant, usize),
-) -> Vec<ast::Constant>
+    __0: (usize, statement::Constant, usize),
+) -> Vec<statement::Constant>
 {
     let __start0 = __0.0;
     let __end0 = __0.0;
@@ -7853,9 +7858,9 @@ fn __action56<
     'input,
 >(
     input: &'input str,
-    __0: (usize, alloc::vec::Vec<ast::Constant>, usize),
-    __1: (usize, ast::Constant, usize),
-) -> Vec<ast::Constant>
+    __0: (usize, alloc::vec::Vec<statement::Constant>, usize),
+    __1: (usize, statement::Constant, usize),
+) -> Vec<statement::Constant>
 {
     let __start0 = __0.0;
     let __end0 = __0.2;
@@ -7878,9 +7883,9 @@ fn __action57<
     'input,
 >(
     input: &'input str,
-    __0: (usize, ast::FieldDefinition, usize),
+    __0: (usize, statement::FieldDefinition, usize),
     __1: (usize, &'input str, usize),
-) -> alloc::vec::Vec<ast::FieldDefinition>
+) -> alloc::vec::Vec<statement::FieldDefinition>
 {
     let __start0 = __0.0;
     let __end0 = __1.2;
@@ -7903,10 +7908,10 @@ fn __action58<
     'input,
 >(
     input: &'input str,
-    __0: (usize, alloc::vec::Vec<ast::FieldDefinition>, usize),
-    __1: (usize, ast::FieldDefinition, usize),
+    __0: (usize, alloc::vec::Vec<statement::FieldDefinition>, usize),
+    __1: (usize, statement::FieldDefinition, usize),
     __2: (usize, &'input str, usize),
-) -> alloc::vec::Vec<ast::FieldDefinition>
+) -> alloc::vec::Vec<statement::FieldDefinition>
 {
     let __start0 = __1.0;
     let __end0 = __2.2;
@@ -7930,8 +7935,8 @@ fn __action59<
     'input,
 >(
     input: &'input str,
-    __0: (usize, ast::FieldDefinition, usize),
-) -> Vec<ast::FieldDefinition>
+    __0: (usize, statement::FieldDefinition, usize),
+) -> Vec<statement::FieldDefinition>
 {
     let __start0 = __0.0;
     let __end0 = __0.0;
@@ -7955,9 +7960,9 @@ fn __action60<
     'input,
 >(
     input: &'input str,
-    __0: (usize, alloc::vec::Vec<ast::FieldDefinition>, usize),
-    __1: (usize, ast::FieldDefinition, usize),
-) -> Vec<ast::FieldDefinition>
+    __0: (usize, alloc::vec::Vec<statement::FieldDefinition>, usize),
+    __1: (usize, statement::FieldDefinition, usize),
+) -> Vec<statement::FieldDefinition>
 {
     let __start0 = __0.0;
     let __end0 = __0.2;
@@ -8082,9 +8087,9 @@ fn __action65<
     'input,
 >(
     input: &'input str,
-    __0: (usize, ast::Term, usize),
+    __0: (usize, predicate::Term, usize),
     __1: (usize, &'input str, usize),
-) -> alloc::vec::Vec<ast::Term>
+) -> alloc::vec::Vec<predicate::Term>
 {
     let __start0 = __0.0;
     let __end0 = __1.2;
@@ -8107,10 +8112,10 @@ fn __action66<
     'input,
 >(
     input: &'input str,
-    __0: (usize, alloc::vec::Vec<ast::Term>, usize),
-    __1: (usize, ast::Term, usize),
+    __0: (usize, alloc::vec::Vec<predicate::Term>, usize),
+    __1: (usize, predicate::Term, usize),
     __2: (usize, &'input str, usize),
-) -> alloc::vec::Vec<ast::Term>
+) -> alloc::vec::Vec<predicate::Term>
 {
     let __start0 = __1.0;
     let __end0 = __2.2;
@@ -8134,8 +8139,8 @@ fn __action67<
     'input,
 >(
     input: &'input str,
-    __0: (usize, ast::Term, usize),
-) -> Vec<ast::Term>
+    __0: (usize, predicate::Term, usize),
+) -> Vec<predicate::Term>
 {
     let __start0 = __0.0;
     let __end0 = __0.0;
@@ -8159,9 +8164,9 @@ fn __action68<
     'input,
 >(
     input: &'input str,
-    __0: (usize, alloc::vec::Vec<ast::Term>, usize),
-    __1: (usize, ast::Term, usize),
-) -> Vec<ast::Term>
+    __0: (usize, alloc::vec::Vec<predicate::Term>, usize),
+    __1: (usize, predicate::Term, usize),
+) -> Vec<predicate::Term>
 {
     let __start0 = __0.0;
     let __end0 = __0.2;

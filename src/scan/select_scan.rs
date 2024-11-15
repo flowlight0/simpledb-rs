@@ -1,82 +1,14 @@
+use crate::{parser::predicate::Predicate, record::field::Value};
+
 use super::Scan;
 
-pub trait Expression<T> {
-    fn evaluate(&self, scan: &mut dyn Scan) -> Result<T, anyhow::Error>;
-}
-
-pub struct ConstantExpression<T> {
-    value: T,
-}
-
-impl<T: Clone> Expression<T> for ConstantExpression<T> {
-    fn evaluate(&self, _scan: &mut dyn Scan) -> Result<T, anyhow::Error> {
-        Ok(self.value.clone())
-    }
-}
-
-pub struct I32FieldExpression {
-    field_name: String,
-}
-
-impl Expression<i32> for I32FieldExpression {
-    fn evaluate(&self, scan: &mut dyn Scan) -> Result<i32, anyhow::Error> {
-        scan.get_i32(&self.field_name)
-    }
-}
-
-pub struct StringFieldExpression {
-    field_name: String,
-}
-
-impl Expression<String> for StringFieldExpression {
-    fn evaluate(&self, scan: &mut dyn Scan) -> Result<String, anyhow::Error> {
-        scan.get_string(&self.field_name)
-    }
-}
-
-pub trait Term {
-    fn is_satisfied(&self, scan: &mut dyn Scan) -> Result<bool, anyhow::Error>;
-}
-
-pub struct EqualityTerm<T> {
-    lhs: Box<dyn Expression<T>>,
-    rhs: Box<dyn Expression<T>>,
-}
-
-impl<T: Clone + Eq + PartialEq> Term for EqualityTerm<T> {
-    fn is_satisfied(&self, scan: &mut dyn Scan) -> Result<bool, anyhow::Error> {
-        let lhs = self.lhs.evaluate(scan)?;
-        let rhs = self.rhs.evaluate(scan)?;
-        Ok(lhs == rhs)
-    }
-}
-
-pub struct Predicate {
-    terms: Vec<Box<dyn Term>>,
-}
-
-impl Predicate {
-    pub fn new(terms: Vec<Box<dyn Term>>) -> Self {
-        Predicate { terms }
-    }
-
-    fn is_satisfied(&self, scan: &mut dyn Scan) -> Result<bool, anyhow::Error> {
-        for term in &self.terms {
-            if !term.is_satisfied(scan)? {
-                return Ok(false);
-            }
-        }
-        Ok(true)
-    }
-}
-
-pub struct SelectScan<'a, T: Scan> {
-    base_scan: &'a mut T,
+pub struct SelectScan {
+    base_scan: Box<dyn Scan>,
     predicate: Predicate,
 }
 
-impl<'a, T: Scan> SelectScan<'a, T> {
-    pub fn new(base_scan: &'a mut T, predicate: Predicate) -> Self {
+impl SelectScan {
+    pub fn new(base_scan: Box<dyn Scan>, predicate: Predicate) -> Self {
         SelectScan {
             base_scan,
             predicate,
@@ -84,14 +16,14 @@ impl<'a, T: Scan> SelectScan<'a, T> {
     }
 }
 
-impl<'a, T: Scan> Scan for SelectScan<'a, T> {
+impl Scan for SelectScan {
     fn before_first(&mut self) -> Result<(), anyhow::Error> {
         self.base_scan.before_first()
     }
 
     fn next(&mut self) -> Result<bool, anyhow::Error> {
         while self.base_scan.next()? {
-            if self.predicate.is_satisfied(&mut *self.base_scan)? {
+            if self.predicate.is_satisfied(&mut self.base_scan)? {
                 return Ok(true);
             }
         }
@@ -104,6 +36,10 @@ impl<'a, T: Scan> Scan for SelectScan<'a, T> {
 
     fn get_string(&mut self, field_name: &str) -> Result<String, anyhow::Error> {
         self.base_scan.get_string(field_name)
+    }
+
+    fn get_value(&mut self, field_name: &str) -> Result<Value, anyhow::Error> {
+        self.base_scan.get_value(field_name)
     }
 
     fn has_field(&self, field_name: &str) -> bool {
@@ -129,8 +65,12 @@ impl<'a, T: Scan> Scan for SelectScan<'a, T> {
 
 #[cfg(test)]
 mod tests {
+    use std::rc::Rc;
+    use std::sync::{Arc, Mutex};
+
     use super::*;
     use crate::db::SimpleDB;
+    use crate::parser::predicate::{Expression, Term};
     use crate::record::layout::Layout;
     use crate::record::schema::Schema;
     use crate::scan::table_scan::TableScan;
@@ -141,15 +81,15 @@ mod tests {
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);
         schema.add_i32_field("C");
-        let layout = Layout::new(schema);
+        let layout = Rc::new(Layout::new(schema));
 
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let db = SimpleDB::new(temp_dir, block_size, 3)?;
 
-        let mut tx = db.new_transaction()?;
-
-        let mut table_scan = TableScan::new(&mut tx, "testtable", &layout)?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+        let mut table_scan: Box<dyn Scan> =
+            Box::new(TableScan::new(tx.clone(), "testtable", layout.clone())?);
         table_scan.before_first()?;
         for i in 0..50 {
             table_scan.insert()?;
@@ -159,28 +99,21 @@ mod tests {
         }
 
         let mut select_scan = SelectScan::new(
-            &mut table_scan,
+            table_scan,
             Predicate::new(vec![
-                Box::new(EqualityTerm {
-                    lhs: Box::new(I32FieldExpression {
-                        field_name: "A".to_string(),
-                    }),
-                    rhs: Box::new(ConstantExpression { value: 1 }),
-                }),
-                Box::new(EqualityTerm {
-                    lhs: Box::new(StringFieldExpression {
-                        field_name: "B".to_string(),
-                    }),
-                    rhs: Box::new(ConstantExpression {
-                        value: "2".to_string(),
-                    }),
-                }),
+                Term::Equality(
+                    Expression::Field("A".to_string()),
+                    Expression::I32Constant(1),
+                ),
+                Term::Equality(
+                    Expression::Field("B".to_string()),
+                    Expression::StringConstant("2".to_string()),
+                ),
             ]),
         );
         select_scan.before_first()?;
         for i in 0..50 {
             if i % 3 == 1 && i % 4 == 2 {
-                dbg!(i);
                 assert!(select_scan.next()?);
                 assert_eq!(select_scan.get_i32("A")?, 1);
                 assert_eq!(select_scan.get_string("B")?, "2");
@@ -189,8 +122,9 @@ mod tests {
             }
         }
         assert!(!select_scan.next()?);
-
         drop(select_scan);
+
+        let mut table_scan = TableScan::new(tx.clone(), "testtable", layout.clone())?;
 
         table_scan.before_first()?;
         for i in 0..50 {
@@ -202,7 +136,7 @@ mod tests {
             }
         }
         drop(table_scan);
-        tx.commit()?;
+        tx.lock().unwrap().commit()?;
         Ok(())
     }
 }

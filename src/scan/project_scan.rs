@@ -1,12 +1,14 @@
+use crate::record::field::Value;
+
 use super::Scan;
 
-pub struct ProjectScan<'a> {
-    base_scan: &'a mut dyn Scan,
+pub struct ProjectScan {
+    base_scan: Box<dyn Scan>,
     fields: Vec<String>,
 }
 
-impl<'a> ProjectScan<'a> {
-    pub fn new(base_scan: &'a mut dyn Scan, fields: Vec<String>) -> Self {
+impl ProjectScan {
+    pub fn new(base_scan: Box<dyn Scan>, fields: Vec<String>) -> Self {
         for field in &fields {
             assert!(base_scan.has_field(field));
         }
@@ -15,7 +17,7 @@ impl<'a> ProjectScan<'a> {
     }
 }
 
-impl<'a> Scan for ProjectScan<'a> {
+impl Scan for ProjectScan {
     fn before_first(&mut self) -> Result<(), anyhow::Error> {
         self.base_scan.before_first()
     }
@@ -34,6 +36,11 @@ impl<'a> Scan for ProjectScan<'a> {
         self.base_scan.get_string(field_name)
     }
 
+    fn get_value(&mut self, field_name: &str) -> Result<Value, anyhow::Error> {
+        assert!(self.fields.contains(&field_name.to_string()));
+        self.base_scan.get_value(field_name)
+    }
+
     fn has_field(&self, field_name: &str) -> bool {
         self.fields.contains(&field_name.to_string())
     }
@@ -41,6 +48,11 @@ impl<'a> Scan for ProjectScan<'a> {
 
 #[cfg(test)]
 mod tests {
+
+    use std::{
+        rc::Rc,
+        sync::{Arc, Mutex},
+    };
 
     use crate::{
         db::SimpleDB,
@@ -56,15 +68,15 @@ mod tests {
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);
         schema.add_i32_field("C");
-        let layout = Layout::new(schema);
+        let layout = Rc::new(Layout::new(schema));
 
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let db = SimpleDB::new(temp_dir, block_size, 3)?;
 
-        let mut tx = db.new_transaction()?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
 
-        let mut table_scan = TableScan::new(&mut tx, "testtable", &layout)?;
+        let mut table_scan = TableScan::new(tx.clone(), "testtable", layout.clone())?;
         table_scan.before_first()?;
         for i in 0..50 {
             table_scan.insert()?;
@@ -74,7 +86,7 @@ mod tests {
         }
 
         let mut project_scan =
-            ProjectScan::new(&mut table_scan, vec!["A".to_string(), "C".to_string()]);
+            ProjectScan::new(Box::new(table_scan), vec!["A".to_string(), "C".to_string()]);
         project_scan.before_first()?;
         for i in 0..50 {
             assert!(project_scan.next()?);
@@ -85,8 +97,7 @@ mod tests {
             assert_eq!(project_scan.get_i32("C")?, i + 2);
         }
         drop(project_scan);
-        drop(table_scan);
-        tx.commit()?;
+        tx.lock().unwrap().commit()?;
         Ok(())
     }
 }
