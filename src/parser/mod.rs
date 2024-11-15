@@ -8,11 +8,9 @@ mod tests {
         parser::{
             grammar,
             predicate::{Expression, Predicate, Term},
-            statement::{
-                Constant, CreateCommand, FieldDefinition, QueryData, Statement, UpdateCommand,
-            },
+            statement::{CreateCommand, FieldDefinition, QueryData, Statement, UpdateCommand},
         },
-        record::field::Spec,
+        record::field::{Spec, Value},
     };
 
     #[test]
@@ -47,7 +45,7 @@ mod tests {
             Statement::UpdateCommand(UpdateCommand::Insert(
                 "table".to_string(),
                 vec!["aaa".to_string(), "bbb".to_string()],
-                vec![Constant::I32(333), Constant::String("222".to_string())]
+                vec![Value::I32(333), Value::String("222".to_string())]
             ))
         );
     }

@@ -118,3 +118,78 @@ impl UpdatePlanner for BasicUpdatePlanner {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::db::SimpleDB;
+
+    use crate::parser::predicate::{Expression, Predicate, Term};
+
+    use crate::parser::statement::{FieldDefinition, QueryData};
+    use crate::plan::basic_query_planner::BasicQueryPlanner;
+    use crate::plan::QueryPlanner;
+    use crate::record::field::Spec;
+
+    #[test]
+    fn test_basic_update_planner() -> Result<(), anyhow::Error> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 256;
+        let num_buffers = 100;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+
+        let planner = BasicUpdatePlanner::new(db.metadata_manager.clone());
+        let updated = planner.execute_update(
+            &UpdateCommand::Create(CreateCommand::Table(
+                "table1".to_string(),
+                vec![
+                    FieldDefinition::new("A".to_string(), Spec::I32),
+                    FieldDefinition::new("B".to_string(), Spec::VarChar(20)),
+                ],
+            )),
+            tx.clone(),
+        )?;
+        assert_eq!(updated, 0);
+
+        for i in 0..10 {
+            let updated = planner.execute_update(
+                &UpdateCommand::Insert(
+                    "table1".to_string(),
+                    vec!["A".to_string(), "B".to_string()],
+                    vec![Value::I32(i % 2), Value::String(i.to_string())],
+                ),
+                tx.clone(),
+            )?;
+            assert_eq!(updated, 1);
+        }
+        let deleted = planner.execute_update(
+            &UpdateCommand::Delete(
+                "table1".to_string(),
+                Some(Predicate::new(vec![Term::Equality(
+                    Expression::Field("A".to_string()),
+                    Expression::I32Constant(0),
+                )])),
+            ),
+            tx.clone(),
+        )?;
+        assert_eq!(deleted, 5);
+
+        let planner = BasicQueryPlanner::new(db.metadata_manager.clone());
+        let mut query = planner.create_plan(
+            &QueryData::new(vec!["B".to_string()], vec!["table1".to_string()], None),
+            tx.clone(),
+        )?;
+        let mut scan = query.open(tx.clone())?;
+
+        for i in 0..5 {
+            assert!(scan.next()?);
+            assert_eq!(scan.get_string("B")?, (i * 2 + 1).to_string());
+        }
+        assert!(!scan.next()?);
+
+        drop(scan);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
+}
