@@ -4,9 +4,9 @@ use crate::{
     metadata::MetadataManager,
     parser::{
         predicate::{Expression, Predicate},
-        statement::UpdateCommand,
+        statement::{CreateCommand, UpdateCommand},
     },
-    record::field::Value,
+    record::{field::Value, schema::Schema},
     tx::transaction::Transaction,
 };
 
@@ -82,6 +82,22 @@ impl BasicUpdatePlanner {
         }
         Ok(count)
     }
+
+    fn create(
+        &self,
+        create_command: &CreateCommand,
+        tx: Arc<Mutex<Transaction>>,
+    ) -> Result<usize, anyhow::Error> {
+        match create_command {
+            CreateCommand::Table(table_name, fields) => {
+                let schema = Schema::create_from(&fields);
+                let mut metadata_manager = self.metadata_manager.lock().unwrap();
+                metadata_manager.create_table(&table_name, &schema, tx)?
+            }
+            _ => unimplemented!("Creation of indexes and views is not supported yet"),
+        }
+        Ok(0)
+    }
 }
 
 impl UpdatePlanner for BasicUpdatePlanner {
@@ -98,7 +114,7 @@ impl UpdatePlanner for BasicUpdatePlanner {
             UpdateCommand::Modify(table_name, field_name, expression, predicate) => {
                 self.modify(table_name, field_name, expression, predicate, tx)
             }
-            _ => todo!(),
+            UpdateCommand::Create(create_command) => self.create(create_command, tx),
         }
     }
 }

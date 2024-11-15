@@ -42,8 +42,8 @@ pub enum CreateCommand {
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct FieldDefinition {
-    name: String,
-    field_type: Spec,
+    pub name: String,
+    pub field_type: Spec,
 }
 
 impl FieldDefinition {

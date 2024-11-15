@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use crate::parser::statement::FieldDefinition;
+
 use super::field::{Spec, Type};
 
 const MAX_STRING_LENGTH: usize = 65535;
@@ -23,6 +25,14 @@ impl Schema {
             string_max_lengths: vec![],
             string_field_to_index: HashMap::new(),
         }
+    }
+
+    pub fn create_from(fields: &[FieldDefinition]) -> Self {
+        let mut schema = Schema::new();
+        for field in fields {
+            schema.add_field(&field.name, &field.field_type);
+        }
+        schema
     }
 
     pub fn add_i32_field(&mut self, field_name: &str) {
