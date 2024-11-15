@@ -37,8 +37,8 @@ impl Plan for ProjectPlan {
         self.plan.num_distinct_values(field_name)
     }
 
-    fn schema(&self) -> Schema {
-        self.schema.clone()
+    fn schema(&self) -> &Schema {
+        &self.schema
     }
 
     fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, anyhow::Error> {

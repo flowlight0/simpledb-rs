@@ -51,8 +51,8 @@ impl Plan for TablePlan {
         self.stat_info.get_distinct_values(field_name)
     }
 
-    fn schema(&self) -> Schema {
-        self.layout.schema.clone()
+    fn schema(&self) -> &Schema {
+        &self.layout.schema
     }
 
     fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, anyhow::Error> {

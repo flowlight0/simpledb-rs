@@ -33,13 +33,6 @@ impl Schema {
         self.i32_fields.push(field_name.to_string());
     }
 
-    pub fn add_field(&mut self, field_name: &str, field_spec: &Spec) {
-        match field_spec {
-            Spec::I32 => self.add_i32_field(field_name),
-            Spec::VarChar(max_length) => self.add_string_field(field_name, *max_length),
-        }
-    }
-
     pub fn add_string_field(&mut self, field_name: &str, max_length: usize) {
         assert!(!self.string_field_to_index.contains_key(field_name));
         assert!(max_length <= MAX_STRING_LENGTH);
@@ -48,6 +41,25 @@ impl Schema {
             .insert(field_name.to_string(), self.string_fields.len());
         self.string_fields.push(field_name.to_string());
         self.string_max_lengths.push(max_length);
+    }
+
+    pub fn add_field(&mut self, field_name: &str, field_spec: &Spec) {
+        match field_spec {
+            Spec::I32 => self.add_i32_field(field_name),
+            Spec::VarChar(max_length) => self.add_string_field(field_name, *max_length),
+        }
+    }
+
+    pub fn add_all(&mut self, schema: &Schema) {
+        for field in &schema.get_fields() {
+            let spec = schema.get_field_spec(field);
+            self.add_field(field, &spec);
+        }
+    }
+
+    pub fn has_field(&self, field_name: &str) -> bool {
+        self.i32_field_to_index.contains_key(field_name)
+            || self.string_field_to_index.contains_key(field_name)
     }
 
     pub fn get_field_type(&self, field_name: &str) -> Type {

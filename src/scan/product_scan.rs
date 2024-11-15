@@ -2,18 +2,18 @@ use crate::record::field::Value;
 
 use super::Scan;
 
-pub struct ProductScan<'a> {
-    scan1: &'a mut dyn Scan,
-    scan2: &'a mut dyn Scan,
+pub struct ProductScan {
+    scan1: Box<dyn Scan>,
+    scan2: Box<dyn Scan>,
 }
 
-impl<'a> ProductScan<'a> {
-    pub fn new(scan1: &'a mut dyn Scan, scan2: &'a mut dyn Scan) -> Self {
+impl ProductScan {
+    pub fn new(scan1: Box<dyn Scan>, scan2: Box<dyn Scan>) -> Self {
         ProductScan { scan1, scan2 }
     }
 }
 
-impl<'a> Scan for ProductScan<'a> {
+impl Scan for ProductScan {
     fn before_first(&mut self) -> Result<(), anyhow::Error> {
         self.scan1.before_first()?;
         self.scan1.next()?;
@@ -110,7 +110,7 @@ mod tests {
             scan2.set_string("E", &i.to_string())?;
         }
 
-        let mut product_scan = ProductScan::new(&mut scan1, &mut scan2);
+        let mut product_scan = ProductScan::new(Box::new(scan1), Box::new(scan2));
         product_scan.before_first()?;
         for i in 0..10 {
             for j in 0..10 {
@@ -124,11 +124,7 @@ mod tests {
         }
         assert!(!product_scan.next()?);
         drop(product_scan);
-
-        drop(scan1);
         tx1.lock().unwrap().commit()?;
-
-        drop(scan2);
         tx2.lock().unwrap().commit()?;
         Ok(())
     }

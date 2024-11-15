@@ -42,7 +42,7 @@ impl Plan for SelectPlan {
         }
     }
 
-    fn schema(&self) -> Schema {
+    fn schema(&self) -> &Schema {
         self.plan.schema()
     }
 
