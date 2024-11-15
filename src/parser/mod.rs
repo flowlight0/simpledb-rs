@@ -1,16 +1,16 @@
-mod ast;
 mod grammar;
 pub mod predicate;
+pub mod statement;
 
 #[cfg(test)]
 mod tests {
     use crate::{
         parser::{
-            ast::{
-                Constant, CreateCommand, FieldDefinition, QueryCommand, Statement, UpdateCommand,
-            },
             grammar,
             predicate::{Expression, Predicate, Term},
+            statement::{
+                Constant, CreateCommand, FieldDefinition, QueryData, Statement, UpdateCommand,
+            },
         },
         record::field::Spec,
     };
@@ -127,7 +127,7 @@ mod tests {
                 .unwrap(),
             Statement::UpdateCommand(UpdateCommand::Create(CreateCommand::View(
                 "view_name".to_string(),
-                QueryCommand::new(
+                QueryData::new(
                     vec!["aaa".to_string(), "bbb".to_string()],
                     vec!["table_name".to_string()],
                     Some(Predicate::new(vec![Term::Equality(

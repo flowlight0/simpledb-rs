@@ -18,7 +18,7 @@ pub struct SimpleDB {
     lock_table: Arc<Mutex<LockTable>>,
     log_manager: Arc<Mutex<LogManager>>,
     buffer_manager: Arc<Mutex<BufferManager>>,
-    pub metadata_manager: MetadataManager,
+    pub metadata_manager: Arc<Mutex<MetadataManager>>,
 }
 
 impl SimpleDB {
@@ -51,7 +51,7 @@ impl SimpleDB {
             info!("Recovering new database");
             tx.lock().unwrap().recover()?;
         }
-        let metadata_manager = MetadataManager::new(is_new, tx.clone())?;
+        let metadata_manager = Arc::new(Mutex::new(MetadataManager::new(is_new, tx.clone())?));
         tx.lock().unwrap().commit()?;
 
         Ok(SimpleDB {

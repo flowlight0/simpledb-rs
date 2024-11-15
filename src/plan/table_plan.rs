@@ -22,8 +22,9 @@ impl TablePlan {
     pub fn new(
         tx: Arc<Mutex<Transaction>>,
         table_name: &str,
-        metadata_manager: &mut MetadataManager,
+        metadata_manager: Arc<Mutex<MetadataManager>>,
     ) -> Result<Self, anyhow::Error> {
+        let mut metadata_manager = metadata_manager.lock().unwrap();
         let layout = Rc::new(
             metadata_manager
                 .get_layout(table_name, tx.clone())?
@@ -73,7 +74,7 @@ mod tests {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 3;
-        let mut db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
 
         let mut schema = Schema::new();
         schema.add_i32_field("A");
@@ -83,8 +84,9 @@ mod tests {
         let table_name = "testtable";
         let tx = Arc::new(Mutex::new(db.new_transaction()?));
 
-        db.metadata_manager
-            .create_table(table_name, &layout.schema, tx.clone())?;
+        let mut metadata_manager = db.metadata_manager.lock().unwrap();
+        metadata_manager.create_table(table_name, &layout.schema, tx.clone())?;
+
         let mut table_scan = TableScan::new(tx.clone(), table_name, layout.clone())?;
         table_scan.before_first()?;
         for i in 0..200 {
@@ -96,10 +98,11 @@ mod tests {
         tx.lock().unwrap().commit()?;
 
         let tx = Arc::new(Mutex::new(db.new_transaction()?));
-        db.metadata_manager
+        metadata_manager
             .stat_manager
             .refresh_statistics(tx.clone())?;
-        let table_plan = TablePlan::new(tx.clone(), table_name, &mut db.metadata_manager)?;
+        drop(metadata_manager);
+        let table_plan = TablePlan::new(tx.clone(), table_name, db.metadata_manager.clone())?;
         assert!(table_plan.get_num_accessed_blocks() > 0);
         assert_eq!(table_plan.get_num_output_records(), 200);
         assert!(table_plan.num_distinct_values("A") > 0);

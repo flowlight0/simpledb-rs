@@ -1,37 +1,37 @@
 use std::str::FromStr;
-use super::ast;
+use super::statement;
 use super::predicate;
 use crate::record::field::Spec;
 
 grammar;
 
-pub Statement: ast::Statement = {
-    <q:Query> => ast::Statement::Query(q),
-    <c:UpdateCommand> => ast::Statement::UpdateCommand(c),
+pub Statement: statement::Statement = {
+    <q:Query> => statement::Statement::Query(q),
+    <c:UpdateCommand> => statement::Statement::UpdateCommand(c),
 }
 
-Query: ast::QueryCommand = {
-    "SELECT" <fs:Comma<IdToken>> "FROM" <ts:Comma<IdToken>> "WHERE" <p:Predicate> => ast::QueryCommand::new(fs, ts, Some(p)),
-    "SELECT" <fs:Comma<IdToken>> "FROM" <ts:Comma<IdToken>> => ast::QueryCommand::new(fs, ts, None),
+Query: statement::QueryData = {
+    "SELECT" <fs:Comma<IdToken>> "FROM" <ts:Comma<IdToken>> "WHERE" <p:Predicate> => statement::QueryData::new(fs, ts, Some(p)),
+    "SELECT" <fs:Comma<IdToken>> "FROM" <ts:Comma<IdToken>> => statement::QueryData::new(fs, ts, None),
 }
 
-UpdateCommand: ast::UpdateCommand = {
-    "INSERT INTO" <t:IdToken> "(" <fs:Comma<IdToken>> ")" "VALUES" "(" <vs:Comma<Constant>> ")" => ast::UpdateCommand::Insert(t, fs, vs),
-    "DELETE FROM" <t:IdToken> => ast::UpdateCommand::Delete(t, None),
-    "DELETE FROM" <t:IdToken> "WHERE" <p:Predicate> => ast::UpdateCommand::Delete(t, Some(p)),
-    "MODIFY" <t:IdToken> "SET" <f:IdToken> "=" <e:Expression> => ast::UpdateCommand::Modify(t, f, e, None),
-    "MODIFY" <t:IdToken> "SET" <f:IdToken> "=" <e:Expression> "WHERE" <p:Predicate> => ast::UpdateCommand::Modify(t, f, e, Some(p)),
-    <c:CreateCommand> => ast::UpdateCommand::Create(c),
+UpdateCommand: statement::UpdateCommand = {
+    "INSERT INTO" <t:IdToken> "(" <fs:Comma<IdToken>> ")" "VALUES" "(" <vs:Comma<Constant>> ")" => statement::UpdateCommand::Insert(t, fs, vs),
+    "DELETE FROM" <t:IdToken> => statement::UpdateCommand::Delete(t, None),
+    "DELETE FROM" <t:IdToken> "WHERE" <p:Predicate> => statement::UpdateCommand::Delete(t, Some(p)),
+    "MODIFY" <t:IdToken> "SET" <f:IdToken> "=" <e:Expression> => statement::UpdateCommand::Modify(t, f, e, None),
+    "MODIFY" <t:IdToken> "SET" <f:IdToken> "=" <e:Expression> "WHERE" <p:Predicate> => statement::UpdateCommand::Modify(t, f, e, Some(p)),
+    <c:CreateCommand> => statement::UpdateCommand::Create(c),
 }
 
-CreateCommand: ast::CreateCommand = {
-    "CREATE TABLE" <t:IdToken> "(" <ds:Comma<FieldDefinition>> ")" => ast::CreateCommand::Table(t, ds),
-    "CREATE VIEW" <t:IdToken> "AS" <q:Query> => ast::CreateCommand::View(t, q),
-    "CREATE INDEX" <t:IdToken> "ON" <n:IdToken> "(" <f:IdToken> ")" => ast::CreateCommand::Index(t, n, f),
+CreateCommand: statement::CreateCommand = {
+    "CREATE TABLE" <t:IdToken> "(" <ds:Comma<FieldDefinition>> ")" => statement::CreateCommand::Table(t, ds),
+    "CREATE VIEW" <t:IdToken> "AS" <q:Query> => statement::CreateCommand::View(t, q),
+    "CREATE INDEX" <t:IdToken> "ON" <n:IdToken> "(" <f:IdToken> ")" => statement::CreateCommand::Index(t, n, f),
 }
 
-FieldDefinition: ast::FieldDefinition = {
-    <n:IdToken> <t:FieldType> => ast::FieldDefinition::new(n, t),
+FieldDefinition: statement::FieldDefinition = {
+    <n:IdToken> <t:FieldType> => statement::FieldDefinition::new(n, t),
 }
 
 FieldType: Spec = {
@@ -53,9 +53,9 @@ Expression: predicate::Expression = {
     <t:IdToken> => predicate::Expression::Field(t),
 }
 
-Constant: ast::Constant = {
-    <i:I32Constant> => ast::Constant::I32(i),
-    <s:StringConstant> => ast::Constant::String(s),
+Constant: statement::Constant = {
+    <i:I32Constant> => statement::Constant::I32(i),
+    <s:StringConstant> => statement::Constant::String(s),
 }
 
 I32Constant: i32 = {

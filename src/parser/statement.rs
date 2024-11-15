@@ -4,20 +4,20 @@ use super::predicate::{Expression, Predicate};
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Statement {
-    Query(QueryCommand),
+    Query(QueryData),
     UpdateCommand(UpdateCommand),
 }
 
 #[derive(Debug, PartialEq, Eq)]
-pub struct QueryCommand {
-    fields: Vec<String>,
-    tables: Vec<String>,
-    predicate: Option<Predicate>,
+pub struct QueryData {
+    pub fields: Vec<String>,
+    pub tables: Vec<String>,
+    pub predicate: Option<Predicate>,
 }
 
-impl QueryCommand {
+impl QueryData {
     pub fn new(fields: Vec<String>, tables: Vec<String>, predicate: Option<Predicate>) -> Self {
-        QueryCommand {
+        QueryData {
             fields,
             tables,
             predicate,
@@ -36,7 +36,7 @@ pub enum UpdateCommand {
 #[derive(Debug, PartialEq, Eq)]
 pub enum CreateCommand {
     Table(String, Vec<FieldDefinition>),
-    View(String, QueryCommand),
+    View(String, QueryData),
     Index(String, String, String),
 }
 

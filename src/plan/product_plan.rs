@@ -9,8 +9,8 @@ use crate::{
 use super::Plan;
 
 pub struct ProductPlan {
-    p1: Box<dyn Plan>,
-    p2: Box<dyn Plan>,
+    pub p1: Box<dyn Plan>,
+    pub p2: Box<dyn Plan>,
     schema: Schema,
 }
 
