@@ -3,6 +3,12 @@ name = "simpledb-rs"
 version = "0.1.0"
 edition = "2021"
 
+
+[[bin]]
+name = "client"
+path = "src/client.rs"
+
+
 [build-dependencies]
 lalrpop = "0.22.0"
 

@@ -1,5 +1,6 @@
 pub mod buffer;
 pub mod db;
+pub mod driver;
 pub mod file;
 pub mod log;
 pub mod metadata;

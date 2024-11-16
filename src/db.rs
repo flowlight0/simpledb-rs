@@ -23,7 +23,7 @@ pub struct SimpleDB {
     log_manager: Arc<Mutex<LogManager>>,
     buffer_manager: Arc<Mutex<BufferManager>>,
     pub metadata_manager: Arc<Mutex<MetadataManager>>,
-    pub planner: Planner,
+    pub planner: Arc<Mutex<Planner>>,
 }
 
 impl SimpleDB {
@@ -62,7 +62,7 @@ impl SimpleDB {
 
         let query_planner = Box::new(BasicQueryPlanner::new(metadata_manager.clone()));
         let update_planner = Box::new(BasicUpdatePlanner::new(metadata_manager.clone()));
-        let planner = Planner::new(query_planner, update_planner);
+        let planner = Arc::new(Mutex::new(Planner::new(query_planner, update_planner)));
 
         Ok(SimpleDB {
             file_manager,

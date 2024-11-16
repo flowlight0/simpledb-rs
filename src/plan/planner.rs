@@ -59,11 +59,13 @@ mod tests {
 
         let updated = db
             .planner
+            .lock()
+            .unwrap()
             .execute_update("CREATE TABLE table1 (A I32, B VARCHAR(20))", tx.clone())?;
         assert_eq!(updated, 0);
 
         for i in 0..10 {
-            let updated = db.planner.execute_update(
+            let updated = db.planner.lock().unwrap().execute_update(
                 &format!("INSERT INTO table1 (A, B) VALUES ({}, '{}')", i % 2, i),
                 tx.clone(),
             )?;
@@ -72,11 +74,15 @@ mod tests {
 
         let deleted = db
             .planner
+            .lock()
+            .unwrap()
             .execute_update("DELETE FROM table1 WHERE A = 0", tx.clone())?;
         assert_eq!(deleted, 5);
 
         let mut query = db
             .planner
+            .lock()
+            .unwrap()
             .create_query_plan("SELECT B FROM table1", tx.clone())?;
         let mut scan = query.open(tx.clone())?;
 
