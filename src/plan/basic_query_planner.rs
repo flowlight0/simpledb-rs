@@ -109,7 +109,7 @@ mod tests {
             table_scan.set_i32("A", i)?;
             table_scan.set_string("B", &i.to_string())?;
         }
-        drop(table_scan);
+        table_scan.close()?;
 
         let mut table_scan = TableScan::new(tx.clone(), "table2", layout2.clone())?;
         table_scan.before_first()?;
@@ -117,7 +117,7 @@ mod tests {
             table_scan.insert()?;
             table_scan.set_i32("C", i)?;
         }
-        drop(table_scan);
+        table_scan.close()?;
 
         let query = QueryData {
             fields: vec!["B".to_string(), "C".to_string()],
@@ -142,7 +142,7 @@ mod tests {
             assert_eq!(scan.get_string("B")?, "3");
             assert_eq!(scan.get_i32("C")?, i);
         }
-        drop(scan);
+        scan.close()?;
         tx.lock().unwrap().commit()?;
         Ok(())
     }

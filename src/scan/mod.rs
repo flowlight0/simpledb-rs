@@ -7,6 +7,7 @@ pub trait Scan {
     fn get_string(&mut self, field_name: &str) -> Result<String, anyhow::Error>;
     fn get_value(&mut self, field_name: &str) -> Result<Value, anyhow::Error>;
     fn has_field(&self, field_name: &str) -> bool;
+    fn close(&mut self) -> Result<(), anyhow::Error>;
 
     // Update operations
     #[allow(unused_variables)]

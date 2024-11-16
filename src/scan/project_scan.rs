@@ -44,6 +44,10 @@ impl Scan for ProjectScan {
     fn has_field(&self, field_name: &str) -> bool {
         self.fields.contains(&field_name.to_string())
     }
+
+    fn close(&mut self) -> Result<(), anyhow::Error> {
+        self.base_scan.close()
+    }
 }
 
 #[cfg(test)]
@@ -96,7 +100,7 @@ mod tests {
             assert_eq!(project_scan.get_i32("A")?, i);
             assert_eq!(project_scan.get_i32("C")?, i + 2);
         }
-        drop(project_scan);
+        project_scan.close()?;
         tx.lock().unwrap().commit()?;
         Ok(())
     }

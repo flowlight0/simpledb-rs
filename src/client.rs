@@ -1,4 +1,4 @@
-use std::io::stdin;
+use std::io::{stdin, stdout, Write};
 
 use simpledb_rs::{
     driver::{embedded::EmbeddedDriver, Statement},
@@ -35,15 +35,18 @@ fn do_query(statement: &mut Box<dyn Statement>, command: &str) -> Result<(), any
             let column_type = metadata.get_column_type(i);
             let width = metadata.get_column_display_size(i);
             // String fmt = "%" + md.getColumnDisplaySize(i);
+            if i > 0 {
+                print!(" ");
+            }
 
             match column_type {
                 Type::I32 => {
                     let val = result_set.get_i32(&column_name)?;
-                    print!("{:width$}", val, width = width);
+                    print!("{:>width$}", val, width = width);
                 }
                 Type::String => {
                     let val = result_set.get_string(&column_name)?;
-                    print!("{:width$}", val, width = width);
+                    print!("{:>width$}", val, width = width);
                 }
             }
         }
@@ -61,6 +64,7 @@ fn do_update(statement: &mut Box<dyn Statement>, command: &str) -> Result<(), an
 
 fn main() -> Result<(), anyhow::Error> {
     print!("Connect> ");
+    stdout().flush()?;
     let mut db_url = String::new();
     stdin().read_line(&mut db_url).unwrap();
 
@@ -74,6 +78,7 @@ fn main() -> Result<(), anyhow::Error> {
     let mut statement = connection.create_statement()?;
 
     print!("\nSQL ({})> ", &db_name);
+    stdout().flush()?;
     loop {
         // process one line of input
         let mut command = String::new();
@@ -93,6 +98,7 @@ fn main() -> Result<(), anyhow::Error> {
             connection.rollback()?;
         }
         print!("\nSQL ({})> ", &db_name);
+        stdout().flush()?;
     }
     connection.commit()?;
     connection.close()?;

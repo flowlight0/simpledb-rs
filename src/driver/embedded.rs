@@ -84,7 +84,7 @@ impl ResultSet for EmbeddedResultSet {
     }
 
     fn close(&mut self) -> Result<(), anyhow::Error> {
-        // self.scan.close()?;
+        self.scan.close()?;
         self.connection.borrow_mut().commit()
     }
 }

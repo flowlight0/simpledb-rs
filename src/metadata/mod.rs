@@ -96,8 +96,7 @@ mod tests {
             table_scan.set_i32("A", i)?;
             table_scan.set_string("B", &i.to_string())?;
         }
-
-        drop(table_scan);
+        table_scan.close()?;
 
         let stat_info = metadata_manager.get_stat_info("testtable", layout.clone(), tx.clone())?;
         assert_eq!(stat_info.get_num_records(), 50);

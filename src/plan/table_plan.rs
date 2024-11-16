@@ -94,7 +94,7 @@ mod tests {
             table_scan.set_i32("A", i)?;
             table_scan.set_string("B", &i.to_string())?;
         }
-        drop(table_scan);
+        table_scan.close()?;
         tx.lock().unwrap().commit()?;
 
         let tx = Arc::new(Mutex::new(db.new_transaction()?));

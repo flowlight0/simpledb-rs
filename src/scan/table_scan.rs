@@ -56,16 +56,6 @@ impl TableScan {
     }
 }
 
-impl Drop for TableScan {
-    fn drop(&mut self) {
-        self.record_page
-            .tx
-            .lock()
-            .unwrap()
-            .unpin(&self.record_page.block);
-    }
-}
-
 impl Scan for TableScan {
     fn before_first(&mut self) -> Result<(), anyhow::Error> {
         let block = BlockId::get_first_block(&self.file_name);
@@ -128,6 +118,15 @@ impl Scan for TableScan {
 
     fn has_field(&self, field_name: &str) -> bool {
         self.record_page.layout.has_field(field_name)
+    }
+
+    fn close(&mut self) -> Result<(), anyhow::Error> {
+        self.record_page
+            .tx
+            .lock()
+            .unwrap()
+            .unpin(&self.record_page.block);
+        Ok(())
     }
 
     fn set_i32(&mut self, field_name: &str, value: i32) -> Result<(), anyhow::Error> {
@@ -244,7 +243,7 @@ mod tests {
             assert_eq!(string_value, (i * 2 + 1).to_string());
         }
         assert!(!table_scan.next()?);
-        drop(table_scan);
+        table_scan.close()?;
         tx.lock().unwrap().commit()?;
         Ok(())
     }

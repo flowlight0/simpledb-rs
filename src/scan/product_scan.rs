@@ -56,6 +56,11 @@ impl Scan for ProductScan {
     fn has_field(&self, field_name: &str) -> bool {
         self.scan1.has_field(field_name) || self.scan2.has_field(field_name)
     }
+
+    fn close(&mut self) -> Result<(), anyhow::Error> {
+        self.scan1.close()?;
+        self.scan2.close()
+    }
 }
 
 #[cfg(test)]
@@ -123,7 +128,7 @@ mod tests {
             }
         }
         assert!(!product_scan.next()?);
-        drop(product_scan);
+        product_scan.close()?;
         tx1.lock().unwrap().commit()?;
         tx2.lock().unwrap().commit()?;
         Ok(())
