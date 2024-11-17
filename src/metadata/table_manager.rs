@@ -150,7 +150,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_table_manager() -> Result<(), anyhow::Error> {
+    fn test_table_manager() -> Result<(), TransactionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let db = SimpleDB::new(temp_dir, block_size, 3)?;

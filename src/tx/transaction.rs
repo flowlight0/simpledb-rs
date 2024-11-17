@@ -320,10 +320,10 @@ impl Transaction {
 
 #[cfg(test)]
 mod tests {
-    use crate::db::SimpleDB;
+    use crate::{db::SimpleDB, tx::errors::TransactionError};
 
     #[test]
-    fn test_transaction() -> Result<(), anyhow::Error> {
+    fn test_transaction() -> Result<(), TransactionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let db = SimpleDB::new(temp_dir, block_size, 3)?;

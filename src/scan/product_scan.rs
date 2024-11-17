@@ -80,7 +80,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_product_scan() -> Result<(), anyhow::Error> {
+    fn test_product_scan() -> Result<(), TransactionError> {
         let mut schema1 = Schema::new();
         schema1.add_i32_field("A");
         schema1.add_string_field("B", 20);

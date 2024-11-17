@@ -215,12 +215,13 @@ mod tests {
     use crate::{
         db::SimpleDB,
         record::{layout::Layout, schema::Schema},
+        tx::errors::TransactionError,
     };
 
     use super::{RecordPage, Slot};
 
     #[test]
-    fn test_record_page() -> Result<(), anyhow::Error> {
+    fn test_record_page() -> Result<(), TransactionError> {
         let mut schema = Schema::new();
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);

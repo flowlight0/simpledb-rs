@@ -80,7 +80,7 @@ mod tests {
     use crate::scan::Scan;
 
     #[test]
-    fn test_basic_query_planner() -> Result<(), anyhow::Error> {
+    fn test_basic_query_planner() -> Result<(), TransactionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 100;

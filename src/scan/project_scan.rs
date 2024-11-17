@@ -67,7 +67,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_project_scan() -> Result<(), anyhow::Error> {
+    fn test_project_scan() -> Result<(), TransactionError> {
         let mut schema = Schema::new();
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);

@@ -67,9 +67,10 @@ mod tests {
     use crate::record::schema::Schema;
     use crate::scan::table_scan::TableScan;
     use crate::scan::Scan;
+    use crate::tx::errors::TransactionError;
 
     #[test]
-    fn test_metadata_manager() -> Result<(), anyhow::Error> {
+    fn test_metadata_manager() -> Result<(), TransactionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 3;

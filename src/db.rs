@@ -31,7 +31,7 @@ impl SimpleDB {
         directory: PathBuf,
         block_size: usize,
         num_buffers: usize,
-    ) -> Result<SimpleDB, anyhow::Error> {
+    ) -> Result<SimpleDB, TransactionError> {
         let file_manager = Arc::new(Mutex::new(FileManager::new(directory, block_size)));
         let lock_table = Arc::new(Mutex::new(LockTable::new(10)));
         let log_manager = LogManager::new(file_manager.clone(), "log".into())?;
