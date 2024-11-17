@@ -1,8 +1,10 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    parser::predicate::Predicate, record::schema::Schema, scan::select_scan::SelectScan,
-    tx::transaction::Transaction,
+    parser::predicate::Predicate,
+    record::schema::Schema,
+    scan::select_scan::SelectScan,
+    tx::{errors::TransactionError, transaction::Transaction},
 };
 
 use super::Plan;
@@ -49,7 +51,7 @@ impl Plan for SelectPlan {
     fn open(
         &mut self,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Box<dyn crate::scan::Scan>, anyhow::Error> {
+    ) -> Result<Box<dyn crate::scan::Scan>, TransactionError> {
         let base_scan = self.plan.open(tx)?;
         Ok(Box::new(SelectScan::new(base_scan, self.predicate.clone())))
     }

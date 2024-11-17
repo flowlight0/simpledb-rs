@@ -1,7 +1,9 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    metadata::MetadataManager, parser::statement::QueryData, tx::transaction::Transaction,
+    metadata::MetadataManager,
+    parser::statement::QueryData,
+    tx::{errors::TransactionError, transaction::Transaction},
 };
 
 use super::{product_plan::ProductPlan, table_plan::TablePlan, Plan, QueryPlanner};
@@ -21,7 +23,7 @@ impl QueryPlanner for BasicQueryPlanner {
         &self,
         query: &QueryData,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Box<dyn super::Plan>, anyhow::Error> {
+    ) -> Result<Box<dyn super::Plan>, TransactionError> {
         // Step 1
         let mut plans = vec![];
         for table_name in &query.tables {

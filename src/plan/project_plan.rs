@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use crate::{
     record::schema::Schema,
     scan::{project_scan::ProjectScan, Scan},
-    tx::transaction::Transaction,
+    tx::{errors::TransactionError, transaction::Transaction},
 };
 
 use super::Plan;
@@ -41,7 +41,7 @@ impl Plan for ProjectPlan {
         &self.schema
     }
 
-    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, anyhow::Error> {
+    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, TransactionError> {
         let scan = self.plan.open(tx)?;
         Ok(Box::new(ProjectScan::new(scan, self.schema.get_fields())))
     }

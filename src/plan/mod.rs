@@ -4,7 +4,7 @@ use crate::{
     parser::statement::{QueryData, UpdateCommand},
     record::schema::Schema,
     scan::Scan,
-    tx::transaction::Transaction,
+    tx::{errors::TransactionError, transaction::Transaction},
 };
 pub mod basic_query_planner;
 pub mod basic_update_planner;
@@ -19,7 +19,7 @@ pub trait Plan {
     fn get_num_output_records(&self) -> usize;
     fn num_distinct_values(&self, field_name: &str) -> usize;
     fn schema(&self) -> &Schema;
-    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, anyhow::Error>;
+    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, TransactionError>;
 }
 
 pub trait QueryPlanner {
@@ -27,7 +27,7 @@ pub trait QueryPlanner {
         &self,
         query: &QueryData,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Box<dyn Plan>, anyhow::Error>;
+    ) -> Result<Box<dyn Plan>, TransactionError>;
 }
 
 pub trait UpdatePlanner {
@@ -35,5 +35,5 @@ pub trait UpdatePlanner {
         &self,
         update_command: &UpdateCommand,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, anyhow::Error>;
+    ) -> Result<usize, TransactionError>;
 }

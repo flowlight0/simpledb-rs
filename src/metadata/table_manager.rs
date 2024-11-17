@@ -6,7 +6,7 @@ use std::{
 use crate::{
     record::{layout::Layout, schema::Schema},
     scan::{table_scan::TableScan, Scan},
-    tx::transaction::Transaction,
+    tx::{errors::TransactionError, transaction::Transaction},
 };
 
 const TABLE_NAME_MAX_LENGTH: usize = 50;
@@ -41,7 +41,7 @@ fn create_table(
     tx: Arc<Mutex<Transaction>>,
     tcat_layout: Rc<Layout>,
     fcat_layout: Rc<Layout>,
-) -> Result<(), anyhow::Error> {
+) -> Result<(), TransactionError> {
     let layout = Layout::new(schema.clone());
     {
         let mut tcat = TableScan::new(tx.clone(), "tblcat", tcat_layout)?;
@@ -72,7 +72,7 @@ fn create_table(
 }
 
 impl TableManager {
-    pub fn new(is_new: bool, tx: Arc<Mutex<Transaction>>) -> Result<Self, anyhow::Error> {
+    pub fn new(is_new: bool, tx: Arc<Mutex<Transaction>>) -> Result<Self, TransactionError> {
         let tcat_layout = Rc::new(create_tcat_layout());
         let fcat_layout = Rc::new(create_fcat_layout());
         if is_new {
@@ -103,7 +103,7 @@ impl TableManager {
         table_name: &str,
         schema: &Schema,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<(), anyhow::Error> {
+    ) -> Result<(), TransactionError> {
         create_table(
             table_name,
             &schema,
@@ -117,7 +117,7 @@ impl TableManager {
         &self,
         table_name: &str,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Option<Layout>, anyhow::Error> {
+    ) -> Result<Option<Layout>, TransactionError> {
         let mut schema = Schema::new();
         let mut fcat = TableScan::new(tx, "fldcat", self.fcat_layout.clone())?;
         while fcat.next()? {

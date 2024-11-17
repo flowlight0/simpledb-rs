@@ -7,7 +7,7 @@ use crate::{
     metadata::{stat_manager::StatInfo, MetadataManager},
     record::{layout::Layout, schema::Schema},
     scan::{table_scan::TableScan, Scan},
-    tx::transaction::Transaction,
+    tx::{errors::TransactionError, transaction::Transaction},
 };
 
 use super::Plan;
@@ -23,7 +23,7 @@ impl TablePlan {
         tx: Arc<Mutex<Transaction>>,
         table_name: &str,
         metadata_manager: Arc<Mutex<MetadataManager>>,
-    ) -> Result<Self, anyhow::Error> {
+    ) -> Result<Self, TransactionError> {
         let mut metadata_manager = metadata_manager.lock().unwrap();
         let layout = Rc::new(
             metadata_manager
@@ -56,7 +56,7 @@ impl Plan for TablePlan {
         &self.layout.schema
     }
 
-    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, anyhow::Error> {
+    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, TransactionError> {
         let table_scan = TableScan::new(tx, &self.table_name, self.layout.clone())?;
         Ok(Box::new(table_scan))
     }

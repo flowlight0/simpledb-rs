@@ -8,7 +8,7 @@ use table_manager::TableManager;
 
 use crate::{
     record::{layout::Layout, schema::Schema},
-    tx::transaction::Transaction,
+    tx::{errors::TransactionError, transaction::Transaction},
 };
 
 pub mod stat_manager;
@@ -20,7 +20,7 @@ pub struct MetadataManager {
 }
 
 impl MetadataManager {
-    pub fn new(is_new: bool, tx: Arc<Mutex<Transaction>>) -> Result<Self, anyhow::Error> {
+    pub fn new(is_new: bool, tx: Arc<Mutex<Transaction>>) -> Result<Self, TransactionError> {
         let table_manager = TableManager::new(is_new, tx.clone())?;
         let stat_manager = StatManager::new(&table_manager)?;
         Ok(Self {
@@ -34,7 +34,7 @@ impl MetadataManager {
         table_name: &str,
         schema: &Schema,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<(), anyhow::Error> {
+    ) -> Result<(), TransactionError> {
         self.table_manager.create_table(table_name, schema, tx)
     }
 
@@ -42,7 +42,7 @@ impl MetadataManager {
         &self,
         table_name: &str,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Option<Layout>, anyhow::Error> {
+    ) -> Result<Option<Layout>, TransactionError> {
         self.table_manager.get_layout(table_name, tx)
     }
 
@@ -51,7 +51,7 @@ impl MetadataManager {
         table_name: &str,
         layout: Rc<Layout>,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<StatInfo, anyhow::Error> {
+    ) -> Result<StatInfo, TransactionError> {
         self.stat_manager.get_stat_info(table_name, layout, tx)
     }
 }

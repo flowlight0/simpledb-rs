@@ -7,7 +7,7 @@ use crate::{
         statement::{CreateCommand, UpdateCommand},
     },
     record::{field::Value, schema::Schema},
-    tx::transaction::Transaction,
+    tx::{errors::TransactionError, transaction::Transaction},
 };
 
 use super::{select_plan::SelectPlan, table_plan::TablePlan, Plan, UpdatePlanner};
@@ -27,7 +27,7 @@ impl BasicUpdatePlanner {
         fields: &Vec<String>,
         values: &Vec<Value>,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, anyhow::Error> {
+    ) -> Result<usize, TransactionError> {
         let mut table_plan = TablePlan::new(tx.clone(), table_name, self.metadata_manager.clone())?;
         let mut table_scan = table_plan.open(tx)?;
         table_scan.insert()?;
@@ -43,7 +43,7 @@ impl BasicUpdatePlanner {
         table_name: &str,
         predicate: &Option<Predicate>,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, anyhow::Error> {
+    ) -> Result<usize, TransactionError> {
         let table_plan = TablePlan::new(tx.clone(), table_name, self.metadata_manager.clone())?;
         let mut plan: Box<dyn Plan> = if let Some(predicate) = predicate {
             Box::new(SelectPlan::new(Box::new(table_plan), predicate.clone()))
@@ -67,7 +67,7 @@ impl BasicUpdatePlanner {
         expression: &Expression,
         predicate: &Option<Predicate>,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, anyhow::Error> {
+    ) -> Result<usize, TransactionError> {
         let table_plan = TablePlan::new(tx.clone(), table_name, self.metadata_manager.clone())?;
         let mut plan: Box<dyn Plan> = if let Some(predicate) = predicate {
             Box::new(SelectPlan::new(Box::new(table_plan), predicate.clone()))
@@ -90,7 +90,7 @@ impl BasicUpdatePlanner {
         &self,
         create_command: &CreateCommand,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, anyhow::Error> {
+    ) -> Result<usize, TransactionError> {
         match create_command {
             CreateCommand::Table(table_name, fields) => {
                 let schema = Schema::create_from(&fields);
@@ -108,7 +108,7 @@ impl UpdatePlanner for BasicUpdatePlanner {
         &self,
         update_command: &UpdateCommand,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, anyhow::Error> {
+    ) -> Result<usize, TransactionError> {
         match update_command {
             UpdateCommand::Insert(table_name, fields, values) => {
                 self.insert(table_name, fields, values, tx)

@@ -30,7 +30,7 @@ impl Planner {
     ) -> Result<Box<dyn Plan>, anyhow::Error> {
         // Discard the parse error because it requires static lifetime for the query
         let query_data = QueryParser::new().parse(query).unwrap();
-        self.query_planner.create_plan(&query_data, tx)
+        Ok(self.query_planner.create_plan(&query_data, tx)?)
     }
 
     pub fn execute_update(
@@ -40,7 +40,7 @@ impl Planner {
     ) -> Result<usize, anyhow::Error> {
         // Discard the parse error because it requires static lifetime for the update_command
         let update_command = UpdateCommandParser::new().parse(&update_command).unwrap();
-        self.update_planner.execute_update(&update_command, tx)
+        Ok(self.update_planner.execute_update(&update_command, tx)?)
     }
 }
 
