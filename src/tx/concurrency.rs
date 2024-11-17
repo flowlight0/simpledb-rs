@@ -3,22 +3,14 @@ use std::{
     sync::{Arc, Condvar, Mutex},
     time::Instant,
 };
-use thiserror::Error;
 
 use crate::file::BlockId;
+
+use super::errors::TransactionError;
 
 enum Lock {
     Exclusive,
     Shared(usize),
-}
-
-#[derive(Error, Debug)]
-pub struct LockGiveUpError {}
-
-impl std::fmt::Display for LockGiveUpError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "LockGiveUpError")
-    }
 }
 
 // We assume that each transaction always gets a shared lock before getting an exclusive lock.
@@ -57,18 +49,18 @@ impl LockTable {
         }
     }
 
-    fn lock_shared(&self, block: &BlockId) -> Result<(), LockGiveUpError> {
+    fn lock_shared(&self, block: &BlockId) -> Result<(), TransactionError> {
         let start_time = Instant::now();
         let mut locks = self.locks.lock().unwrap();
         while has_exclusive_lock(&locks, block) {
             if start_time.elapsed().as_millis() > self.lock_maxtime {
-                return Err(LockGiveUpError {});
+                return Err(TransactionError::LockGiveUpError);
             }
             let duration = std::time::Duration::from_millis(self.lock_maxtime as u64);
             let lock_result = self.condvar.wait_timeout(locks, duration).unwrap();
             locks = lock_result.0;
             if lock_result.1.timed_out() {
-                return Err(LockGiveUpError {});
+                return Err(TransactionError::LockGiveUpError);
             }
         }
         assert!(!has_exclusive_lock(&locks, block));
@@ -82,19 +74,19 @@ impl LockTable {
         Ok(())
     }
 
-    fn lock_exclusive(&self, block: &BlockId) -> Result<(), LockGiveUpError> {
+    fn lock_exclusive(&self, block: &BlockId) -> Result<(), TransactionError> {
         let start_time = Instant::now();
         let mut locks = self.locks.lock().unwrap();
         while has_multiple_shared_locks(&locks, block) {
             if start_time.elapsed().as_millis() > self.lock_maxtime {
-                return Err(LockGiveUpError {});
+                return Err(TransactionError::LockGiveUpError);
             }
 
             let duration = std::time::Duration::from_millis(self.lock_maxtime as u64);
             let lock_result = self.condvar.wait_timeout(locks, duration).unwrap();
             locks = lock_result.0;
             if lock_result.1.timed_out() {
-                return Err(LockGiveUpError {});
+                return Err(TransactionError::LockGiveUpError);
             }
         }
         assert!(!has_multiple_shared_locks(&locks, block));
@@ -144,7 +136,7 @@ impl ConcurrencyManager {
         }
     }
 
-    pub fn lock_shared(&mut self, block: &BlockId) -> Result<(), LockGiveUpError> {
+    pub fn lock_shared(&mut self, block: &BlockId) -> Result<(), TransactionError> {
         match self.my_locks.get(&block) {
             Some(Lock::Shared(_)) => Ok(()),
             Some(Lock::Exclusive) => Ok(()),
@@ -156,7 +148,7 @@ impl ConcurrencyManager {
         }
     }
 
-    pub fn lock_exclusive(&mut self, block: &BlockId) -> Result<(), LockGiveUpError> {
+    pub fn lock_exclusive(&mut self, block: &BlockId) -> Result<(), TransactionError> {
         match self.my_locks.get(block) {
             Some(Lock::Exclusive) => Ok(()),
             _ => {

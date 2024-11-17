@@ -14,7 +14,7 @@ use crate::{
         basic_query_planner::BasicQueryPlanner, basic_update_planner::BasicUpdatePlanner,
         planner::Planner,
     },
-    tx::{concurrency::LockTable, transaction::Transaction},
+    tx::{concurrency::LockTable, errors::TransactionError, transaction::Transaction},
 };
 
 pub struct SimpleDB {
@@ -74,7 +74,7 @@ impl SimpleDB {
         })
     }
 
-    pub fn new_transaction(&self) -> Result<Transaction, anyhow::Error> {
+    pub fn new_transaction(&self) -> Result<Transaction, TransactionError> {
         Transaction::new(
             self.file_manager.clone(),
             self.log_manager.clone(),

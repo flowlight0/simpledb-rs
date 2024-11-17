@@ -62,6 +62,7 @@ impl RecordPage {
             .lock()
             .unwrap()
             .get_i32(&self.block, self.offset(slot) + field_offset)
+            .map_err(|e| anyhow::Error::new(e))
     }
 
     pub fn set_i32(
@@ -86,6 +87,7 @@ impl RecordPage {
             .lock()
             .unwrap()
             .get_string(&self.block, self.offset(slot) + field_offset)
+            .map_err(|e| anyhow::Error::new(e))
     }
 
     pub fn set_string(

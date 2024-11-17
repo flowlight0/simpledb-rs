@@ -5,6 +5,7 @@ use thiserror::Error;
 use crate::file::{BlockId, FileManager};
 use crate::log::manager::LogManager;
 use crate::page::Page;
+use crate::tx::errors::TransactionError;
 
 const PIN_TIME_LIMIT_IN_MILLIS: u128 = 5_000;
 
@@ -168,7 +169,7 @@ impl BufferManager {
         self.condvar.notify_all();
     }
 
-    pub fn pin(&mut self, block: &BlockId) -> Result<usize, anyhow::Error> {
+    pub fn pin(&mut self, block: &BlockId) -> Result<usize, TransactionError> {
         let timestamp = Instant::now();
         while timestamp.elapsed().as_millis() < PIN_TIME_LIMIT_IN_MILLIS {
             let mut buffers = self.buffers.lock().unwrap();
@@ -184,7 +185,7 @@ impl BufferManager {
                     .unwrap();
             }
         }
-        Err(anyhow::Error::new(BufferAbortError {}))
+        Err(TransactionError::BufferAbortError)
     }
 
     pub fn flush_all(&self, transaction_id: usize) -> Result<(), std::io::Error> {
@@ -203,7 +204,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_buffer_manager() -> Result<(), anyhow::Error> {
+    fn test_buffer_manager() -> Result<(), TransactionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
 

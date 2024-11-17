@@ -8,6 +8,7 @@ use crate::log::manager::LogManager;
 use crate::log::record::LogRecord;
 
 use super::concurrency::{ConcurrencyManager, LockTable};
+use super::errors::TransactionError;
 
 pub struct Transaction {
     file_manager: Arc<Mutex<FileManager>>,
@@ -28,7 +29,7 @@ impl Transaction {
         log_manager: Arc<Mutex<LogManager>>,
         buffer_manager: Arc<Mutex<BufferManager>>,
         lock_table: Arc<Mutex<LockTable>>,
-    ) -> Result<Self, anyhow::Error> {
+    ) -> Result<Self, TransactionError> {
         let concurrency_manager = ConcurrencyManager::new(lock_table.clone());
         let id = TRANSACTION_ID.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
         let block_size = file_manager.lock().unwrap().block_size;
@@ -45,7 +46,7 @@ impl Transaction {
         })
     }
 
-    pub fn commit(&mut self) -> Result<(), anyhow::Error> {
+    pub fn commit(&mut self) -> Result<(), TransactionError> {
         {
             let buffer_manager = self.buffer_manager.lock().unwrap();
             buffer_manager.flush_all(self.id)?;
@@ -62,7 +63,7 @@ impl Transaction {
         Ok(())
     }
 
-    pub fn rollback(&mut self) -> Result<(), anyhow::Error> {
+    pub fn rollback(&mut self) -> Result<(), TransactionError> {
         self.do_rollback()?;
 
         {
@@ -84,7 +85,7 @@ impl Transaction {
     // "Quiescent Checkpointing" is currently implemented
     // This method is not thread-safe.
     // TODO: understand why we need to flush all buffers twice.
-    pub fn recover(&mut self) -> Result<(), anyhow::Error> {
+    pub fn recover(&mut self) -> Result<(), TransactionError> {
         {
             let buffer_manager = self.buffer_manager.lock().unwrap();
             buffer_manager.flush_all(self.id)?;
@@ -102,7 +103,7 @@ impl Transaction {
         Ok(())
     }
 
-    pub fn pin(&mut self, block: &BlockId) -> Result<(), anyhow::Error> {
+    pub fn pin(&mut self, block: &BlockId) -> Result<(), TransactionError> {
         let mut buffer_manager = self.buffer_manager.lock().unwrap();
         let buffer_index = buffer_manager.pin(block)?;
 
@@ -125,7 +126,7 @@ impl Transaction {
     }
 
     // Block with block_id must be pinned before calling this method.
-    pub fn get_i32(&mut self, block: &BlockId, offset: usize) -> Result<i32, anyhow::Error> {
+    pub fn get_i32(&mut self, block: &BlockId, offset: usize) -> Result<i32, TransactionError> {
         self.concurrency_manager.lock_shared(block)?;
         let &buffer_index = self.block_to_buffer_map.get(&block).unwrap();
         let buffer_manager = self.buffer_manager.lock().unwrap();
@@ -141,7 +142,7 @@ impl Transaction {
         offset: usize,
         value: i32,
         is_log_needed: bool,
-    ) -> Result<usize, anyhow::Error> {
+    ) -> Result<usize, TransactionError> {
         self.concurrency_manager.lock_exclusive(block)?;
         let &buffer_index = self.block_to_buffer_map.get(&block).unwrap();
         let buffer_manager = self.buffer_manager.lock().unwrap();
@@ -165,7 +166,11 @@ impl Transaction {
     }
 
     // Block with block_id must be pinned before calling this method.
-    pub fn get_string(&mut self, block: &BlockId, offset: usize) -> Result<String, anyhow::Error> {
+    pub fn get_string(
+        &mut self,
+        block: &BlockId,
+        offset: usize,
+    ) -> Result<String, TransactionError> {
         self.concurrency_manager.lock_shared(block)?;
         let &buffer_index = self.block_to_buffer_map.get(&block).unwrap();
         let buffer_manager = self.buffer_manager.lock().unwrap();
@@ -184,7 +189,7 @@ impl Transaction {
         offset: usize,
         value: &str,
         is_log_needed: bool,
-    ) -> Result<usize, anyhow::Error> {
+    ) -> Result<usize, TransactionError> {
         self.concurrency_manager.lock_exclusive(block)?;
         let &buffer_index = self.block_to_buffer_map.get(&block).unwrap();
         let buffer_manager = self.buffer_manager.lock().unwrap();
@@ -212,7 +217,7 @@ impl Transaction {
         Ok(written_length)
     }
 
-    pub fn append_block(&mut self, file_name: &str) -> Result<BlockId, anyhow::Error> {
+    pub fn append_block(&mut self, file_name: &str) -> Result<BlockId, TransactionError> {
         let dummy = BlockId::create_dummy(file_name);
         self.concurrency_manager.lock_exclusive(&dummy)?;
         let block = self.file_manager.lock().unwrap().append_block(file_name)?;
@@ -223,19 +228,19 @@ impl Transaction {
         self.block_size
     }
 
-    pub fn is_last_block(&mut self, block: &BlockId) -> Result<bool, anyhow::Error> {
+    pub fn is_last_block(&mut self, block: &BlockId) -> Result<bool, TransactionError> {
         let dummy = BlockId::create_dummy(&block.file_name);
         self.concurrency_manager.lock_shared(&dummy)?;
         Ok(self.get_num_blocks(&block.file_name)? == block.block_slot + 1)
     }
 
-    pub fn get_num_blocks(&mut self, file_name: &str) -> Result<usize, anyhow::Error> {
+    pub fn get_num_blocks(&mut self, file_name: &str) -> Result<usize, TransactionError> {
         let dummy = BlockId::create_dummy(file_name);
         self.concurrency_manager.lock_shared(&dummy)?;
         Ok(self.file_manager.lock().unwrap().get_num_blocks(file_name))
     }
 
-    fn do_rollback(&mut self) -> Result<(), anyhow::Error> {
+    fn do_rollback(&mut self) -> Result<(), TransactionError> {
         let mut log_manager = self.log_manager.lock().unwrap();
         let log_iter = log_manager.get_backward_iter()?;
         let mut log_records = vec![];
@@ -255,7 +260,7 @@ impl Transaction {
         Ok(())
     }
 
-    fn do_recover(&mut self) -> Result<(), anyhow::Error> {
+    fn do_recover(&mut self) -> Result<(), TransactionError> {
         let mut log_manager = self.log_manager.lock().unwrap();
         let log_iter = log_manager.get_backward_iter()?;
         let mut finshed_transactions = HashSet::new();
@@ -283,7 +288,7 @@ impl Transaction {
         Ok(())
     }
 
-    fn undo_update(&mut self, log_record: &LogRecord) -> Result<(), anyhow::Error> {
+    fn undo_update(&mut self, log_record: &LogRecord) -> Result<(), TransactionError> {
         match log_record {
             LogRecord::SetI32(_, block, offset, old_value, _) => {
                 self.pin(block)?;
