@@ -1,4 +1,4 @@
-use crate::{plan::Plan, record::field::Value, scan::Scan};
+use crate::{errors::TransactionError, plan::Plan, record::field::Value, scan::Scan};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Expression {
@@ -8,7 +8,7 @@ pub enum Expression {
 }
 
 impl Expression {
-    pub fn evaluate(&self, scan: &mut Box<dyn Scan>) -> Result<Value, anyhow::Error> {
+    pub fn evaluate(&self, scan: &mut Box<dyn Scan>) -> Result<Value, TransactionError> {
         match self {
             Expression::I32Constant(value) => Ok(Value::I32(*value)),
             Expression::StringConstant(value) => Ok(Value::String(value.clone())),
@@ -16,7 +16,7 @@ impl Expression {
                 if scan.has_field(field_name) {
                     scan.get_value(field_name)
                 } else {
-                    Err(anyhow::anyhow!("Field {} not found", field_name))
+                    panic!("Field {} not found", field_name)
                 }
             }
         }
@@ -44,7 +44,7 @@ pub enum Term {
 }
 
 impl Term {
-    pub fn is_satisfied(&self, scan: &mut Box<dyn Scan>) -> Result<bool, anyhow::Error> {
+    pub fn is_satisfied(&self, scan: &mut Box<dyn Scan>) -> Result<bool, TransactionError> {
         match self {
             Term::Equality(lhs, rhs) => {
                 let lhs = lhs.evaluate(scan)?;
@@ -139,7 +139,7 @@ impl Predicate {
         Predicate { terms }
     }
 
-    pub fn is_satisfied(&self, scan: &mut Box<dyn Scan>) -> Result<bool, anyhow::Error> {
+    pub fn is_satisfied(&self, scan: &mut Box<dyn Scan>) -> Result<bool, TransactionError> {
         for term in &self.terms {
             if !term.is_satisfied(scan)? {
                 return Ok(false);

@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
+    errors::TransactionError,
     metadata::MetadataManager,
     parser::{
         predicate::{Expression, Predicate},
@@ -27,7 +28,7 @@ impl BasicUpdatePlanner {
         fields: &Vec<String>,
         values: &Vec<Value>,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, anyhow::Error> {
+    ) -> Result<usize, TransactionError> {
         let mut table_plan = TablePlan::new(tx.clone(), table_name, self.metadata_manager.clone())?;
         let mut table_scan = table_plan.open(tx)?;
         table_scan.insert()?;
@@ -43,7 +44,7 @@ impl BasicUpdatePlanner {
         table_name: &str,
         predicate: &Option<Predicate>,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, anyhow::Error> {
+    ) -> Result<usize, TransactionError> {
         let table_plan = TablePlan::new(tx.clone(), table_name, self.metadata_manager.clone())?;
         let mut plan: Box<dyn Plan> = if let Some(predicate) = predicate {
             Box::new(SelectPlan::new(Box::new(table_plan), predicate.clone()))
@@ -67,7 +68,7 @@ impl BasicUpdatePlanner {
         expression: &Expression,
         predicate: &Option<Predicate>,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, anyhow::Error> {
+    ) -> Result<usize, TransactionError> {
         let table_plan = TablePlan::new(tx.clone(), table_name, self.metadata_manager.clone())?;
         let mut plan: Box<dyn Plan> = if let Some(predicate) = predicate {
             Box::new(SelectPlan::new(Box::new(table_plan), predicate.clone()))
@@ -90,7 +91,7 @@ impl BasicUpdatePlanner {
         &self,
         create_command: &CreateCommand,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, anyhow::Error> {
+    ) -> Result<usize, TransactionError> {
         match create_command {
             CreateCommand::Table(table_name, fields) => {
                 let schema = Schema::create_from(&fields);
@@ -108,7 +109,7 @@ impl UpdatePlanner for BasicUpdatePlanner {
         &self,
         update_command: &UpdateCommand,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, anyhow::Error> {
+    ) -> Result<usize, TransactionError> {
         match update_command {
             UpdateCommand::Insert(table_name, fields, values) => {
                 self.insert(table_name, fields, values, tx)
@@ -135,7 +136,7 @@ mod tests {
     use crate::record::field::Spec;
 
     #[test]
-    fn test_basic_update_planner() -> Result<(), anyhow::Error> {
+    fn test_basic_update_planner() -> Result<(), TransactionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 100;

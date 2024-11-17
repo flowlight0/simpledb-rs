@@ -1,4 +1,4 @@
-use crate::record::field::Value;
+use crate::{errors::TransactionError, record::field::Value};
 
 use super::Scan;
 
@@ -14,13 +14,13 @@ impl ProductScan {
 }
 
 impl Scan for ProductScan {
-    fn before_first(&mut self) -> Result<(), anyhow::Error> {
+    fn before_first(&mut self) -> Result<(), TransactionError> {
         self.scan1.before_first()?;
         self.scan1.next()?;
         self.scan2.before_first()
     }
 
-    fn next(&mut self) -> Result<bool, anyhow::Error> {
+    fn next(&mut self) -> Result<bool, TransactionError> {
         if self.scan2.next()? {
             Ok(true)
         } else {
@@ -29,7 +29,7 @@ impl Scan for ProductScan {
         }
     }
 
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, anyhow::Error> {
+    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
         if self.scan1.has_field(field_name) {
             self.scan1.get_i32(field_name)
         } else {
@@ -37,7 +37,7 @@ impl Scan for ProductScan {
         }
     }
 
-    fn get_string(&mut self, field_name: &str) -> Result<String, anyhow::Error> {
+    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError> {
         if self.scan1.has_field(field_name) {
             self.scan1.get_string(field_name)
         } else {
@@ -45,7 +45,7 @@ impl Scan for ProductScan {
         }
     }
 
-    fn get_value(&mut self, field_name: &str) -> Result<Value, anyhow::Error> {
+    fn get_value(&mut self, field_name: &str) -> Result<Value, TransactionError> {
         if self.scan1.has_field(field_name) {
             self.scan1.get_value(field_name)
         } else {
@@ -57,7 +57,7 @@ impl Scan for ProductScan {
         self.scan1.has_field(field_name) || self.scan2.has_field(field_name)
     }
 
-    fn close(&mut self) -> Result<(), anyhow::Error> {
+    fn close(&mut self) -> Result<(), TransactionError> {
         self.scan1.close()?;
         self.scan2.close()
     }
@@ -80,7 +80,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_product_scan() -> Result<(), anyhow::Error> {
+    fn test_product_scan() -> Result<(), TransactionError> {
         let mut schema1 = Schema::new();
         schema1.add_i32_field("A");
         schema1.add_string_field("B", 20);

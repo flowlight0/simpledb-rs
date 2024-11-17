@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
+    errors::TransactionError,
     record::schema::Schema,
     scan::{product_scan::ProductScan, Scan},
     tx::transaction::Transaction,
@@ -45,7 +46,7 @@ impl Plan for ProductPlan {
         &self.schema
     }
 
-    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, anyhow::Error> {
+    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, TransactionError> {
         let s1 = self.p1.open(tx.clone())?;
         let s2 = self.p2.open(tx.clone())?;
         Ok(Box::new(ProductScan::new(s1, s2)))

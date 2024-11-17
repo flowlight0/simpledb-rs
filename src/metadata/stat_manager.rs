@@ -5,6 +5,7 @@ use std::{
 };
 
 use crate::{
+    errors::TransactionError,
     record::layout::Layout,
     scan::{table_scan::TableScan, Scan},
     tx::transaction::Transaction,
@@ -47,7 +48,7 @@ pub struct StatManager {
 }
 
 impl StatManager {
-    pub fn new(table_manager: &TableManager) -> Result<Self, anyhow::Error> {
+    pub fn new(table_manager: &TableManager) -> Result<Self, TransactionError> {
         Ok(Self {
             table_manager: table_manager.clone(),
             table_stats: HashMap::new(),
@@ -60,7 +61,7 @@ impl StatManager {
         table_name: &str,
         layout: Rc<Layout>,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<StatInfo, anyhow::Error> {
+    ) -> Result<StatInfo, TransactionError> {
         self.num_calls += 1;
         if self.num_calls % 100 == 0 {
             self.refresh_statistics(tx.clone())?;
@@ -79,7 +80,7 @@ impl StatManager {
     pub(crate) fn refresh_statistics(
         &mut self,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<(), anyhow::Error> {
+    ) -> Result<(), TransactionError> {
         self.table_stats.clear();
         self.num_calls = 0;
 
@@ -113,7 +114,7 @@ fn calculate_table_stat(
     table_name: &str,
     layout: Rc<Layout>,
     tx: Arc<Mutex<Transaction>>,
-) -> Result<StatInfo, anyhow::Error> {
+) -> Result<StatInfo, TransactionError> {
     let mut num_blocks = 0;
     let mut num_records = 0;
     let mut table_scan = TableScan::new(tx, table_name, layout)?;

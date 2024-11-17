@@ -1,8 +1,8 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    parser::predicate::Predicate, record::schema::Schema, scan::select_scan::SelectScan,
-    tx::transaction::Transaction,
+    errors::TransactionError, parser::predicate::Predicate, record::schema::Schema,
+    scan::select_scan::SelectScan, tx::transaction::Transaction,
 };
 
 use super::Plan;
@@ -49,7 +49,7 @@ impl Plan for SelectPlan {
     fn open(
         &mut self,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Box<dyn crate::scan::Scan>, anyhow::Error> {
+    ) -> Result<Box<dyn crate::scan::Scan>, TransactionError> {
         let base_scan = self.plan.open(tx)?;
         Ok(Box::new(SelectScan::new(base_scan, self.predicate.clone())))
     }
@@ -71,7 +71,7 @@ mod tests {
     use crate::scan::Scan;
 
     #[test]
-    fn test_select_plan() -> Result<(), anyhow::Error> {
+    fn test_select_plan() -> Result<(), TransactionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 3;

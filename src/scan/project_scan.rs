@@ -1,4 +1,4 @@
-use crate::record::field::Value;
+use crate::{errors::TransactionError, record::field::Value};
 
 use super::Scan;
 
@@ -18,25 +18,25 @@ impl ProjectScan {
 }
 
 impl Scan for ProjectScan {
-    fn before_first(&mut self) -> Result<(), anyhow::Error> {
+    fn before_first(&mut self) -> Result<(), TransactionError> {
         self.base_scan.before_first()
     }
 
-    fn next(&mut self) -> Result<bool, anyhow::Error> {
+    fn next(&mut self) -> Result<bool, TransactionError> {
         self.base_scan.next()
     }
 
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, anyhow::Error> {
+    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
         assert!(self.fields.contains(&field_name.to_string()));
         self.base_scan.get_i32(field_name)
     }
 
-    fn get_string(&mut self, field_name: &str) -> Result<String, anyhow::Error> {
+    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError> {
         assert!(self.fields.contains(&field_name.to_string()));
         self.base_scan.get_string(field_name)
     }
 
-    fn get_value(&mut self, field_name: &str) -> Result<Value, anyhow::Error> {
+    fn get_value(&mut self, field_name: &str) -> Result<Value, TransactionError> {
         assert!(self.fields.contains(&field_name.to_string()));
         self.base_scan.get_value(field_name)
     }
@@ -45,7 +45,7 @@ impl Scan for ProjectScan {
         self.fields.contains(&field_name.to_string())
     }
 
-    fn close(&mut self) -> Result<(), anyhow::Error> {
+    fn close(&mut self) -> Result<(), TransactionError> {
         self.base_scan.close()
     }
 }
@@ -67,7 +67,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_project_scan() -> Result<(), anyhow::Error> {
+    fn test_project_scan() -> Result<(), TransactionError> {
         let mut schema = Schema::new();
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);

@@ -7,6 +7,7 @@ use log::info;
 
 use crate::{
     buffer::BufferManager,
+    errors::TransactionError,
     file::FileManager,
     log::manager::LogManager,
     metadata::MetadataManager,
@@ -31,7 +32,7 @@ impl SimpleDB {
         directory: PathBuf,
         block_size: usize,
         num_buffers: usize,
-    ) -> Result<SimpleDB, anyhow::Error> {
+    ) -> Result<SimpleDB, TransactionError> {
         let file_manager = Arc::new(Mutex::new(FileManager::new(directory, block_size)));
         let lock_table = Arc::new(Mutex::new(LockTable::new(10)));
         let log_manager = LogManager::new(file_manager.clone(), "log".into())?;
@@ -74,7 +75,7 @@ impl SimpleDB {
         })
     }
 
-    pub fn new_transaction(&self) -> Result<Transaction, anyhow::Error> {
+    pub fn new_transaction(&self) -> Result<Transaction, TransactionError> {
         Transaction::new(
             self.file_manager.clone(),
             self.log_manager.clone(),

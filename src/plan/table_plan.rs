@@ -4,6 +4,7 @@ use std::{
 };
 
 use crate::{
+    errors::TransactionError,
     metadata::{stat_manager::StatInfo, MetadataManager},
     record::{layout::Layout, schema::Schema},
     scan::{table_scan::TableScan, Scan},
@@ -23,7 +24,7 @@ impl TablePlan {
         tx: Arc<Mutex<Transaction>>,
         table_name: &str,
         metadata_manager: Arc<Mutex<MetadataManager>>,
-    ) -> Result<Self, anyhow::Error> {
+    ) -> Result<Self, TransactionError> {
         let mut metadata_manager = metadata_manager.lock().unwrap();
         let layout = Rc::new(
             metadata_manager
@@ -56,7 +57,7 @@ impl Plan for TablePlan {
         &self.layout.schema
     }
 
-    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, anyhow::Error> {
+    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, TransactionError> {
         let table_scan = TableScan::new(tx, &self.table_name, self.layout.clone())?;
         Ok(Box::new(table_scan))
     }
@@ -70,7 +71,7 @@ mod tests {
     use crate::record::schema::Schema;
 
     #[test]
-    fn test_table_plan() -> Result<(), anyhow::Error> {
+    fn test_table_plan() -> Result<(), TransactionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 3;
