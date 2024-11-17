@@ -4,10 +4,11 @@ use std::{
 };
 
 use crate::{
+    errors::TransactionError,
     metadata::{stat_manager::StatInfo, MetadataManager},
     record::{layout::Layout, schema::Schema},
     scan::{table_scan::TableScan, Scan},
-    tx::{errors::TransactionError, transaction::Transaction},
+    tx::transaction::Transaction,
 };
 
 use super::Plan;

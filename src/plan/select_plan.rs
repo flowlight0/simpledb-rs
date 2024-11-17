@@ -1,10 +1,8 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    parser::predicate::Predicate,
-    record::schema::Schema,
-    scan::select_scan::SelectScan,
-    tx::{errors::TransactionError, transaction::Transaction},
+    errors::TransactionError, parser::predicate::Predicate, record::schema::Schema,
+    scan::select_scan::SelectScan, tx::transaction::Transaction,
 };
 
 use super::Plan;

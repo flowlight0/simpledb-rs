@@ -1,9 +1,10 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
+    errors::TransactionError,
     record::schema::Schema,
     scan::{project_scan::ProjectScan, Scan},
-    tx::{errors::TransactionError, transaction::Transaction},
+    tx::transaction::Transaction,
 };
 
 use super::Plan;

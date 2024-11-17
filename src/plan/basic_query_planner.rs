@@ -1,9 +1,8 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    metadata::MetadataManager,
-    parser::statement::QueryData,
-    tx::{errors::TransactionError, transaction::Transaction},
+    errors::TransactionError, metadata::MetadataManager, parser::statement::QueryData,
+    tx::transaction::Transaction,
 };
 
 use super::{product_plan::ProductPlan, table_plan::TablePlan, Plan, QueryPlanner};

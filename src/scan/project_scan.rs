@@ -1,4 +1,4 @@
-use crate::{record::field::Value, tx::errors::TransactionError};
+use crate::{errors::TransactionError, record::field::Value};
 
 use super::Scan;
 

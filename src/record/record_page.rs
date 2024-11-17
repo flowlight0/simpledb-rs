@@ -3,10 +3,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use crate::{
-    file::BlockId,
-    tx::{errors::TransactionError, transaction::Transaction},
-};
+use crate::{errors::TransactionError, file::BlockId, tx::transaction::Transaction};
 
 use super::layout::Layout;
 
@@ -214,8 +211,8 @@ mod tests {
 
     use crate::{
         db::SimpleDB,
+        errors::TransactionError,
         record::{layout::Layout, schema::Schema},
-        tx::errors::TransactionError,
     };
 
     use super::{RecordPage, Slot};

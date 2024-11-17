@@ -2,10 +2,10 @@ use std::sync::{Arc, Condvar, Mutex};
 use std::time::{Duration, Instant};
 use thiserror::Error;
 
+use crate::errors::TransactionError;
 use crate::file::{BlockId, FileManager};
 use crate::log::manager::LogManager;
 use crate::page::Page;
-use crate::tx::errors::TransactionError;
 
 const PIN_TIME_LIMIT_IN_MILLIS: u128 = 5_000;
 

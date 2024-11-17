@@ -1,4 +1,4 @@
-use crate::{record::field::Value, tx::errors::TransactionError};
+use crate::{record::field::Value, errors::TransactionError};
 
 pub trait Scan {
     fn before_first(&mut self) -> Result<(), TransactionError>;

@@ -7,8 +7,9 @@ use stat_manager::{StatInfo, StatManager};
 use table_manager::TableManager;
 
 use crate::{
+    errors::TransactionError,
     record::{layout::Layout, schema::Schema},
-    tx::{errors::TransactionError, transaction::Transaction},
+    tx::transaction::Transaction,
 };
 
 pub mod stat_manager;
@@ -64,10 +65,10 @@ mod tests {
     use crate::db::SimpleDB;
     use crate::metadata::MetadataManager;
 
+    use crate::errors::TransactionError;
     use crate::record::schema::Schema;
     use crate::scan::table_scan::TableScan;
     use crate::scan::Scan;
-    use crate::tx::errors::TransactionError;
 
     #[test]
     fn test_metadata_manager() -> Result<(), TransactionError> {

@@ -4,9 +4,7 @@ use std::{
     time::Instant,
 };
 
-use crate::file::BlockId;
-
-use super::errors::TransactionError;
+use crate::{errors::TransactionError, file::BlockId};
 
 enum Lock {
     Exclusive,

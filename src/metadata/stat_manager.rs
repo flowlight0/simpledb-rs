@@ -5,9 +5,10 @@ use std::{
 };
 
 use crate::{
+    errors::TransactionError,
     record::layout::Layout,
     scan::{table_scan::TableScan, Scan},
-    tx::{errors::TransactionError, transaction::Transaction},
+    tx::transaction::Transaction,
 };
 
 use super::table_manager::TableManager;

@@ -1,10 +1,11 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
+    errors::TransactionError,
     parser::statement::{QueryData, UpdateCommand},
     record::schema::Schema,
     scan::Scan,
-    tx::{errors::TransactionError, transaction::Transaction},
+    tx::transaction::Transaction,
 };
 pub mod basic_query_planner;
 pub mod basic_update_planner;

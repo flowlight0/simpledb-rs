@@ -1,13 +1,14 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
+    errors::TransactionError,
     metadata::MetadataManager,
     parser::{
         predicate::{Expression, Predicate},
         statement::{CreateCommand, UpdateCommand},
     },
     record::{field::Value, schema::Schema},
-    tx::{errors::TransactionError, transaction::Transaction},
+    tx::transaction::Transaction,
 };
 
 use super::{select_plan::SelectPlan, table_plan::TablePlan, Plan, UpdatePlanner};

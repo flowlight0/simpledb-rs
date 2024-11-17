@@ -7,6 +7,7 @@ use log::info;
 
 use crate::{
     buffer::BufferManager,
+    errors::TransactionError,
     file::FileManager,
     log::manager::LogManager,
     metadata::MetadataManager,
@@ -14,7 +15,7 @@ use crate::{
         basic_query_planner::BasicQueryPlanner, basic_update_planner::BasicUpdatePlanner,
         planner::Planner,
     },
-    tx::{concurrency::LockTable, errors::TransactionError, transaction::Transaction},
+    tx::{concurrency::LockTable, transaction::Transaction},
 };
 
 pub struct SimpleDB {

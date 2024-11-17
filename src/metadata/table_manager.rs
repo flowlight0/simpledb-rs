@@ -4,9 +4,10 @@ use std::{
 };
 
 use crate::{
+    errors::TransactionError,
     record::{layout::Layout, schema::Schema},
     scan::{table_scan::TableScan, Scan},
-    tx::{errors::TransactionError, transaction::Transaction},
+    tx::transaction::Transaction,
 };
 
 const TABLE_NAME_MAX_LENGTH: usize = 50;

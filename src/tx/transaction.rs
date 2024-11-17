@@ -3,12 +3,12 @@ use std::sync::atomic::AtomicUsize;
 use std::sync::{Arc, Mutex};
 
 use crate::buffer::BufferManager;
+use crate::errors::TransactionError;
 use crate::file::{BlockId, FileManager};
 use crate::log::manager::LogManager;
 use crate::log::record::LogRecord;
 
 use super::concurrency::{ConcurrencyManager, LockTable};
-use super::errors::TransactionError;
 
 pub struct Transaction {
     file_manager: Arc<Mutex<FileManager>>,
@@ -320,7 +320,7 @@ impl Transaction {
 
 #[cfg(test)]
 mod tests {
-    use crate::{db::SimpleDB, tx::errors::TransactionError};
+    use crate::{db::SimpleDB, errors::TransactionError};
 
     #[test]
     fn test_transaction() -> Result<(), TransactionError> {

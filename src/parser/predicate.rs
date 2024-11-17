@@ -1,4 +1,4 @@
-use crate::{plan::Plan, record::field::Value, scan::Scan, tx::errors::TransactionError};
+use crate::{errors::TransactionError, plan::Plan, record::field::Value, scan::Scan};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Expression {

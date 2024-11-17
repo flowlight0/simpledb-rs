@@ -1,4 +1,4 @@
-use crate::{parser::predicate::Predicate, record::field::Value, tx::errors::TransactionError};
+use crate::{errors::TransactionError, parser::predicate::Predicate, record::field::Value};
 
 use super::Scan;
 

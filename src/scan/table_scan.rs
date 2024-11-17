@@ -4,13 +4,14 @@ use std::{
 };
 
 use crate::{
+    errors::TransactionError,
     file::BlockId,
     record::{
         field::{Type, Value},
         layout::Layout,
         record_page::{RecordPage, Slot},
     },
-    tx::{errors::TransactionError, transaction::Transaction},
+    tx::transaction::Transaction,
 };
 
 use super::Scan;
