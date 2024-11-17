@@ -3,7 +3,10 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use crate::{file::BlockId, tx::transaction::Transaction};
+use crate::{
+    file::BlockId,
+    tx::{errors::TransactionError, transaction::Transaction},
+};
 
 use super::layout::Layout;
 
@@ -56,13 +59,12 @@ impl RecordPage {
         self.block = block;
     }
 
-    pub fn get_i32(&mut self, slot: usize, field_name: &str) -> Result<i32, anyhow::Error> {
+    pub fn get_i32(&mut self, slot: usize, field_name: &str) -> Result<i32, TransactionError> {
         let field_offset = self.layout.get_offset(field_name);
         self.tx
             .lock()
             .unwrap()
             .get_i32(&self.block, self.offset(slot) + field_offset)
-            .map_err(|e| anyhow::Error::new(e))
     }
 
     pub fn set_i32(
@@ -70,7 +72,7 @@ impl RecordPage {
         slot: usize,
         field_name: &str,
         value: i32,
-    ) -> Result<(), anyhow::Error> {
+    ) -> Result<(), TransactionError> {
         let field_offset = self.layout.get_offset(field_name);
         self.tx.lock().unwrap().set_i32(
             &self.block,
@@ -81,13 +83,16 @@ impl RecordPage {
         Ok(())
     }
 
-    pub fn get_string(&mut self, slot: usize, field_name: &str) -> Result<String, anyhow::Error> {
+    pub fn get_string(
+        &mut self,
+        slot: usize,
+        field_name: &str,
+    ) -> Result<String, TransactionError> {
         let field_offset = self.layout.get_offset(field_name);
         self.tx
             .lock()
             .unwrap()
             .get_string(&self.block, self.offset(slot) + field_offset)
-            .map_err(|e| anyhow::Error::new(e))
     }
 
     pub fn set_string(
@@ -95,7 +100,7 @@ impl RecordPage {
         slot: usize,
         field_name: &str,
         value: &str,
-    ) -> Result<(), anyhow::Error> {
+    ) -> Result<(), TransactionError> {
         let field_offset = self.layout.get_offset(field_name);
         self.tx.lock().unwrap().set_string(
             &self.block,
@@ -106,11 +111,11 @@ impl RecordPage {
         Ok(())
     }
 
-    pub fn delete(&mut self, slot: usize) -> Result<(), anyhow::Error> {
+    pub fn delete(&mut self, slot: usize) -> Result<(), TransactionError> {
         self.set_flag(slot, EMPTY)
     }
 
-    pub fn insert_after(&mut self, slot: Slot) -> Result<Slot, anyhow::Error> {
+    pub fn insert_after(&mut self, slot: Slot) -> Result<Slot, TransactionError> {
         let result = self.search_after(slot, EMPTY);
         if let Ok(Slot::Index(index)) = result {
             self.set_flag(index, FULL)?;
@@ -120,11 +125,11 @@ impl RecordPage {
         }
     }
 
-    pub fn next_after(&mut self, slot: Slot) -> Result<Slot, anyhow::Error> {
+    pub fn next_after(&mut self, slot: Slot) -> Result<Slot, TransactionError> {
         self.search_after(slot, FULL)
     }
 
-    fn search_after(&mut self, slot: Slot, flag: i32) -> Result<Slot, anyhow::Error> {
+    fn search_after(&mut self, slot: Slot, flag: i32) -> Result<Slot, TransactionError> {
         if slot == Slot::End {
             return Ok(Slot::End);
         }
@@ -149,7 +154,7 @@ impl RecordPage {
         Ok(Slot::End)
     }
 
-    pub fn format(&mut self) -> Result<(), anyhow::Error> {
+    pub fn format(&mut self) -> Result<(), TransactionError> {
         let mut slot = 0;
 
         while self.is_valid_slot(slot) {
@@ -190,7 +195,7 @@ impl RecordPage {
         slot * self.layout.slot_size
     }
 
-    fn set_flag(&mut self, slot: usize, value: i32) -> Result<(), anyhow::Error> {
+    fn set_flag(&mut self, slot: usize, value: i32) -> Result<(), TransactionError> {
         self.tx
             .lock()
             .unwrap()

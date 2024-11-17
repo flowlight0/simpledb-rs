@@ -1,38 +1,38 @@
-use crate::record::field::Value;
+use crate::{record::field::Value, tx::errors::TransactionError};
 
 pub trait Scan {
-    fn before_first(&mut self) -> Result<(), anyhow::Error>;
-    fn next(&mut self) -> Result<bool, anyhow::Error>;
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, anyhow::Error>;
-    fn get_string(&mut self, field_name: &str) -> Result<String, anyhow::Error>;
-    fn get_value(&mut self, field_name: &str) -> Result<Value, anyhow::Error>;
+    fn before_first(&mut self) -> Result<(), TransactionError>;
+    fn next(&mut self) -> Result<bool, TransactionError>;
+    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError>;
+    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError>;
+    fn get_value(&mut self, field_name: &str) -> Result<Value, TransactionError>;
     fn has_field(&self, field_name: &str) -> bool;
-    fn close(&mut self) -> Result<(), anyhow::Error>;
+    fn close(&mut self) -> Result<(), TransactionError>;
 
     // Update operations
     #[allow(unused_variables)]
-    fn set_i32(&mut self, field_name: &str, value: i32) -> Result<(), anyhow::Error> {
-        Err(anyhow::anyhow!("Update operation is not supported"))
+    fn set_i32(&mut self, field_name: &str, value: i32) -> Result<(), TransactionError> {
+        unimplemented!("Update operation is not supported")
     }
 
     #[allow(unused_variables)]
-    fn set_string(&mut self, field_name: &str, value: &str) -> Result<(), anyhow::Error> {
-        Err(anyhow::anyhow!("Update operation is not supported"))
+    fn set_string(&mut self, field_name: &str, value: &str) -> Result<(), TransactionError> {
+        unimplemented!("Update operation is not supported")
     }
 
     #[allow(unused_variables)]
-    fn set_value(&mut self, field_name: &str, value: &Value) -> Result<(), anyhow::Error> {
-        Err(anyhow::anyhow!("Update operation is not supported"))
+    fn set_value(&mut self, field_name: &str, value: &Value) -> Result<(), TransactionError> {
+        unimplemented!("Update operation is not supported")
     }
 
     #[allow(unused_variables)]
-    fn delete(&mut self) -> Result<(), anyhow::Error> {
-        Err(anyhow::anyhow!("Update operation is not supported"))
+    fn delete(&mut self) -> Result<(), TransactionError> {
+        unimplemented!("Update operation is not supported")
     }
 
     #[allow(unused_variables)]
-    fn insert(&mut self) -> Result<(), anyhow::Error> {
-        Err(anyhow::anyhow!("Update operation is not supported"))
+    fn insert(&mut self) -> Result<(), TransactionError> {
+        unimplemented!("Update operation is not supported")
     }
 }
 

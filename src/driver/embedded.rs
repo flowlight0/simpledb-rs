@@ -72,15 +72,19 @@ impl ResultSet for EmbeddedResultSet {
     }
 
     fn next(&mut self) -> Result<bool, anyhow::Error> {
-        self.scan.next()
+        self.scan.next().map_err(|e| anyhow::Error::new(e))
     }
 
     fn get_i32(&mut self, column_name: &str) -> Result<i32, anyhow::Error> {
-        self.scan.get_i32(column_name)
+        self.scan
+            .get_i32(column_name)
+            .map_err(|e| anyhow::Error::new(e))
     }
 
     fn get_string(&mut self, column_name: &str) -> Result<String, anyhow::Error> {
-        self.scan.get_string(column_name)
+        self.scan
+            .get_string(column_name)
+            .map_err(|e| anyhow::Error::new(e))
     }
 
     fn close(&mut self) -> Result<(), anyhow::Error> {

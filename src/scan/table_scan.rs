@@ -10,7 +10,7 @@ use crate::{
         layout::Layout,
         record_page::{RecordPage, Slot},
     },
-    tx::transaction::Transaction,
+    tx::{errors::TransactionError, transaction::Transaction},
 };
 
 use super::Scan;
@@ -26,7 +26,7 @@ impl TableScan {
         tx: Arc<Mutex<Transaction>>,
         table_name: &str,
         layout: Rc<Layout>,
-    ) -> Result<Self, anyhow::Error> {
+    ) -> Result<Self, TransactionError> {
         let file_name = format!("{}.tbl", table_name);
 
         let record_page = {
@@ -57,7 +57,7 @@ impl TableScan {
 }
 
 impl Scan for TableScan {
-    fn before_first(&mut self) -> Result<(), anyhow::Error> {
+    fn before_first(&mut self) -> Result<(), TransactionError> {
         let block = BlockId::get_first_block(&self.file_name);
         self.record_page
             .tx
@@ -70,7 +70,7 @@ impl Scan for TableScan {
         Ok(())
     }
 
-    fn next(&mut self) -> Result<bool, anyhow::Error> {
+    fn next(&mut self) -> Result<bool, TransactionError> {
         loop {
             self.current_slot = self.record_page.next_after(self.current_slot)?;
             match self.current_slot {
@@ -99,17 +99,17 @@ impl Scan for TableScan {
         }
     }
 
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, anyhow::Error> {
+    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
         self.record_page
             .get_i32(self.current_slot.get_index(), field_name)
     }
 
-    fn get_string(&mut self, field_name: &str) -> Result<String, anyhow::Error> {
+    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError> {
         self.record_page
             .get_string(self.current_slot.get_index(), field_name)
     }
 
-    fn get_value(&mut self, field_name: &str) -> Result<Value, anyhow::Error> {
+    fn get_value(&mut self, field_name: &str) -> Result<Value, TransactionError> {
         match self.record_page.layout.schema.get_field_type(field_name) {
             Type::I32 => Ok(Value::I32(self.get_i32(field_name)?)),
             Type::String => Ok(Value::String(self.get_string(field_name)?)),
@@ -120,7 +120,7 @@ impl Scan for TableScan {
         self.record_page.layout.has_field(field_name)
     }
 
-    fn close(&mut self) -> Result<(), anyhow::Error> {
+    fn close(&mut self) -> Result<(), TransactionError> {
         self.record_page
             .tx
             .lock()
@@ -129,28 +129,28 @@ impl Scan for TableScan {
         Ok(())
     }
 
-    fn set_i32(&mut self, field_name: &str, value: i32) -> Result<(), anyhow::Error> {
+    fn set_i32(&mut self, field_name: &str, value: i32) -> Result<(), TransactionError> {
         self.record_page
             .set_i32(self.current_slot.get_index(), field_name, value)
     }
 
-    fn set_string(&mut self, field_name: &str, value: &str) -> Result<(), anyhow::Error> {
+    fn set_string(&mut self, field_name: &str, value: &str) -> Result<(), TransactionError> {
         self.record_page
             .set_string(self.current_slot.get_index(), field_name, value)
     }
 
-    fn set_value(&mut self, field_name: &str, value: &Value) -> Result<(), anyhow::Error> {
+    fn set_value(&mut self, field_name: &str, value: &Value) -> Result<(), TransactionError> {
         match value {
             Value::I32(i) => self.set_i32(field_name, *i),
             Value::String(s) => self.set_string(field_name, s),
         }
     }
 
-    fn delete(&mut self) -> Result<(), anyhow::Error> {
+    fn delete(&mut self) -> Result<(), TransactionError> {
         self.record_page.delete(self.current_slot.get_index())
     }
 
-    fn insert(&mut self) -> Result<(), anyhow::Error> {
+    fn insert(&mut self) -> Result<(), TransactionError> {
         loop {
             self.current_slot = self.record_page.insert_after(self.current_slot)?;
             match self.current_slot {

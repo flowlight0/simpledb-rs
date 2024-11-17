@@ -1,4 +1,4 @@
-use crate::{parser::predicate::Predicate, record::field::Value};
+use crate::{parser::predicate::Predicate, record::field::Value, tx::errors::TransactionError};
 
 use super::Scan;
 
@@ -17,11 +17,11 @@ impl SelectScan {
 }
 
 impl Scan for SelectScan {
-    fn before_first(&mut self) -> Result<(), anyhow::Error> {
+    fn before_first(&mut self) -> Result<(), TransactionError> {
         self.base_scan.before_first()
     }
 
-    fn next(&mut self) -> Result<bool, anyhow::Error> {
+    fn next(&mut self) -> Result<bool, TransactionError> {
         while self.base_scan.next()? {
             if self.predicate.is_satisfied(&mut self.base_scan)? {
                 return Ok(true);
@@ -30,15 +30,15 @@ impl Scan for SelectScan {
         Ok(false)
     }
 
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, anyhow::Error> {
+    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
         self.base_scan.get_i32(field_name)
     }
 
-    fn get_string(&mut self, field_name: &str) -> Result<String, anyhow::Error> {
+    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError> {
         self.base_scan.get_string(field_name)
     }
 
-    fn get_value(&mut self, field_name: &str) -> Result<Value, anyhow::Error> {
+    fn get_value(&mut self, field_name: &str) -> Result<Value, TransactionError> {
         self.base_scan.get_value(field_name)
     }
 
@@ -46,23 +46,23 @@ impl Scan for SelectScan {
         self.base_scan.has_field(field_name)
     }
 
-    fn close(&mut self) -> Result<(), anyhow::Error> {
+    fn close(&mut self) -> Result<(), TransactionError> {
         self.base_scan.close()
     }
 
-    fn set_i32(&mut self, field_name: &str, value: i32) -> Result<(), anyhow::Error> {
+    fn set_i32(&mut self, field_name: &str, value: i32) -> Result<(), TransactionError> {
         self.base_scan.set_i32(field_name, value)
     }
 
-    fn set_string(&mut self, field_name: &str, value: &str) -> Result<(), anyhow::Error> {
+    fn set_string(&mut self, field_name: &str, value: &str) -> Result<(), TransactionError> {
         self.base_scan.set_string(field_name, value)
     }
 
-    fn delete(&mut self) -> Result<(), anyhow::Error> {
+    fn delete(&mut self) -> Result<(), TransactionError> {
         self.base_scan.delete()
     }
 
-    fn insert(&mut self) -> Result<(), anyhow::Error> {
+    fn insert(&mut self) -> Result<(), TransactionError> {
         self.base_scan.insert()
     }
 }
