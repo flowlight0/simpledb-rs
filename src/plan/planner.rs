@@ -1,6 +1,9 @@
 use std::sync::{Arc, Mutex};
 
+use lalrpop_util::{lexer::Token, ParseError};
+
 use crate::{
+    errors::{ExecutionError, QueryError},
     parser::grammar::{QueryParser, UpdateCommandParser},
     tx::transaction::Transaction,
 };
@@ -27,9 +30,11 @@ impl Planner {
         &self,
         query: &str,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Box<dyn Plan>, anyhow::Error> {
+    ) -> Result<Box<dyn Plan>, ExecutionError> {
         // Discard the parse error because it requires static lifetime for the query
-        let query_data = QueryParser::new().parse(query).unwrap();
+        let query_data = QueryParser::new()
+            .parse(query)
+            .map_err(|e: ParseError<usize, Token<'_>, &str>| QueryError::from(e))?;
         Ok(self.query_planner.create_plan(&query_data, tx)?)
     }
 
@@ -37,9 +42,11 @@ impl Planner {
         &self,
         update_command: &str,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, anyhow::Error> {
+    ) -> Result<usize, ExecutionError> {
         // Discard the parse error because it requires static lifetime for the update_command
-        let update_command = UpdateCommandParser::new().parse(&update_command).unwrap();
+        let update_command = UpdateCommandParser::new()
+            .parse(&update_command)
+            .map_err(QueryError::from)?;
         Ok(self.update_planner.execute_update(&update_command, tx)?)
     }
 }
@@ -50,7 +57,7 @@ mod tests {
     use crate::db::SimpleDB;
 
     #[test]
-    fn test_planner() -> Result<(), anyhow::Error> {
+    fn test_planner() -> Result<(), ExecutionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 100;
