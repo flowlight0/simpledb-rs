@@ -8,6 +8,7 @@ use std::{
 
 use crate::{
     db::SimpleDB,
+    errors::ExecutionError,
     plan::{planner::Planner, Plan},
     record::{field::Type, schema::Schema},
     scan::Scan,
@@ -54,7 +55,7 @@ impl EmbeddedResultSet {
     fn new(
         mut plan: Box<dyn Plan>,
         connection: Rc<RefCell<EmbeddedConnectionImpl>>,
-    ) -> Result<Self, anyhow::Error> {
+    ) -> Result<Self, ExecutionError> {
         let scan = plan.open(connection.borrow().get_transaction())?;
         Ok(EmbeddedResultSet {
             connection,
@@ -72,24 +73,20 @@ impl ResultSet for EmbeddedResultSet {
     }
 
     fn next(&mut self) -> Result<bool, anyhow::Error> {
-        self.scan.next().map_err(|e| anyhow::Error::new(e))
+        Ok(self.scan.next()?)
     }
 
     fn get_i32(&mut self, column_name: &str) -> Result<i32, anyhow::Error> {
-        self.scan
-            .get_i32(column_name)
-            .map_err(|e| anyhow::Error::new(e))
+        Ok(self.scan.get_i32(column_name)?)
     }
 
     fn get_string(&mut self, column_name: &str) -> Result<String, anyhow::Error> {
-        self.scan
-            .get_string(column_name)
-            .map_err(|e| anyhow::Error::new(e))
+        Ok(self.scan.get_string(column_name)?)
     }
 
     fn close(&mut self) -> Result<(), anyhow::Error> {
         self.scan.close()?;
-        self.connection.borrow_mut().commit()
+        Ok(self.connection.borrow_mut().commit()?)
     }
 }
 
@@ -99,7 +96,7 @@ struct EmbeddedStatement {
 }
 
 impl EmbeddedStatement {
-    fn new(connection: Rc<RefCell<EmbeddedConnectionImpl>>) -> Result<Self, anyhow::Error> {
+    fn new(connection: Rc<RefCell<EmbeddedConnectionImpl>>) -> Result<Self, ExecutionError> {
         let planner = connection.borrow().db.planner.clone();
         Ok(Self {
             connection,
@@ -134,19 +131,19 @@ struct EmbeddedConnectionImpl {
 }
 
 impl EmbeddedConnectionImpl {
-    fn close(&self) -> Result<(), anyhow::Error> {
+    fn close(&self) -> Result<(), ExecutionError> {
         self.current_tx.lock().unwrap().commit()?;
         Ok(())
     }
 
-    fn commit(&mut self) -> Result<(), anyhow::Error> {
+    fn commit(&mut self) -> Result<(), ExecutionError> {
         self.current_tx.lock().unwrap().commit()?;
         let new_tx = Arc::new(Mutex::new(self.db.new_transaction()?));
         self.current_tx = new_tx;
         Ok(())
     }
 
-    fn rollback(&mut self) -> Result<(), anyhow::Error> {
+    fn rollback(&mut self) -> Result<(), ExecutionError> {
         self.current_tx.lock().unwrap().rollback()?;
         let new_tx = Arc::new(Mutex::new(self.db.new_transaction()?));
         self.current_tx = new_tx;
@@ -163,7 +160,7 @@ struct EmbeddedConnection {
 }
 
 impl EmbeddedConnection {
-    fn new(db: SimpleDB) -> Result<Self, anyhow::Error> {
+    fn new(db: SimpleDB) -> Result<Self, ExecutionError> {
         let current_tx = Arc::new(Mutex::new(db.new_transaction()?));
         let connection = EmbeddedConnectionImpl { db, current_tx };
         Ok(Self {
@@ -178,15 +175,15 @@ impl ConnectionAdaptor for EmbeddedConnection {
     }
 
     fn close(&mut self) -> Result<(), anyhow::Error> {
-        self.connection.borrow().close()
+        Ok(self.connection.borrow().close()?)
     }
 
     fn commit(&mut self) -> Result<(), anyhow::Error> {
-        self.connection.borrow_mut().commit()
+        Ok(self.connection.borrow_mut().commit()?)
     }
 
     fn rollback(&mut self) -> Result<(), anyhow::Error> {
-        self.connection.borrow_mut().rollback()
+        Ok(self.connection.borrow_mut().rollback()?)
     }
 }
 
