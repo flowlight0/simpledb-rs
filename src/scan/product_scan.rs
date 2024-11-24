@@ -66,10 +66,7 @@ impl Scan for ProductScan {
 #[cfg(test)]
 mod tests {
 
-    use std::{
-        rc::Rc,
-        sync::{Arc, Mutex},
-    };
+    use std::sync::{Arc, Mutex};
 
     use crate::{
         db::SimpleDB,
@@ -85,12 +82,12 @@ mod tests {
         schema1.add_i32_field("A");
         schema1.add_string_field("B", 20);
         schema1.add_i32_field("C");
-        let layout1 = Rc::new(Layout::new(schema1));
+        let layout1 = Arc::new(Layout::new(schema1));
 
         let mut schema2 = Schema::new();
         schema2.add_i32_field("D");
         schema2.add_string_field("E", 20);
-        let layout2 = Rc::new(Layout::new(schema2));
+        let layout2 = Arc::new(Layout::new(schema2));
 
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;

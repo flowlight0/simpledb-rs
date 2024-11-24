@@ -1,7 +1,7 @@
 use std::io::{stdin, stdout, Write};
 
 use simpledb_rs::{
-    driver::{embedded::EmbeddedDriver, Statement},
+    driver::{embedded::EmbeddedDriver, Driver, Statement},
     record::field::Type,
 };
 
@@ -70,6 +70,7 @@ fn main() -> Result<(), anyhow::Error> {
 
     let driver = if db_url.contains("//") {
         todo!()
+        // NetworkDriver::new()
     } else {
         EmbeddedDriver::new()
     };

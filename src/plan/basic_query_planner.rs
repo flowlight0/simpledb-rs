@@ -67,7 +67,6 @@ impl QueryPlanner for BasicQueryPlanner {
 
 #[cfg(test)]
 mod tests {
-    use std::rc::Rc;
 
     use super::*;
     use crate::db::SimpleDB;
@@ -99,8 +98,8 @@ mod tests {
         metadata_manager.create_table("table1", &schema1, tx.clone())?;
         metadata_manager.create_table("table2", &schema2, tx.clone())?;
 
-        let layout1 = Rc::new(metadata_manager.get_layout("table1", tx.clone())?.unwrap());
-        let layout2 = Rc::new(metadata_manager.get_layout("table2", tx.clone())?.unwrap());
+        let layout1 = Arc::new(metadata_manager.get_layout("table1", tx.clone())?.unwrap());
+        let layout2 = Arc::new(metadata_manager.get_layout("table2", tx.clone())?.unwrap());
         drop(metadata_manager);
 
         let mut table_scan = TableScan::new(tx.clone(), "table1", layout1.clone())?;

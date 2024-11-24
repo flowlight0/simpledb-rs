@@ -1,6 +1,7 @@
 use crate::record::field::Type;
 
 pub mod embedded;
+pub mod network;
 
 pub trait Metadata {
     fn get_column_count(&self) -> usize;
@@ -27,4 +28,8 @@ pub trait ConnectionAdaptor {
     fn close(&mut self) -> Result<(), anyhow::Error>;
     fn commit(&mut self) -> Result<(), anyhow::Error>;
     fn rollback(&mut self) -> Result<(), anyhow::Error>;
+}
+
+pub trait Driver {
+    fn connect(&self, db_url: &str) -> Result<(String, Box<dyn ConnectionAdaptor>), anyhow::Error>;
 }

@@ -57,7 +57,6 @@ impl Plan for SelectPlan {
 
 #[cfg(test)]
 mod tests {
-    use std::rc::Rc;
 
     use super::*;
     use crate::db::SimpleDB;
@@ -79,7 +78,7 @@ mod tests {
         let mut schema = Schema::new();
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);
-        let layout = Rc::new(Layout::new(schema));
+        let layout = Arc::new(Layout::new(schema));
 
         let table_name = "testtable";
         let tx = Arc::new(Mutex::new(db.new_transaction()?));

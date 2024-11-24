@@ -53,10 +53,7 @@ impl Scan for ProjectScan {
 #[cfg(test)]
 mod tests {
 
-    use std::{
-        rc::Rc,
-        sync::{Arc, Mutex},
-    };
+    use std::sync::{Arc, Mutex};
 
     use crate::{
         db::SimpleDB,
@@ -72,7 +69,7 @@ mod tests {
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);
         schema.add_i32_field("C");
-        let layout = Rc::new(Layout::new(schema));
+        let layout = Arc::new(Layout::new(schema));
 
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;

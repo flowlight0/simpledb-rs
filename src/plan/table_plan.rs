@@ -1,7 +1,4 @@
-use std::{
-    rc::Rc,
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
 use crate::{
     errors::TransactionError,
@@ -15,7 +12,7 @@ use super::Plan;
 
 pub struct TablePlan {
     table_name: String,
-    layout: Rc<Layout>,
+    layout: Arc<Layout>,
     stat_info: StatInfo,
 }
 
@@ -26,7 +23,7 @@ impl TablePlan {
         metadata_manager: Arc<Mutex<MetadataManager>>,
     ) -> Result<Self, TransactionError> {
         let mut metadata_manager = metadata_manager.lock().unwrap();
-        let layout = Rc::new(
+        let layout = Arc::new(
             metadata_manager
                 .get_layout(table_name, tx.clone())?
                 .unwrap(),
@@ -80,7 +77,7 @@ mod tests {
         let mut schema = Schema::new();
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);
-        let layout = Rc::new(Layout::new(schema));
+        let layout = Arc::new(Layout::new(schema));
 
         let table_name = "testtable";
         let tx = Arc::new(Mutex::new(db.new_transaction()?));
