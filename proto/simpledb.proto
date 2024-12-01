@@ -57,7 +57,7 @@ message ResultSetGetMetadataRequest {
 }
 
 message ResultSetGetMetadataResponse {
-    uint64 metadata_id = 1;
+
 }
 
 message ResultSetNextRequest {

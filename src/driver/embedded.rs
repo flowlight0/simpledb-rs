@@ -14,8 +14,8 @@ use crate::{
 };
 
 use super::{
-    ConnectionAdaptor, Driver, Metadata, MetadataControl, ResultSet, ResultSetControl, Statement,
-    StatementControl,
+    Connection, ConnectionControl, Driver, Metadata, MetadataControl, ResultSet, ResultSetControl,
+    Statement, StatementControl,
 };
 
 pub struct EmbeddedMetadata {
@@ -23,26 +23,26 @@ pub struct EmbeddedMetadata {
 }
 
 impl MetadataControl for EmbeddedMetadata {
-    fn get_column_count(&self) -> usize {
-        self.schema.get_fields().len()
+    fn get_column_count(&self) -> Result<usize, anyhow::Error> {
+        Ok(self.schema.get_fields().len())
     }
 
-    fn get_column_name(&self, index: usize) -> String {
-        self.schema.get_fields()[index].clone()
+    fn get_column_name(&self, index: usize) -> Result<String, anyhow::Error> {
+        Ok(self.schema.get_fields()[index].clone())
     }
 
-    fn get_column_display_size(&self, index: usize) -> usize {
-        let name = self.get_column_name(index);
-        let size = match self.get_column_type(index) {
+    fn get_column_display_size(&self, index: usize) -> Result<usize, anyhow::Error> {
+        let name = self.get_column_name(index)?;
+        let size = match self.get_column_type(index)? {
             Type::I32 => 12,
             Type::String => name.len(),
         };
-        max(size, name.len())
+        Ok(max(size, name.len()))
     }
 
-    fn get_column_type(&self, index: usize) -> Type {
-        let name = self.get_column_name(index);
-        self.schema.get_field_type(&name)
+    fn get_column_type(&self, index: usize) -> Result<Type, anyhow::Error> {
+        let name = self.get_column_name(index)?;
+        Ok(self.schema.get_field_type(&name))
     }
 }
 
@@ -67,10 +67,10 @@ impl EmbeddedResultSet {
 }
 
 impl ResultSetControl for EmbeddedResultSet {
-    fn get_metadata(&self) -> Metadata {
-        Metadata::Embedded(EmbeddedMetadata {
+    fn get_metadata(&self) -> Result<Metadata, anyhow::Error> {
+        Ok(Metadata::Embedded(EmbeddedMetadata {
             schema: self.schema.clone(),
-        })
+        }))
     }
 
     fn next(&mut self) -> Result<bool, anyhow::Error> {
@@ -156,7 +156,7 @@ impl EmbeddedConnectionImpl {
     }
 }
 
-struct EmbeddedConnection {
+pub struct EmbeddedConnection {
     connection: Arc<Mutex<EmbeddedConnectionImpl>>,
 }
 
@@ -170,7 +170,7 @@ impl EmbeddedConnection {
     }
 }
 
-impl ConnectionAdaptor for EmbeddedConnection {
+impl ConnectionControl for EmbeddedConnection {
     fn create_statement(&self) -> Result<Statement, anyhow::Error> {
         Ok(Statement::Embedded(EmbeddedStatement::new(
             self.connection.clone(),
@@ -203,10 +203,10 @@ impl EmbeddedDriver {
 }
 
 impl Driver for EmbeddedDriver {
-    fn connect(&self, db_url: &str) -> Result<(String, Box<dyn ConnectionAdaptor>), anyhow::Error> {
+    fn connect(&self, db_url: &str) -> Result<(String, Connection), anyhow::Error> {
         let db_name = db_url.replace("jdbc:simpledb:", "").trim().to_string();
         let db_directory = PathBuf::from(&db_name);
         let db = SimpleDB::new(db_directory, DEFAULT_BLOCK_SIZE, DEFAULT_NUM_BUFFERS)?;
-        Ok((db_name, Box::new(EmbeddedConnection::new(db)?)))
+        Ok((db_name, Connection::Embedded(EmbeddedConnection::new(db)?)))
     }
 }

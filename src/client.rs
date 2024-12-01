@@ -2,22 +2,22 @@ use std::io::{stdin, stdout, Write};
 
 use simpledb_rs::{
     driver::{
-        embedded::EmbeddedDriver, Driver, MetadataControl, ResultSetControl, Statement,
-        StatementControl,
+        embedded::EmbeddedDriver, ConnectionControl, Driver, MetadataControl, ResultSetControl,
+        Statement, StatementControl,
     },
     record::field::Type,
 };
 
 fn do_query(statement: &mut Statement, command: &str) -> Result<(), anyhow::Error> {
     let mut result_set = statement.execute_query(command)?;
-    let metadata = result_set.get_metadata();
-    let num_columns = metadata.get_column_count();
+    let metadata = result_set.get_metadata()?;
+    let num_columns = metadata.get_column_count()?;
     let mut total_width = 0;
 
     // print header
     for i in 0..num_columns {
-        let column_name = metadata.get_column_name(i);
-        let mut width = metadata.get_column_display_size(i);
+        let column_name = metadata.get_column_name(i)?;
+        let mut width = metadata.get_column_display_size(i)?;
         if i > 0 {
             width += 1;
         }
@@ -34,9 +34,9 @@ fn do_query(statement: &mut Statement, command: &str) -> Result<(), anyhow::Erro
     // print records
     while result_set.next()? {
         for i in 0..num_columns {
-            let column_name = metadata.get_column_name(i);
-            let column_type = metadata.get_column_type(i);
-            let width = metadata.get_column_display_size(i);
+            let column_name = metadata.get_column_name(i)?;
+            let column_type = metadata.get_column_type(i)?;
+            let width = metadata.get_column_display_size(i)?;
             // String fmt = "%" + md.getColumnDisplaySize(i);
             if i > 0 {
                 print!(" ");

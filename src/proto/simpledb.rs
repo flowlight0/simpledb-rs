@@ -51,10 +51,7 @@ pub struct ResultSetGetMetadataRequest {
     pub id: u64,
 }
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct ResultSetGetMetadataResponse {
-    #[prost(uint64, tag = "1")]
-    pub metadata_id: u64,
-}
+pub struct ResultSetGetMetadataResponse {}
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct ResultSetNextRequest {
     #[prost(uint64, tag = "1")]
