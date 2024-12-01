@@ -1,11 +1,14 @@
 use std::io::{stdin, stdout, Write};
 
 use simpledb_rs::{
-    driver::{embedded::EmbeddedDriver, Driver, Statement},
+    driver::{
+        embedded::EmbeddedDriver, Driver, MetadataControl, ResultSetControl, Statement,
+        StatementControl,
+    },
     record::field::Type,
 };
 
-fn do_query(statement: &mut Box<dyn Statement>, command: &str) -> Result<(), anyhow::Error> {
+fn do_query(statement: &mut Statement, command: &str) -> Result<(), anyhow::Error> {
     let mut result_set = statement.execute_query(command)?;
     let metadata = result_set.get_metadata();
     let num_columns = metadata.get_column_count();
@@ -56,7 +59,7 @@ fn do_query(statement: &mut Box<dyn Statement>, command: &str) -> Result<(), any
     Ok(())
 }
 
-fn do_update(statement: &mut Box<dyn Statement>, command: &str) -> Result<(), anyhow::Error> {
+fn do_update(statement: &mut Statement, command: &str) -> Result<(), anyhow::Error> {
     let num_records = statement.execute_update(command)?;
     println!("{} records processed", num_records);
     Ok(())

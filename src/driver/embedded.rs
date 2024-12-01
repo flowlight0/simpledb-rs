@@ -13,13 +13,16 @@ use crate::{
     tx::transaction::Transaction,
 };
 
-use super::{ConnectionAdaptor, Driver, Metadata, ResultSet, Statement};
+use super::{
+    ConnectionAdaptor, Driver, Metadata, MetadataControl, ResultSet, ResultSetControl, Statement,
+    StatementControl,
+};
 
 pub struct EmbeddedMetadata {
     schema: Schema,
 }
 
-impl Metadata for EmbeddedMetadata {
+impl MetadataControl for EmbeddedMetadata {
     fn get_column_count(&self) -> usize {
         self.schema.get_fields().len()
     }
@@ -63,9 +66,9 @@ impl EmbeddedResultSet {
     }
 }
 
-impl ResultSet for EmbeddedResultSet {
-    fn get_metadata(&self) -> Box<dyn Metadata> {
-        Box::new(EmbeddedMetadata {
+impl ResultSetControl for EmbeddedResultSet {
+    fn get_metadata(&self) -> Metadata {
+        Metadata::Embedded(EmbeddedMetadata {
             schema: self.schema.clone(),
         })
     }
@@ -88,7 +91,7 @@ impl ResultSet for EmbeddedResultSet {
     }
 }
 
-struct EmbeddedStatement {
+pub struct EmbeddedStatement {
     connection: Arc<Mutex<EmbeddedConnectionImpl>>,
     planner: Arc<Mutex<Planner>>,
 }
@@ -103,8 +106,8 @@ impl EmbeddedStatement {
     }
 }
 
-impl Statement for EmbeddedStatement {
-    fn execute_query(&mut self, command: &str) -> Result<Box<dyn ResultSet>, anyhow::Error> {
+impl StatementControl for EmbeddedStatement {
+    fn execute_query(&mut self, command: &str) -> Result<ResultSet, anyhow::Error> {
         let tx = self.connection.lock().unwrap().get_transaction();
         let plan = self
             .planner
@@ -112,7 +115,7 @@ impl Statement for EmbeddedStatement {
             .unwrap()
             .create_query_plan(command, tx)?;
         let result_set: EmbeddedResultSet = EmbeddedResultSet::new(plan, self.connection.clone())?;
-        return Ok(Box::new(result_set));
+        return Ok(ResultSet::Embedded(result_set));
     }
 
     fn execute_update(&mut self, command: &str) -> Result<usize, anyhow::Error> {
@@ -123,7 +126,7 @@ impl Statement for EmbeddedStatement {
     }
 }
 
-struct EmbeddedConnectionImpl {
+pub struct EmbeddedConnectionImpl {
     db: SimpleDB,
     current_tx: Arc<Mutex<Transaction>>,
 }
@@ -168,8 +171,10 @@ impl EmbeddedConnection {
 }
 
 impl ConnectionAdaptor for EmbeddedConnection {
-    fn create_statement(&self) -> Result<Box<dyn Statement>, anyhow::Error> {
-        Ok(Box::new(EmbeddedStatement::new(self.connection.clone())?))
+    fn create_statement(&self) -> Result<Statement, anyhow::Error> {
+        Ok(Statement::Embedded(EmbeddedStatement::new(
+            self.connection.clone(),
+        )?))
     }
 
     fn close(&mut self) -> Result<(), anyhow::Error> {
