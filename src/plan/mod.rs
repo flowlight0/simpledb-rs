@@ -23,7 +23,7 @@ pub trait Plan {
     fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, TransactionError>;
 }
 
-pub trait QueryPlanner {
+pub trait QueryPlanner: Send + Sync {
     fn create_plan(
         &self,
         query: &QueryData,
@@ -31,7 +31,7 @@ pub trait QueryPlanner {
     ) -> Result<Box<dyn Plan>, TransactionError>;
 }
 
-pub trait UpdatePlanner {
+pub trait UpdatePlanner: Send + Sync {
     fn execute_update(
         &self,
         update_command: &UpdateCommand,
