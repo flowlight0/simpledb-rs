@@ -1,9 +1,11 @@
-use embedded::{EmbeddedConnection, EmbeddedMetadata, EmbeddedResultSet, EmbeddedStatement};
+use embedded::{
+    EmbeddedConnection, EmbeddedDriver, EmbeddedMetadata, EmbeddedResultSet, EmbeddedStatement,
+};
 use enum_dispatch::enum_dispatch;
 
 use network::{
-    connection::NetworkConnection, metadata::NetworkMetadata, result_set::NetworkResultSet,
-    statement::NetworkStatement,
+    connection::NetworkConnection, driver::NetworkDriver, metadata::NetworkMetadata,
+    result_set::NetworkResultSet, statement::NetworkStatement,
 };
 // use network::NetworkMetadata;
 
@@ -67,6 +69,13 @@ pub trait ConnectionControl {
     fn rollback(&mut self) -> Result<(), anyhow::Error>;
 }
 
-pub trait Driver {
+#[enum_dispatch]
+pub enum Driver {
+    Embedded(EmbeddedDriver),
+    Network(NetworkDriver),
+}
+
+#[enum_dispatch(Driver)]
+pub trait DriverControl {
     fn connect(&self, db_url: &str) -> Result<(String, Connection), anyhow::Error>;
 }

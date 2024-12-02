@@ -2,8 +2,8 @@ use std::io::{stdin, stdout, Write};
 
 use simpledb_rs::{
     driver::{
-        embedded::EmbeddedDriver, ConnectionControl, Driver, MetadataControl, ResultSetControl,
-        Statement, StatementControl,
+        embedded::EmbeddedDriver, network::driver::NetworkDriver, ConnectionControl, Driver,
+        DriverControl, MetadataControl, ResultSetControl, Statement, StatementControl,
     },
     record::field::Type,
 };
@@ -71,11 +71,10 @@ fn main() -> Result<(), anyhow::Error> {
     let mut db_url = String::new();
     stdin().read_line(&mut db_url).unwrap();
 
-    let driver = if db_url.contains("//") {
-        todo!()
-        // NetworkDriver::new()
+    let driver: Driver = if db_url.contains("//") {
+        Driver::Network(NetworkDriver::new())
     } else {
-        EmbeddedDriver::new()
+        Driver::Embedded(EmbeddedDriver::new())
     };
 
     let (db_name, mut connection) = driver.connect(&db_url)?;

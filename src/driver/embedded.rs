@@ -14,8 +14,8 @@ use crate::{
 };
 
 use super::{
-    Connection, ConnectionControl, Driver, Metadata, MetadataControl, ResultSet, ResultSetControl,
-    Statement, StatementControl,
+    Connection, ConnectionControl, DriverControl, Metadata, MetadataControl, ResultSet,
+    ResultSetControl, Statement, StatementControl,
 };
 
 pub struct EmbeddedMetadata {
@@ -202,7 +202,7 @@ impl EmbeddedDriver {
     }
 }
 
-impl Driver for EmbeddedDriver {
+impl DriverControl for EmbeddedDriver {
     fn connect(&self, db_url: &str) -> Result<(String, Connection), anyhow::Error> {
         let db_name = db_url.replace("jdbc:simpledb:", "").trim().to_string();
         let db_directory = PathBuf::from(&db_name);
