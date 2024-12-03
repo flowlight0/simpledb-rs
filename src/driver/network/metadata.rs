@@ -18,16 +18,16 @@ use crate::{
     record::field::Type,
 };
 
-use super::connection::NetworkConnection;
+use super::{connection::NetworkConnection, result_set::RemoteResultSet};
 
 pub struct RemoteMetadata {
     embedded_metadata_dict: Arc<Mutex<HashMap<u64, EmbeddedMetadata>>>,
 }
 
 impl RemoteMetadata {
-    pub fn new(embedded_metadata_dict: Arc<Mutex<HashMap<u64, EmbeddedMetadata>>>) -> Self {
+    pub fn new(result_set: &RemoteResultSet) -> Self {
         RemoteMetadata {
-            embedded_metadata_dict,
+            embedded_metadata_dict: result_set.embedded_metadata_dict.clone(),
         }
     }
 }

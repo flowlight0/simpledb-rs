@@ -1,6 +1,73 @@
-use tonic::transport::Endpoint;
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
-use crate::driver::{network::connection::NetworkConnection, Connection, DriverControl};
+use tonic::{transport::Endpoint, Request, Response};
+
+use crate::{
+    driver::{
+        embedded::{EmbeddedConnection, EmbeddedDriver},
+        network::connection::NetworkConnection,
+        Connection, DriverControl,
+    },
+    proto::simpledb::{
+        driver_service_server::DriverService, DriverCreateConnectionRequest,
+        DriverCreateConnectionResponse,
+    },
+};
+
+use super::connection::RemoteConnection;
+
+pub struct RemoteDriver {
+    // The driver does not need to maintain any state.
+    embedded_driver: Arc<Mutex<EmbeddedDriver>>,
+    pub(crate) embedded_connection_dict: Arc<Mutex<HashMap<u64, EmbeddedConnection>>>,
+}
+
+impl RemoteDriver {
+    pub fn new() -> Self {
+        Self {
+            embedded_driver: Arc::new(Mutex::new(EmbeddedDriver::new())),
+            embedded_connection_dict: Arc::new(Mutex::new(HashMap::new())),
+        }
+    }
+
+    pub fn create_remote_connection(&self) -> RemoteConnection {
+        RemoteConnection::new(self)
+    }
+}
+
+#[tonic::async_trait]
+impl DriverService for RemoteDriver {
+    async fn create_connection(
+        &self,
+        request: Request<DriverCreateConnectionRequest>,
+    ) -> Result<Response<DriverCreateConnectionResponse>, tonic::Status> {
+        let embedded_connection = {
+            let (_, embedded_connection) = self
+                .embedded_driver
+                .lock()
+                .unwrap()
+                .connect(&request.into_inner().url)
+                .unwrap();
+            if let Connection::Embedded(embedded_connection) = embedded_connection {
+                embedded_connection
+            } else {
+                panic!("Unexpected connection type");
+            }
+        };
+        let mut connection_id = 0;
+        let mut lock = self.embedded_connection_dict.lock().unwrap();
+        while lock.contains_key(&connection_id) {
+            connection_id += 1;
+        }
+        lock.insert(connection_id, embedded_connection);
+        Ok(Response::new(DriverCreateConnectionResponse {
+            connection_id,
+        }))
+    }
+}
 
 pub struct NetworkDriver {}
 

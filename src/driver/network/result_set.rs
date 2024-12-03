@@ -15,19 +15,24 @@ use crate::proto::simpledb::{
 };
 
 use super::connection::NetworkConnection;
-use super::metadata::NetworkMetadata;
+use super::metadata::{NetworkMetadata, RemoteMetadata};
+use super::statement::RemoteStatement;
 
 pub struct RemoteResultSet {
     embedded_result_set_dict: Arc<Mutex<HashMap<u64, EmbeddedResultSet>>>,
-    embedded_metadata_dict: Arc<Mutex<HashMap<u64, EmbeddedMetadata>>>,
+    pub(crate) embedded_metadata_dict: Arc<Mutex<HashMap<u64, EmbeddedMetadata>>>,
 }
 
 impl RemoteResultSet {
-    pub fn new() -> Self {
+    pub fn new(statement: &RemoteStatement) -> Self {
         Self {
-            embedded_result_set_dict: Arc::new(Mutex::new(HashMap::new())),
+            embedded_result_set_dict: statement.embedded_result_set_dict.clone(),
             embedded_metadata_dict: Arc::new(Mutex::new(HashMap::new())),
         }
+    }
+
+    pub fn create_remote_metadata(&self) -> RemoteMetadata {
+        RemoteMetadata::new(self)
     }
 }
 

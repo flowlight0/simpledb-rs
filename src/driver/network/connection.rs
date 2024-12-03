@@ -15,11 +15,26 @@ use crate::proto::simpledb::{
     ConnectionRollbackRequest, ConnectionRollbackResponse,
 };
 
-use super::statement::NetworkStatement;
+use super::driver::RemoteDriver;
+use super::statement::{NetworkStatement, RemoteStatement};
 
-struct RemoteConnection {
+// Each connection can have multiple statements.
+pub struct RemoteConnection {
     embedded_connection_dict: Arc<Mutex<HashMap<u64, EmbeddedConnection>>>,
-    embedded_statement_dict: Arc<Mutex<HashMap<u64, EmbeddedStatement>>>,
+    pub(crate) embedded_statement_dict: Arc<Mutex<HashMap<u64, EmbeddedStatement>>>,
+}
+
+impl RemoteConnection {
+    pub fn new(driver: &RemoteDriver) -> Self {
+        Self {
+            embedded_connection_dict: driver.embedded_connection_dict.clone(),
+            embedded_statement_dict: Arc::new(Mutex::new(HashMap::new())),
+        }
+    }
+
+    pub fn create_remote_statement(&self) -> RemoteStatement {
+        RemoteStatement::new(self)
+    }
 }
 
 #[tonic::async_trait]

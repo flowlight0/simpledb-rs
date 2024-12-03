@@ -13,12 +13,26 @@ use crate::proto::simpledb::{
     StatementExecuteUpdateResponse,
 };
 
-use super::connection::NetworkConnection;
-use super::result_set::NetworkResultSet;
+use super::connection::{NetworkConnection, RemoteConnection};
+use super::result_set::{NetworkResultSet, RemoteResultSet};
 
+// Each embedded statement can have multiple result sets.
 pub struct RemoteStatement {
-    embedded_result_set_dict: Arc<Mutex<HashMap<u64, EmbeddedResultSet>>>,
+    pub(crate) embedded_result_set_dict: Arc<Mutex<HashMap<u64, EmbeddedResultSet>>>,
     embedded_statement_dict: Arc<Mutex<HashMap<u64, EmbeddedStatement>>>,
+}
+
+impl RemoteStatement {
+    pub fn new(connection: &RemoteConnection) -> Self {
+        Self {
+            embedded_result_set_dict: Arc::new(Mutex::new(HashMap::new())),
+            embedded_statement_dict: connection.embedded_statement_dict.clone(),
+        }
+    }
+
+    pub fn create_remote_result_set(&self) -> RemoteResultSet {
+        RemoteResultSet::new(self)
+    }
 }
 
 #[tonic::async_trait]

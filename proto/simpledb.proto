@@ -157,3 +157,15 @@ message ConnectionRollbackRequest {
 message ConnectionRollbackResponse {
     
 }
+
+service DriverService {
+    rpc CreateConnection (DriverCreateConnectionRequest) returns (DriverCreateConnectionResponse) {}
+}
+
+message DriverCreateConnectionRequest {
+    string url = 1;
+}
+
+message DriverCreateConnectionResponse {
+    uint64 connection_id = 1;
+}
