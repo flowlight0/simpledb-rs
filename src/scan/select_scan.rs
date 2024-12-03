@@ -69,7 +69,6 @@ impl Scan for SelectScan {
 
 #[cfg(test)]
 mod tests {
-    use std::rc::Rc;
     use std::sync::{Arc, Mutex};
 
     use super::*;
@@ -85,7 +84,7 @@ mod tests {
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);
         schema.add_i32_field("C");
-        let layout = Rc::new(Layout::new(schema));
+        let layout = Arc::new(Layout::new(schema));
 
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;

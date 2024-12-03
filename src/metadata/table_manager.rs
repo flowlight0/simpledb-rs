@@ -1,7 +1,4 @@
-use std::{
-    rc::Rc,
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
 use crate::{
     errors::TransactionError,
@@ -15,8 +12,8 @@ const FIELD_NAME_MAX_LENGTH: usize = 50;
 
 #[derive(Clone)]
 pub struct TableManager {
-    tcat_layout: Rc<Layout>,
-    fcat_layout: Rc<Layout>,
+    tcat_layout: Arc<Layout>,
+    fcat_layout: Arc<Layout>,
 }
 
 fn create_tcat_layout() -> Layout {
@@ -40,8 +37,8 @@ fn create_table(
     table_name: &str,
     schema: &Schema,
     tx: Arc<Mutex<Transaction>>,
-    tcat_layout: Rc<Layout>,
-    fcat_layout: Rc<Layout>,
+    tcat_layout: Arc<Layout>,
+    fcat_layout: Arc<Layout>,
 ) -> Result<(), TransactionError> {
     let layout = Layout::new(schema.clone());
     {
@@ -74,8 +71,8 @@ fn create_table(
 
 impl TableManager {
     pub fn new(is_new: bool, tx: Arc<Mutex<Transaction>>) -> Result<Self, TransactionError> {
-        let tcat_layout = Rc::new(create_tcat_layout());
-        let fcat_layout = Rc::new(create_fcat_layout());
+        let tcat_layout = Arc::new(create_tcat_layout());
+        let fcat_layout = Arc::new(create_fcat_layout());
         if is_new {
             create_table(
                 "tblcat",

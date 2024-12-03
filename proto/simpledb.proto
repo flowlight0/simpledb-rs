@@ -1,0 +1,171 @@
+syntax = "proto3";
+package simpledb;
+
+service MetadataService {
+    rpc GetColumnCount (MetadataGetColumnCountRequest) returns (MetadataGetColumnCountResponse) {}
+    rpc GetColumnName (MetadataGetColumnNameRequest) returns (MetadataGetColumnNameResponse) {}
+    rpc GetColumnDisplaySize (MetadataGetColumnDisplaySizeRequest) returns (MetadataGetColumnDisplaySizeResponse) {}
+    rpc GetColumnType (MetadataGetColumnTypeRequest) returns (MetadataGetColumnTypeResponse) {}
+}
+
+message MetadataGetColumnCountRequest {
+    uint64 id = 1;
+}
+
+message MetadataGetColumnCountResponse {
+    uint64 column_count = 1;
+}
+
+message MetadataGetColumnNameRequest {
+    uint64 id = 1;
+    uint64 index = 2;
+}
+
+message MetadataGetColumnNameResponse {
+    string column_name = 1;
+}
+
+message MetadataGetColumnDisplaySizeRequest {
+    uint64 id = 1;
+    uint64 index = 2;
+}
+
+message MetadataGetColumnDisplaySizeResponse {
+    uint64 size = 1;
+}
+
+message MetadataGetColumnTypeRequest {
+    uint64 id = 1;
+    uint64 index = 2;
+}
+
+message MetadataGetColumnTypeResponse {
+    uint64 type_code = 1;
+}
+
+
+service ResultSetService {
+    rpc GetMetadata (ResultSetGetMetadataRequest) returns (ResultSetGetMetadataResponse) {}
+    rpc Next (ResultSetNextRequest) returns (ResultSetNextResponse) {}
+    rpc GetI32 (ResultSetGetI32Request) returns (ResultSetGetI32Response) {}
+    rpc GetString (ResultSetGetStringRequest) returns (ResultSetGetStringResponse) {}
+    rpc Close (ResultSetCloseRequest) returns (ResultSetCloseResponse) {}
+}
+
+message ResultSetGetMetadataRequest {
+    uint64 id = 1;
+}
+
+message ResultSetGetMetadataResponse {
+
+}
+
+message ResultSetNextRequest {
+    uint64 id = 1;
+}
+
+message ResultSetNextResponse {
+    bool has_next = 1;
+}
+
+message ResultSetGetI32Request {
+    uint64 id = 1;
+    string column_name = 2;
+}
+
+message ResultSetGetI32Response {
+    int32 value = 1;
+}
+
+message ResultSetGetStringRequest {
+    uint64 id = 1;
+    string column_name = 2;
+}
+
+message ResultSetGetStringResponse {
+    string value = 1;
+}
+
+message ResultSetCloseRequest {
+    uint64 id = 1;
+}
+
+message ResultSetCloseResponse {
+    
+}
+
+
+service StatementService {
+    rpc ExecuteQuery (StatementExecuteQueryRequest) returns (StatementExecuteQueryResponse) {}
+    rpc ExecuteUpdate (StatementExecuteUpdateRequest) returns (StatementExecuteUpdateResponse) {}
+}
+
+message StatementExecuteQueryRequest {
+    uint64 id = 1;
+    string command = 2;
+}
+
+message StatementExecuteQueryResponse {
+    uint64 result_set_id = 1;
+}
+
+message StatementExecuteUpdateRequest {
+    uint64 id = 1;
+    string command = 2;
+}
+
+message StatementExecuteUpdateResponse {
+    uint64 num_updated_rows = 1;
+}
+
+service ConnectionService {
+    rpc CreateStatement (ConnectionCreateStatementRequest) returns (ConnectionCreateStatementResponse) {}
+    rpc Close (ConnectionCloseRequest) returns (ConnectionCloseResponse) {}
+    rpc Commit (ConnectionCommitRequest) returns (ConnectionCommitResponse) {}
+    rpc Rollback (ConnectionRollbackRequest) returns (ConnectionRollbackResponse) {}
+}
+
+message ConnectionCreateStatementRequest {
+    uint64 id = 1;
+}
+
+message ConnectionCreateStatementResponse {
+    uint64 statement_id = 1;
+}
+
+
+message ConnectionCloseRequest {
+    uint64 id = 1;
+}
+
+message ConnectionCloseResponse {
+    
+}
+
+message ConnectionCommitRequest {
+    uint64 id = 1;
+}
+
+message ConnectionCommitResponse {
+    
+}
+
+message ConnectionRollbackRequest {
+    uint64 id = 1;
+}
+
+message ConnectionRollbackResponse {
+    
+}
+
+service DriverService {
+    rpc CreateConnection (DriverCreateConnectionRequest) returns (DriverCreateConnectionResponse) {}
+}
+
+message DriverCreateConnectionRequest {
+    string url = 1;
+}
+
+message DriverCreateConnectionResponse {
+    uint64 connection_id = 1;
+}

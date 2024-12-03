@@ -1,8 +1,6 @@
 use std::{
-    cell::RefCell,
     cmp::max,
     path::PathBuf,
-    rc::Rc,
     sync::{Arc, Mutex},
 };
 
@@ -15,38 +13,41 @@ use crate::{
     tx::transaction::Transaction,
 };
 
-use super::{ConnectionAdaptor, Metadata, ResultSet, Statement};
+use super::{
+    Connection, ConnectionControl, DriverControl, Metadata, MetadataControl, ResultSet,
+    ResultSetControl, Statement, StatementControl,
+};
 
-struct EmbeddedMetadata {
+pub struct EmbeddedMetadata {
     schema: Schema,
 }
 
-impl Metadata for EmbeddedMetadata {
-    fn get_column_count(&self) -> usize {
-        self.schema.get_fields().len()
+impl MetadataControl for EmbeddedMetadata {
+    fn get_column_count(&self) -> Result<usize, anyhow::Error> {
+        Ok(self.schema.get_fields().len())
     }
 
-    fn get_column_name(&self, index: usize) -> String {
-        self.schema.get_fields()[index].clone()
+    fn get_column_name(&self, index: usize) -> Result<String, anyhow::Error> {
+        Ok(self.schema.get_fields()[index].clone())
     }
 
-    fn get_column_display_size(&self, index: usize) -> usize {
-        let name = self.get_column_name(index);
-        let size = match self.get_column_type(index) {
+    fn get_column_display_size(&self, index: usize) -> Result<usize, anyhow::Error> {
+        let name = self.get_column_name(index)?;
+        let size = match self.get_column_type(index)? {
             Type::I32 => 12,
             Type::String => name.len(),
         };
-        max(size, name.len())
+        Ok(max(size, name.len()))
     }
 
-    fn get_column_type(&self, index: usize) -> Type {
-        let name = self.get_column_name(index);
-        self.schema.get_field_type(&name)
+    fn get_column_type(&self, index: usize) -> Result<Type, anyhow::Error> {
+        let name = self.get_column_name(index)?;
+        Ok(self.schema.get_field_type(&name))
     }
 }
 
-struct EmbeddedResultSet {
-    connection: Rc<RefCell<EmbeddedConnectionImpl>>,
+pub struct EmbeddedResultSet {
+    connection: Arc<Mutex<EmbeddedConnectionImpl>>,
     scan: Box<dyn Scan>,
     schema: Schema,
 }
@@ -54,9 +55,9 @@ struct EmbeddedResultSet {
 impl EmbeddedResultSet {
     fn new(
         mut plan: Box<dyn Plan>,
-        connection: Rc<RefCell<EmbeddedConnectionImpl>>,
+        connection: Arc<Mutex<EmbeddedConnectionImpl>>,
     ) -> Result<Self, ExecutionError> {
-        let scan = plan.open(connection.borrow().get_transaction())?;
+        let scan = plan.open(connection.lock().unwrap().get_transaction())?;
         Ok(EmbeddedResultSet {
             connection,
             scan,
@@ -65,11 +66,11 @@ impl EmbeddedResultSet {
     }
 }
 
-impl ResultSet for EmbeddedResultSet {
-    fn get_metadata(&self) -> Box<dyn Metadata> {
-        Box::new(EmbeddedMetadata {
+impl ResultSetControl for EmbeddedResultSet {
+    fn get_metadata(&self) -> Result<Metadata, anyhow::Error> {
+        Ok(Metadata::Embedded(EmbeddedMetadata {
             schema: self.schema.clone(),
-        })
+        }))
     }
 
     fn next(&mut self) -> Result<bool, anyhow::Error> {
@@ -86,18 +87,18 @@ impl ResultSet for EmbeddedResultSet {
 
     fn close(&mut self) -> Result<(), anyhow::Error> {
         self.scan.close()?;
-        Ok(self.connection.borrow_mut().commit()?)
+        Ok(self.connection.lock().unwrap().commit()?)
     }
 }
 
-struct EmbeddedStatement {
-    connection: Rc<RefCell<EmbeddedConnectionImpl>>,
+pub struct EmbeddedStatement {
+    connection: Arc<Mutex<EmbeddedConnectionImpl>>,
     planner: Arc<Mutex<Planner>>,
 }
 
 impl EmbeddedStatement {
-    fn new(connection: Rc<RefCell<EmbeddedConnectionImpl>>) -> Result<Self, ExecutionError> {
-        let planner = connection.borrow().db.planner.clone();
+    fn new(connection: Arc<Mutex<EmbeddedConnectionImpl>>) -> Result<Self, ExecutionError> {
+        let planner = connection.lock().unwrap().db.planner.clone();
         Ok(Self {
             connection,
             planner,
@@ -105,27 +106,27 @@ impl EmbeddedStatement {
     }
 }
 
-impl Statement for EmbeddedStatement {
-    fn execute_query(&mut self, command: &str) -> Result<Box<dyn ResultSet>, anyhow::Error> {
-        let tx = self.connection.borrow().get_transaction();
+impl StatementControl for EmbeddedStatement {
+    fn execute_query(&mut self, command: &str) -> Result<ResultSet, anyhow::Error> {
+        let tx = self.connection.lock().unwrap().get_transaction();
         let plan = self
             .planner
             .lock()
             .unwrap()
             .create_query_plan(command, tx)?;
         let result_set: EmbeddedResultSet = EmbeddedResultSet::new(plan, self.connection.clone())?;
-        return Ok(Box::new(result_set));
+        return Ok(ResultSet::Embedded(result_set));
     }
 
     fn execute_update(&mut self, command: &str) -> Result<usize, anyhow::Error> {
-        let tx = self.connection.borrow().get_transaction();
+        let tx = self.connection.lock().unwrap().get_transaction();
         let num_updated = self.planner.lock().unwrap().execute_update(command, tx)?;
-        self.connection.borrow_mut().commit()?;
+        self.connection.lock().unwrap().commit()?;
         Ok(num_updated)
     }
 }
 
-struct EmbeddedConnectionImpl {
+pub struct EmbeddedConnectionImpl {
     db: SimpleDB,
     current_tx: Arc<Mutex<Transaction>>,
 }
@@ -155,8 +156,8 @@ impl EmbeddedConnectionImpl {
     }
 }
 
-struct EmbeddedConnection {
-    connection: Rc<RefCell<EmbeddedConnectionImpl>>,
+pub struct EmbeddedConnection {
+    connection: Arc<Mutex<EmbeddedConnectionImpl>>,
 }
 
 impl EmbeddedConnection {
@@ -164,26 +165,28 @@ impl EmbeddedConnection {
         let current_tx = Arc::new(Mutex::new(db.new_transaction()?));
         let connection = EmbeddedConnectionImpl { db, current_tx };
         Ok(Self {
-            connection: Rc::new(RefCell::new(connection)),
+            connection: Arc::new(Mutex::new(connection)),
         })
     }
 }
 
-impl ConnectionAdaptor for EmbeddedConnection {
-    fn create_statement(&self) -> Result<Box<dyn Statement>, anyhow::Error> {
-        Ok(Box::new(EmbeddedStatement::new(self.connection.clone())?))
+impl ConnectionControl for EmbeddedConnection {
+    fn create_statement(&self) -> Result<Statement, anyhow::Error> {
+        Ok(Statement::Embedded(EmbeddedStatement::new(
+            self.connection.clone(),
+        )?))
     }
 
     fn close(&mut self) -> Result<(), anyhow::Error> {
-        Ok(self.connection.borrow().close()?)
+        Ok(self.connection.lock().unwrap().close()?)
     }
 
     fn commit(&mut self) -> Result<(), anyhow::Error> {
-        Ok(self.connection.borrow_mut().commit()?)
+        Ok(self.connection.lock().unwrap().commit()?)
     }
 
     fn rollback(&mut self) -> Result<(), anyhow::Error> {
-        Ok(self.connection.borrow_mut().rollback()?)
+        Ok(self.connection.lock().unwrap().rollback()?)
     }
 }
 
@@ -197,14 +200,13 @@ impl EmbeddedDriver {
     pub fn new() -> Self {
         Self {}
     }
+}
 
-    pub fn connect(
-        &self,
-        db_url: &str,
-    ) -> Result<(String, Box<dyn ConnectionAdaptor>), anyhow::Error> {
+impl DriverControl for EmbeddedDriver {
+    fn connect(&self, db_url: &str) -> Result<(String, Connection), anyhow::Error> {
         let db_name = db_url.replace("jdbc:simpledb:", "").trim().to_string();
         let db_directory = PathBuf::from(&db_name);
         let db = SimpleDB::new(db_directory, DEFAULT_BLOCK_SIZE, DEFAULT_NUM_BUFFERS)?;
-        Ok((db_name, Box::new(EmbeddedConnection::new(db)?)))
+        Ok((db_name, Connection::Embedded(EmbeddedConnection::new(db)?)))
     }
 }

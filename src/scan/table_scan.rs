@@ -1,7 +1,4 @@
-use std::{
-    rc::Rc,
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
 use crate::{
     errors::TransactionError,
@@ -26,7 +23,7 @@ impl TableScan {
     pub fn new(
         tx: Arc<Mutex<Transaction>>,
         table_name: &str,
-        layout: Rc<Layout>,
+        layout: Arc<Layout>,
     ) -> Result<Self, TransactionError> {
         let file_name = format!("{}.tbl", table_name);
 
@@ -188,7 +185,7 @@ mod tests {
         let mut schema = Schema::new();
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);
-        let layout = Rc::new(Layout::new(schema));
+        let layout = Arc::new(Layout::new(schema));
 
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;

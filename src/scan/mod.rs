@@ -1,6 +1,6 @@
-use crate::{record::field::Value, errors::TransactionError};
+use crate::{errors::TransactionError, record::field::Value};
 
-pub trait Scan {
+pub trait Scan: Send + Sync {
     fn before_first(&mut self) -> Result<(), TransactionError>;
     fn next(&mut self) -> Result<bool, TransactionError>;
     fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError>;

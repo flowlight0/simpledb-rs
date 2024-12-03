@@ -1,20 +1,23 @@
 use std::io::{stdin, stdout, Write};
 
 use simpledb_rs::{
-    driver::{embedded::EmbeddedDriver, Statement},
+    driver::{
+        embedded::EmbeddedDriver, network::driver::NetworkDriver, ConnectionControl, Driver,
+        DriverControl, MetadataControl, ResultSetControl, Statement, StatementControl,
+    },
     record::field::Type,
 };
 
-fn do_query(statement: &mut Box<dyn Statement>, command: &str) -> Result<(), anyhow::Error> {
+fn do_query(statement: &mut Statement, command: &str) -> Result<(), anyhow::Error> {
     let mut result_set = statement.execute_query(command)?;
-    let metadata = result_set.get_metadata();
-    let num_columns = metadata.get_column_count();
+    let metadata = result_set.get_metadata()?;
+    let num_columns = metadata.get_column_count()?;
     let mut total_width = 0;
 
     // print header
     for i in 0..num_columns {
-        let column_name = metadata.get_column_name(i);
-        let mut width = metadata.get_column_display_size(i);
+        let column_name = metadata.get_column_name(i)?;
+        let mut width = metadata.get_column_display_size(i)?;
         if i > 0 {
             width += 1;
         }
@@ -31,9 +34,9 @@ fn do_query(statement: &mut Box<dyn Statement>, command: &str) -> Result<(), any
     // print records
     while result_set.next()? {
         for i in 0..num_columns {
-            let column_name = metadata.get_column_name(i);
-            let column_type = metadata.get_column_type(i);
-            let width = metadata.get_column_display_size(i);
+            let column_name = metadata.get_column_name(i)?;
+            let column_type = metadata.get_column_type(i)?;
+            let width = metadata.get_column_display_size(i)?;
             // String fmt = "%" + md.getColumnDisplaySize(i);
             if i > 0 {
                 print!(" ");
@@ -56,7 +59,7 @@ fn do_query(statement: &mut Box<dyn Statement>, command: &str) -> Result<(), any
     Ok(())
 }
 
-fn do_update(statement: &mut Box<dyn Statement>, command: &str) -> Result<(), anyhow::Error> {
+fn do_update(statement: &mut Statement, command: &str) -> Result<(), anyhow::Error> {
     let num_records = statement.execute_update(command)?;
     println!("{} records processed", num_records);
     Ok(())
@@ -68,10 +71,10 @@ fn main() -> Result<(), anyhow::Error> {
     let mut db_url = String::new();
     stdin().read_line(&mut db_url).unwrap();
 
-    let driver = if db_url.contains("//") {
-        todo!()
+    let driver: Driver = if db_url.contains("//") {
+        Driver::Network(NetworkDriver::new())
     } else {
-        EmbeddedDriver::new()
+        Driver::Embedded(EmbeddedDriver::new())
     };
 
     let (db_name, mut connection) = driver.connect(&db_url)?;

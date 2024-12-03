@@ -1,7 +1,4 @@
-use std::{
-    rc::Rc,
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
 use stat_manager::{StatInfo, StatManager};
 use table_manager::TableManager;
@@ -50,7 +47,7 @@ impl MetadataManager {
     pub fn get_stat_info(
         &mut self,
         table_name: &str,
-        layout: Rc<Layout>,
+        layout: Arc<Layout>,
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<StatInfo, TransactionError> {
         self.stat_manager.get_stat_info(table_name, layout, tx)
@@ -59,7 +56,7 @@ impl MetadataManager {
 
 #[cfg(test)]
 mod tests {
-    use std::rc::Rc;
+
     use std::sync::{Arc, Mutex};
 
     use crate::db::SimpleDB;
@@ -85,7 +82,7 @@ mod tests {
         schema.add_string_field("B", 20);
 
         metadata_manager.create_table("testtable", &schema, tx.clone())?;
-        let layout = Rc::new(
+        let layout = Arc::new(
             metadata_manager
                 .get_layout("testtable", tx.clone())?
                 .unwrap(),

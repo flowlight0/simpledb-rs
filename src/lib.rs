@@ -8,6 +8,7 @@ pub mod metadata;
 pub mod page;
 pub mod parser;
 pub mod plan;
+pub mod proto;
 pub mod record;
 pub mod scan;
 pub mod tx;

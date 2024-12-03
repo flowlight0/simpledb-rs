@@ -1,7 +1,4 @@
-use std::{
-    rc::Rc,
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
 use crate::{errors::TransactionError, file::BlockId, tx::transaction::Transaction};
 
@@ -13,7 +10,7 @@ const FULL: i32 = 1;
 pub struct RecordPage {
     pub tx: Arc<Mutex<Transaction>>,
     pub block: BlockId,
-    pub layout: Rc<Layout>,
+    pub layout: Arc<Layout>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -48,7 +45,7 @@ impl Slot {
 }
 
 impl RecordPage {
-    pub fn new(tx: Arc<Mutex<Transaction>>, block: BlockId, layout: Rc<Layout>) -> Self {
+    pub fn new(tx: Arc<Mutex<Transaction>>, block: BlockId, layout: Arc<Layout>) -> Self {
         RecordPage { tx, block, layout }
     }
 
@@ -204,10 +201,7 @@ impl RecordPage {
 #[cfg(test)]
 mod tests {
 
-    use std::{
-        rc::Rc,
-        sync::{Arc, Mutex},
-    };
+    use std::sync::{Arc, Mutex};
 
     use crate::{
         db::SimpleDB,
@@ -222,7 +216,7 @@ mod tests {
         let mut schema = Schema::new();
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);
-        let layout = Rc::new(Layout::new(schema));
+        let layout = Arc::new(Layout::new(schema));
 
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 4096;

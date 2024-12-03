@@ -1,6 +1,5 @@
 use std::{
     collections::HashMap,
-    rc::Rc,
     sync::{Arc, Mutex},
 };
 
@@ -59,7 +58,7 @@ impl StatManager {
     pub fn get_stat_info(
         &mut self,
         table_name: &str,
-        layout: Rc<Layout>,
+        layout: Arc<Layout>,
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<StatInfo, TransactionError> {
         self.num_calls += 1;
@@ -84,7 +83,7 @@ impl StatManager {
         self.table_stats.clear();
         self.num_calls = 0;
 
-        let tcat_layout = Rc::new(
+        let tcat_layout = Arc::new(
             self.table_manager
                 .get_layout("tblcat", tx.clone())?
                 .unwrap(),
@@ -98,7 +97,7 @@ impl StatManager {
         tcat_scan.close()?;
 
         for table_name in table_names {
-            let layout = Rc::new(
+            let layout = Arc::new(
                 self.table_manager
                     .get_layout(&table_name, tx.clone())?
                     .unwrap(),
@@ -112,7 +111,7 @@ impl StatManager {
 
 fn calculate_table_stat(
     table_name: &str,
-    layout: Rc<Layout>,
+    layout: Arc<Layout>,
     tx: Arc<Mutex<Transaction>>,
 ) -> Result<StatInfo, TransactionError> {
     let mut num_blocks = 0;
