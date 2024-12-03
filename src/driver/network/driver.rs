@@ -3,17 +3,19 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+use tokio::runtime::{Builder, Runtime};
 use tonic::{transport::Endpoint, Request, Response};
 
 use crate::{
+    db,
     driver::{
         embedded::{EmbeddedConnection, EmbeddedDriver},
         network::connection::NetworkConnection,
         Connection, DriverControl,
     },
     proto::simpledb::{
-        driver_service_server::DriverService, DriverCreateConnectionRequest,
-        DriverCreateConnectionResponse,
+        driver_service_client::DriverServiceClient, driver_service_server::DriverService,
+        DriverCreateConnectionRequest, DriverCreateConnectionResponse,
     },
 };
 
@@ -44,6 +46,7 @@ impl DriverService for RemoteDriver {
         &self,
         request: Request<DriverCreateConnectionRequest>,
     ) -> Result<Response<DriverCreateConnectionResponse>, tonic::Status> {
+        dbg!(&request);
         let embedded_connection = {
             let (_, embedded_connection) = self
                 .embedded_driver
@@ -69,21 +72,42 @@ impl DriverService for RemoteDriver {
     }
 }
 
-pub struct NetworkDriver {}
+pub struct NetworkDriver {
+    runtime: Arc<Runtime>,
+}
 
 impl NetworkDriver {
     pub fn new() -> Self {
-        NetworkDriver {}
+        let runtime = Builder::new_current_thread().enable_all().build().unwrap();
+        let runtime = Arc::new(runtime);
+        NetworkDriver { runtime }
     }
 }
 
 impl DriverControl for NetworkDriver {
     fn connect(&self, db_url: &str) -> Result<(String, Connection), anyhow::Error> {
         if let Some(idx) = db_url.find("//") {
-            let endpoint = Endpoint::from_shared(format!("http://{}:50051", &db_url[idx + 2..]))?;
+            let db_url = db_url[idx + 2..].trim();
+            let url = format!("http://{}:50051", db_url);
+            dbg!(&url);
+            let endpoint = Endpoint::from_shared(url)?;
+            let channel = self.runtime.block_on(endpoint.connect())?;
+            let mut client = DriverServiceClient::new(channel.clone());
+            let response = self
+                .runtime
+                .block_on(client.create_connection(DriverCreateConnectionRequest {
+                    url: db_url.to_string(),
+                }))?
+                .into_inner();
+            let connection_id = response.connection_id;
+
             return Ok((
                 "".to_string(),
-                Connection::Network(NetworkConnection::new(endpoint)?),
+                Connection::Network(NetworkConnection::new(
+                    self.runtime.clone(),
+                    channel,
+                    connection_id,
+                )?),
             ));
         } else {
             panic!("Invalid URL");

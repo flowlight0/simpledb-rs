@@ -1,5 +1,6 @@
 use simpledb_rs::driver::network::driver::RemoteDriver;
 use simpledb_rs::proto::simpledb::connection_service_server::ConnectionServiceServer;
+use simpledb_rs::proto::simpledb::driver_service_server::DriverServiceServer;
 use simpledb_rs::proto::simpledb::metadata_service_server::MetadataServiceServer;
 use simpledb_rs::proto::simpledb::result_set_service_server::ResultSetServiceServer;
 use simpledb_rs::proto::simpledb::statement_service_server::StatementServiceServer;
@@ -16,6 +17,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let remote_metadata = remote_result_set.create_remote_metadata();
 
     Server::builder()
+        .add_service(DriverServiceServer::new(remote_driver))
         .add_service(ConnectionServiceServer::new(remote_connection))
         .add_service(StatementServiceServer::new(remote_statement))
         .add_service(ResultSetServiceServer::new(remote_result_set))

@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
-use tokio::runtime::{Builder, Runtime};
-use tonic::transport::{Channel, Endpoint};
+use tokio::runtime::Runtime;
+use tonic::transport::Channel;
 use tonic::{Request, Response, Status};
 
 use crate::driver::embedded::{EmbeddedConnection, EmbeddedStatement};
@@ -124,14 +124,14 @@ pub struct NetworkConnection {
 }
 
 impl NetworkConnection {
-    pub fn new(endpoint: Endpoint) -> Result<Self, anyhow::Error> {
-        let runtime = Builder::new_current_thread().enable_all().build()?;
-        let channel = runtime.block_on(endpoint.connect())?;
-        let connection_id = 0;
-
+    pub fn new(
+        runtime: Arc<Runtime>,
+        channel: Channel,
+        connection_id: u64,
+    ) -> Result<Self, anyhow::Error> {
         Ok(Self {
             channel,
-            runtime: Arc::new(runtime),
+            runtime,
             connection_id,
         })
     }
