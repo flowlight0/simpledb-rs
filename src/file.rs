@@ -100,6 +100,11 @@ impl FileAccessStats {
             write_count: 0,
         }
     }
+
+    pub fn reset(&mut self) {
+        self.read_count = 0;
+        self.write_count = 0;
+    }
 }
 
 pub struct FileManager {
@@ -107,7 +112,7 @@ pub struct FileManager {
     pub block_size: usize,
     opened_files: RwLock<HashMap<String, Arc<Mutex<File>>>>,
     pub is_new: bool,
-    file_access_stats: FileAccessStats,
+    pub file_access_stats: FileAccessStats,
 }
 
 impl FileManager {
