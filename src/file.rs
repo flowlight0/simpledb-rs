@@ -88,11 +88,31 @@ impl BlockId {
     }
 }
 
+pub struct FileAccessStats {
+    pub read_count: usize,
+    pub write_count: usize,
+}
+
+impl FileAccessStats {
+    pub fn new() -> Self {
+        FileAccessStats {
+            read_count: 0,
+            write_count: 0,
+        }
+    }
+
+    pub fn reset(&mut self) {
+        self.read_count = 0;
+        self.write_count = 0;
+    }
+}
+
 pub struct FileManager {
     directory: PathBuf,
     pub block_size: usize,
     opened_files: RwLock<HashMap<String, Arc<Mutex<File>>>>,
     pub is_new: bool,
+    pub file_access_stats: FileAccessStats,
 }
 
 impl FileManager {
@@ -109,6 +129,7 @@ impl FileManager {
             block_size,
             opened_files: RwLock::new(HashMap::new()),
             is_new,
+            file_access_stats: FileAccessStats::new(),
         }
     }
 
@@ -117,6 +138,7 @@ impl FileManager {
         let mut file = binding.lock().unwrap();
         file.seek(SeekFrom::Start((block.block_slot * self.block_size) as u64))?;
         page.write_to_file(&mut file)?;
+        self.file_access_stats.write_count += 1;
         Ok(())
     }
 
@@ -125,6 +147,7 @@ impl FileManager {
         let mut file = binding.lock().unwrap();
         file.seek(SeekFrom::Start((block.block_slot * self.block_size) as u64))?;
         page.read_from_file(&mut file)?;
+        self.file_access_stats.read_count += 1;
         Ok(())
     }
 
@@ -145,6 +168,7 @@ impl FileManager {
         let num_blocks = file.metadata().unwrap().len() as usize / self.block_size;
         let new_block_contents = vec![0; self.block_size];
         file.write(new_block_contents.as_slice())?;
+        self.file_access_stats.write_count += 1;
         Ok(BlockId::new(file_name, num_blocks))
     }
 
@@ -193,6 +217,9 @@ mod tests {
         let mut page1 = Page::new(file_manager.block_size);
         file_manager.read(&block_id, &mut page1)?;
         assert_eq!(page1.get_i32(80), 100);
+
+        assert_eq!(file_manager.file_access_stats.write_count, 2); // append + write
+        assert_eq!(file_manager.file_access_stats.read_count, 1);
         Ok(())
     }
 
@@ -208,6 +235,8 @@ mod tests {
             assert_eq!(block, BlockId::new("testfile", i));
             assert_eq!(file_manager.get_num_blocks("testfile"), i + 1);
         }
+        assert_eq!(file_manager.file_access_stats.write_count, 10);
+        assert_eq!(file_manager.file_access_stats.read_count, 0);
         Ok(())
     }
 }

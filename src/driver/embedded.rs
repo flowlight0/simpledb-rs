@@ -137,10 +137,22 @@ impl EmbeddedConnectionImpl {
         Ok(())
     }
 
+    fn print_file_access_stats(&self) {
+        let mut file_manager = self.db.file_manager.lock().unwrap();
+        let tx_write_count = file_manager.file_access_stats.write_count;
+        let tx_read_count = file_manager.file_access_stats.read_count;
+        file_manager.file_access_stats.reset();
+        eprintln!(
+            "Transaction read count: {}, write count: {}",
+            tx_read_count, tx_write_count
+        );
+    }
+
     fn commit(&mut self) -> Result<(), ExecutionError> {
         self.current_tx.lock().unwrap().commit()?;
         let new_tx = Arc::new(Mutex::new(self.db.new_transaction()?));
         self.current_tx = new_tx;
+        self.print_file_access_stats();
         Ok(())
     }
 
@@ -148,6 +160,7 @@ impl EmbeddedConnectionImpl {
         self.current_tx.lock().unwrap().rollback()?;
         let new_tx = Arc::new(Mutex::new(self.db.new_transaction()?));
         self.current_tx = new_tx;
+        self.print_file_access_stats();
         Ok(())
     }
 
@@ -162,6 +175,10 @@ pub struct EmbeddedConnection {
 
 impl EmbeddedConnection {
     fn new(db: SimpleDB) -> Result<Self, ExecutionError> {
+        {
+            let mut file_manager = db.file_manager.lock().unwrap();
+            file_manager.file_access_stats.reset();
+        }
         let current_tx = Arc::new(Mutex::new(db.new_transaction()?));
         let connection = EmbeddedConnectionImpl { db, current_tx };
         Ok(Self {

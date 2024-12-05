@@ -7,7 +7,6 @@ use tokio::runtime::{Builder, Runtime};
 use tonic::{transport::Endpoint, Request, Response};
 
 use crate::{
-    db,
     driver::{
         embedded::{EmbeddedConnection, EmbeddedDriver},
         network::connection::NetworkConnection,
