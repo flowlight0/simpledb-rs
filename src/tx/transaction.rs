@@ -248,9 +248,12 @@ impl Transaction {
         for log_record in log_iter {
             if log_record.get_transaction_id() == self.id {
                 log_records.push(log_record.clone());
-                if let LogRecord::Start(_) = log_record {
+            }
+            match log_record {
+                LogRecord::Start(_) | LogRecord::Checkpoint(_) => {
                     break;
                 }
+                _ => {}
             }
         }
         drop(log_manager);
