@@ -112,8 +112,21 @@ impl ResultSetService for RemoteResultSet {
     ) -> Result<Response<ResultSetCloseResponse>, Status> {
         let request = request.into_inner();
         let result_set_id = request.id;
-        let mut lock = self.embedded_result_set_dict.lock().unwrap();
-        lock.remove(&result_set_id);
+
+        // Close the embedded result set
+        {
+            let mut lock = self.embedded_result_set_dict.lock().unwrap();
+            let embedded_result_set = lock
+                .get_mut(&result_set_id)
+                .expect(&format!("Unknown result_set_id: {}", result_set_id));
+            embedded_result_set.close().unwrap();
+        }
+
+        // Remove the embedded result set
+        {
+            let mut lock = self.embedded_result_set_dict.lock().unwrap();
+            lock.remove(&result_set_id);
+        }
         Ok(Response::new(ResultSetCloseResponse {}))
     }
 }
