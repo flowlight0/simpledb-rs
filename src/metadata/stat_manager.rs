@@ -41,15 +41,15 @@ impl StatInfo {
 }
 
 pub struct StatManager {
-    table_manager: TableManager,
+    table_manager: Arc<Mutex<TableManager>>,
     table_stats: HashMap<String, StatInfo>,
     num_calls: usize,
 }
 
 impl StatManager {
-    pub fn new(table_manager: &TableManager) -> Result<Self, TransactionError> {
+    pub fn new(table_manager: Arc<Mutex<TableManager>>) -> Result<Self, TransactionError> {
         Ok(Self {
-            table_manager: table_manager.clone(),
+            table_manager,
             table_stats: HashMap::new(),
             num_calls: 0,
         })
@@ -85,6 +85,8 @@ impl StatManager {
 
         let tcat_layout = Arc::new(
             self.table_manager
+                .lock()
+                .unwrap()
                 .get_layout("tblcat", tx.clone())?
                 .unwrap(),
         );
@@ -99,6 +101,8 @@ impl StatManager {
         for table_name in table_names {
             let layout = Arc::new(
                 self.table_manager
+                    .lock()
+                    .unwrap()
                     .get_layout(&table_name, tx.clone())?
                     .unwrap(),
             );

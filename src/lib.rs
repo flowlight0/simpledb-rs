@@ -3,6 +3,7 @@ pub mod db;
 pub mod driver;
 pub mod errors;
 pub mod file;
+pub mod index;
 pub mod log;
 pub mod metadata;
 pub mod page;

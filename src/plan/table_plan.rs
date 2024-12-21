@@ -98,6 +98,8 @@ mod tests {
         let tx = Arc::new(Mutex::new(db.new_transaction()?));
         metadata_manager
             .stat_manager
+            .lock()
+            .unwrap()
             .refresh_statistics(tx.clone())?;
         drop(metadata_manager);
         let table_plan = TablePlan::new(tx.clone(), table_name, db.metadata_manager.clone())?;

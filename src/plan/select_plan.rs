@@ -97,8 +97,11 @@ mod tests {
         tx.lock().unwrap().commit()?;
 
         let tx = Arc::new(Mutex::new(db.new_transaction()?));
+
         metadata_manager
             .stat_manager
+            .lock()
+            .unwrap()
             .refresh_statistics(tx.clone())?;
         drop(metadata_manager);
 

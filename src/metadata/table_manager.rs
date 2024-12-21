@@ -109,6 +109,8 @@ impl TableManager {
         )
     }
 
+    // Get the layout of a table
+    // If the table does not exist, return None
     pub fn get_layout(
         &self,
         table_name: &str,
@@ -117,10 +119,12 @@ impl TableManager {
         let mut schema = Schema::new();
         let mut fcat = TableScan::new(tx, "fldcat", self.fcat_layout.clone())?;
         while fcat.next()? {
+            dbg!(fcat.get_string("tblname")?, table_name);
             if fcat.get_string("tblname")? != table_name {
                 continue;
             }
             let field_name = fcat.get_string("fldname")?;
+            dbg!(&field_name);
             let type_code = fcat.get_i32("type")?;
             let length = fcat.get_i32("length")?;
             // let offset = fcat.get_i32("offset")?;
