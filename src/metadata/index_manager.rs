@@ -62,7 +62,7 @@ impl IndexInfo {
         }
     }
 
-    fn open(&self) -> Index {
+    pub fn open(&self) -> Index {
         Index::BTree(BTreeIndex::new(
             self.tx.clone(),
             self.index_name.clone(),

@@ -56,11 +56,8 @@ mod tests {
 
     use crate::{
         db::SimpleDB,
-        driver::network::metadata,
-        plan::{table_plan::TablePlan, Plan},
-        record::{layout, schema::Schema},
+        record::schema::Schema,
         scan::{table_scan::TableScan, Scan},
-        tx,
     };
 
     use super::*;
@@ -68,7 +65,7 @@ mod tests {
     #[test]
     fn test_b_tree_index_retrieval() -> Result<(), anyhow::Error> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
-        let block_size = 256;
+        let block_size = 4096;
         let num_buffers = 256;
         let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
         let tx = Arc::new(Mutex::new(db.new_transaction()?));
@@ -100,13 +97,24 @@ mod tests {
             tx.clone(),
         )?;
 
-        // let mut plan = TablePlan::new(tx.clone(), "test_table", db.metadata_manager.clone())?;
-        // let scan = plan.open(tx.clone())?;
+        let mut index = metadata_manager
+            .lock()
+            .unwrap()
+            .get_index_info("test_index", tx.clone())?
+            .get("test_index")
+            .unwrap()
+            .open();
+        index.before_first(Value::String("2".to_string()))?;
+        while index.next()? {
+            let record_id = index.get()?;
+            table_scan.move_to_record_id(record_id)?;
+            assert_eq!(table_scan.get_string("B")?, "2".to_string());
+            table_scan.close()?;
+        }
 
-        // db.metadata_manager
-        //     .lock()
-        //     .unwrap()
-        //     .create_index("test_table", "A", "BTree", tx.clone())?;
+        index.close()?;
+        table_scan.close()?;
+        tx.lock().unwrap().commit()?;
         Ok(())
     }
 }

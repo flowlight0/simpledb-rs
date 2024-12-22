@@ -1,6 +1,9 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
-use index_manager::IndexManager;
+use index_manager::{IndexInfo, IndexManager};
 use stat_manager::{StatInfo, StatManager};
 use table_manager::TableManager;
 
@@ -65,6 +68,15 @@ impl MetadataManager {
     ) -> Result<(), TransactionError> {
         let index_manager = self.index_manager.lock().unwrap();
         index_manager.create_index(index_name, table_name, field_name, tx)
+    }
+
+    pub fn get_index_info(
+        &self,
+        table_name: &str,
+        tx: Arc<Mutex<Transaction>>,
+    ) -> Result<HashMap<String, IndexInfo>, TransactionError> {
+        let index_manager = self.index_manager.lock().unwrap();
+        index_manager.get_index_info(table_name, tx)
     }
 
     pub fn get_stat_info(

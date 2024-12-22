@@ -3,9 +3,7 @@ pub mod b_tree;
 use b_tree::BTreeIndex;
 use enum_dispatch::enum_dispatch;
 
-use crate::record::field::Value;
-
-type RecordId = u64;
+use crate::{record::field::Value, scan::table_scan::RecordId};
 
 #[enum_dispatch]
 pub enum Index {
