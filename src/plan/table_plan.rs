@@ -70,7 +70,7 @@ mod tests {
     #[test]
     fn test_table_plan() -> Result<(), TransactionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
-        let block_size = 256;
+        let block_size = 1024;
         let num_buffers = 3;
         let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
 

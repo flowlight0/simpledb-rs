@@ -142,8 +142,7 @@ impl IndexManager {
         scan.insert()?;
         scan.set_string(INDEX_NAME_COLUMN, index_name)?;
         scan.set_string(TABLE_NAME_COLUMN, table_name)?;
-        scan.set_string(FIELD_NAME_COLUMN, field_name)?;
-        scan.close()
+        scan.set_string(FIELD_NAME_COLUMN, field_name)
     }
 
     pub fn get_index_info(
@@ -182,7 +181,6 @@ impl IndexManager {
             );
             result.insert(index_name, index_info);
         }
-        scan.close()?;
         Ok(result)
     }
 }
