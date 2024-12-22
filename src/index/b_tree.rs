@@ -58,6 +58,8 @@ mod tests {
         db::SimpleDB,
         driver::network::metadata,
         plan::{table_plan::TablePlan, Plan},
+        record::{layout, schema::Schema},
+        scan::{table_scan::TableScan, Scan},
         tx,
     };
 
@@ -67,10 +69,36 @@ mod tests {
     fn test_b_tree_index_retrieval() -> Result<(), anyhow::Error> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
-        let num_buffers = 100;
+        let num_buffers = 256;
         let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
         let tx = Arc::new(Mutex::new(db.new_transaction()?));
         let metadata_manager = db.metadata_manager.clone();
+
+        let mut schema = Schema::new();
+        schema.add_i32_field("A");
+        schema.add_string_field("B", 20);
+
+        metadata_manager
+            .lock()
+            .unwrap()
+            .create_table("test_table", &schema, tx.clone())?;
+
+        let layout = Arc::new(Layout::new(schema));
+
+        let mut table_scan = TableScan::new(tx.clone(), "test_table", layout)?;
+        for i in 0..1 {
+            table_scan.insert()?;
+            table_scan.set_i32("A", i % 3)?;
+            table_scan.set_string("B", &(i % 4).to_string())?;
+        }
+        table_scan.close()?;
+
+        metadata_manager.lock().unwrap().create_index(
+            "test_index",
+            "test_table",
+            "B",
+            tx.clone(),
+        )?;
 
         // let mut plan = TablePlan::new(tx.clone(), "test_table", db.metadata_manager.clone())?;
         // let scan = plan.open(tx.clone())?;

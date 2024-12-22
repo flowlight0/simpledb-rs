@@ -22,7 +22,7 @@ const INDEX_NAME_COLUMN: &str = "index_name";
 const TABLE_NAME_COLUMN: &str = "table_name";
 const MAX_LENGTH: usize = 255;
 
-struct IndexInfo {
+pub struct IndexInfo {
     index_name: String,
     field_name: String,
     index_layout: Layout,

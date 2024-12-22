@@ -34,12 +34,18 @@ impl TableScan {
             } else {
                 (BlockId::get_first_block(&file_name), false)
             };
-            let mut rp = RecordPage::new(tx, block, layout);
+            let mut rp = RecordPage::new(tx.clone(), block, layout);
             if is_new {
                 rp.format()?;
             }
             rp
         };
+
+        let block_size = tx.lock().unwrap().get_block_size();
+        let slot_size = record_page.layout.slot_size;
+        if slot_size > block_size {
+            return Err(TransactionError::TooSmallBlockError(block_size, slot_size));
+        }
 
         Ok(Self {
             file_name,
