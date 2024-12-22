@@ -34,7 +34,6 @@ impl TableScan {
             } else {
                 (BlockId::get_first_block(&file_name), false)
             };
-            tx.lock().unwrap().pin(&block)?;
             let mut rp = RecordPage::new(tx, block, layout);
             if is_new {
                 rp.format()?;
@@ -57,13 +56,7 @@ impl TableScan {
 impl Scan for TableScan {
     fn before_first(&mut self) -> Result<(), TransactionError> {
         let block = BlockId::get_first_block(&self.file_name);
-        self.record_page
-            .tx
-            .lock()
-            .unwrap()
-            .unpin(&self.record_page.block);
-        self.record_page.tx.lock().unwrap().pin(&block)?;
-        self.record_page.reset_block(block);
+        self.record_page.reset_block(block)?;
         self.current_slot = Slot::Start;
         Ok(())
     }
@@ -75,22 +68,11 @@ impl Scan for TableScan {
                 Slot::Index(_) => return Ok(true),
                 Slot::Start => unreachable!(),
                 Slot::End => {
-                    if self
-                        .record_page
-                        .tx
-                        .lock()
-                        .unwrap()
-                        .is_last_block(&self.record_page.block)?
-                    {
-                        return Ok(false);
-                    } else {
-                        let new_block = self.record_page.block.get_next_block();
-                        let mut lock = self.record_page.tx.lock().unwrap();
-                        lock.unpin(&self.record_page.block);
-                        lock.pin(&new_block)?;
-                        drop(lock);
-                        self.record_page.reset_block(new_block);
+                    if let Some(new_block) = self.record_page.get_next_block(false)? {
+                        self.record_page.reset_block(new_block)?;
                         self.current_slot = Slot::Start;
+                    } else {
+                        return Ok(false);
                     }
                 }
             }
@@ -116,15 +98,6 @@ impl Scan for TableScan {
 
     fn has_field(&self, field_name: &str) -> bool {
         self.record_page.layout.has_field(field_name)
-    }
-
-    fn close(&mut self) -> Result<(), TransactionError> {
-        self.record_page
-            .tx
-            .lock()
-            .unwrap()
-            .unpin(&self.record_page.block);
-        Ok(())
     }
 
     fn set_i32(&mut self, field_name: &str, value: i32) -> Result<(), TransactionError> {
@@ -155,17 +128,11 @@ impl Scan for TableScan {
                 Slot::Index(_) => return Ok(()),
                 Slot::Start => unreachable!(),
                 Slot::End => {
-                    let mut lock = self.record_page.tx.lock().unwrap();
-                    let next_block = if lock.is_last_block(&self.record_page.block)? {
-                        lock.append_block(&self.file_name)?
-                    } else {
-                        self.record_page.block.get_next_block()
-                    };
-
-                    lock.unpin(&self.record_page.block);
-                    lock.pin(&next_block)?;
-                    drop(lock);
-                    self.record_page.reset_block(next_block);
+                    let next_block = self
+                        .record_page
+                        .get_next_block(true)?
+                        .expect("next block must have been appended before reaching here");
+                    self.record_page.reset_block(next_block)?;
                     self.current_slot = Slot::Start;
                 }
             }
@@ -201,26 +168,11 @@ mod tests {
 
             assert_eq!(table_scan.get_i32("A")?, i);
             assert_eq!(table_scan.get_string("B")?, i.to_string());
-            let value = table_scan
-                .record_page
-                .tx
-                .lock()
-                .unwrap()
-                .get_i32(&table_scan.record_page.block, 0)?;
-            assert_eq!(value, 1);
         }
-
-        table_scan.before_first()?;
-        let value = table_scan
-            .record_page
-            .tx
-            .lock()
-            .unwrap()
-            .get_i32(&table_scan.record_page.block, 0)?;
-        assert_eq!(value, 1);
 
         let mut num_scanned_records = 0;
         let mut num_deleted_records = 0;
+        table_scan.before_first()?;
         while table_scan.next()? {
             let value = table_scan.get_i32("A")?;
             num_scanned_records += 1;
@@ -241,7 +193,7 @@ mod tests {
             assert_eq!(string_value, (i * 2 + 1).to_string());
         }
         assert!(!table_scan.next()?);
-        table_scan.close()?;
+        drop(table_scan);
         tx.lock().unwrap().commit()?;
         Ok(())
     }

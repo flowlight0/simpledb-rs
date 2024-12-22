@@ -7,8 +7,12 @@ use super::layout::Layout;
 const EMPTY: i32 = 0;
 const FULL: i32 = 1;
 
+// RecordPage is a struct that represents a page in a record file. It is used to read and write records to the page.
+// It contains a reference to a transaction, a block id, and a layout.
+// The layout is used to determine the size and offset of each field in the record.
+// RecordPage pins the block in the transaction when it is created and unpins the block when it is dropped.
 pub struct RecordPage {
-    pub tx: Arc<Mutex<Transaction>>,
+    tx: Arc<Mutex<Transaction>>,
     pub block: BlockId,
     pub layout: Arc<Layout>,
 }
@@ -46,11 +50,33 @@ impl Slot {
 
 impl RecordPage {
     pub fn new(tx: Arc<Mutex<Transaction>>, block: BlockId, layout: Arc<Layout>) -> Self {
+        tx.lock().unwrap().pin(&block).unwrap();
         RecordPage { tx, block, layout }
     }
 
-    pub fn reset_block(&mut self, block: BlockId) {
+    pub fn reset_block(&mut self, block: BlockId) -> Result<(), TransactionError> {
+        self.tx.lock().unwrap().unpin(&self.block);
+        self.tx.lock().unwrap().pin(&block)?;
         self.block = block;
+        Ok(())
+    }
+
+    pub fn get_next_block(
+        &mut self,
+        append_if_neccessary: bool,
+    ) -> Result<Option<BlockId>, TransactionError> {
+        let mut lock = self.tx.lock().unwrap();
+        if lock.is_last_block(&self.block)? {
+            if append_if_neccessary {
+                let new_block = lock.append_block(&self.block.file_name)?;
+                Ok(Some(new_block))
+            } else {
+                Ok(None)
+            }
+        } else {
+            let new_block = self.block.get_next_block();
+            Ok(Some(new_block))
+        }
     }
 
     pub fn get_i32(&mut self, slot: usize, field_name: &str) -> Result<i32, TransactionError> {
@@ -198,6 +224,12 @@ impl RecordPage {
     }
 }
 
+impl Drop for RecordPage {
+    fn drop(&mut self) {
+        self.tx.lock().unwrap().unpin(&self.block);
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -253,8 +285,7 @@ mod tests {
             assert_eq!(string_value, (i * 2 + 1).to_string());
         }
         assert_eq!(record_page.next_after(slot)?, Slot::End);
-
-        tx.lock().unwrap().unpin(&block);
+        drop(record_page);
         tx.lock().unwrap().commit()?;
         Ok(())
     }

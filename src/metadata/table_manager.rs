@@ -46,7 +46,6 @@ fn create_table(
         tcat.insert()?;
         tcat.set_string("tblname", table_name)?;
         tcat.set_i32("slotsize", layout.slot_size as i32)?;
-        tcat.close()?;
     }
 
     {
@@ -64,7 +63,6 @@ fn create_table(
             fcat.set_i32("length", layout.get_length(field_name) as i32)?;
             fcat.set_i32("offset", layout.get_offset(field_name) as i32)?;
         }
-        fcat.close()?;
     }
     Ok(())
 }
@@ -132,8 +130,6 @@ impl TableManager {
                 _ => panic!("Unknown type code: {}", type_code),
             }
         }
-        fcat.close()?;
-
         if schema.i32_fields.is_empty() && schema.string_fields.is_empty() {
             return Ok(None);
         }
