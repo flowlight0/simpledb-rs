@@ -98,7 +98,7 @@ mod tests {
             assert_eq!(scan.get_string("B")?, (i * 2 + 1).to_string());
         }
         assert!(!scan.next()?);
-        scan.close()?;
+        drop(scan);
         tx.lock().unwrap().commit()?;
         Ok(())
     }

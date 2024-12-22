@@ -7,7 +7,6 @@ pub trait Scan: Send + Sync {
     fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError>;
     fn get_value(&mut self, field_name: &str) -> Result<Value, TransactionError>;
     fn has_field(&self, field_name: &str) -> bool;
-    fn close(&mut self) -> Result<(), TransactionError>;
 
     // Update operations
     #[allow(unused_variables)]

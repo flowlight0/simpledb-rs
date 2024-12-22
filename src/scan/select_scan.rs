@@ -46,10 +46,6 @@ impl Scan for SelectScan {
         self.base_scan.has_field(field_name)
     }
 
-    fn close(&mut self) -> Result<(), TransactionError> {
-        self.base_scan.close()
-    }
-
     fn set_i32(&mut self, field_name: &str, value: i32) -> Result<(), TransactionError> {
         self.base_scan.set_i32(field_name, value)
     }
@@ -65,6 +61,10 @@ impl Scan for SelectScan {
     fn insert(&mut self) -> Result<(), TransactionError> {
         self.base_scan.insert()
     }
+}
+
+impl Drop for SelectScan {
+    fn drop(&mut self) {}
 }
 
 #[cfg(test)]
@@ -125,7 +125,7 @@ mod tests {
             }
         }
         assert!(!select_scan.next()?);
-        select_scan.close()?;
+        drop(select_scan);
 
         let mut table_scan = TableScan::new(tx.clone(), "testtable", layout.clone())?;
 
@@ -138,7 +138,7 @@ mod tests {
                 assert_eq!(table_scan.get_i32("C")?, i);
             }
         }
-        table_scan.close()?;
+        drop(table_scan);
         tx.lock().unwrap().commit()?;
         Ok(())
     }

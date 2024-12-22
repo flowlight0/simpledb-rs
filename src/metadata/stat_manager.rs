@@ -94,7 +94,7 @@ impl StatManager {
             let table_name = tcat_scan.get_string("tblname")?;
             table_names.push(table_name);
         }
-        tcat_scan.close()?;
+        drop(tcat_scan);
 
         for table_name in table_names {
             let layout = Arc::new(
@@ -121,6 +121,5 @@ fn calculate_table_stat(
         num_records += 1;
         num_blocks = table_scan.get_block_number() + 1;
     }
-    table_scan.close()?;
     Ok(StatInfo::new(num_blocks, num_records))
 }

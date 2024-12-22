@@ -35,7 +35,6 @@ impl BasicUpdatePlanner {
         for (field, value) in fields.iter().zip(values.iter()) {
             table_scan.set_value(field, value)?;
         }
-        table_scan.close()?;
         Ok(1)
     }
 
@@ -57,7 +56,6 @@ impl BasicUpdatePlanner {
             scan.delete()?;
             count += 1;
         }
-        scan.close()?;
         Ok(count)
     }
 
@@ -83,7 +81,6 @@ impl BasicUpdatePlanner {
             scan.set_value(field_name, &new_value)?;
             count += 1;
         }
-        scan.close()?;
         Ok(count)
     }
 
@@ -192,7 +189,7 @@ mod tests {
         }
         assert!(!scan.next()?);
 
-        scan.close()?;
+        drop(scan);
         tx.lock().unwrap().commit()?;
         Ok(())
     }

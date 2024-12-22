@@ -85,14 +85,15 @@ mod tests {
 
         let mut metadata_manager = db.metadata_manager.lock().unwrap();
         metadata_manager.create_table(table_name, &layout.schema, tx.clone())?;
-        let mut table_scan = TableScan::new(tx.clone(), table_name, layout.clone())?;
-        table_scan.before_first()?;
-        for i in 0..200 {
-            table_scan.insert()?;
-            table_scan.set_i32("A", i)?;
-            table_scan.set_string("B", &i.to_string())?;
+        {
+            let mut table_scan = TableScan::new(tx.clone(), table_name, layout.clone())?;
+            table_scan.before_first()?;
+            for i in 0..200 {
+                table_scan.insert()?;
+                table_scan.set_i32("A", i)?;
+                table_scan.set_string("B", &i.to_string())?;
+            }
         }
-        table_scan.close()?;
         tx.lock().unwrap().commit()?;
 
         let tx = Arc::new(Mutex::new(db.new_transaction()?));

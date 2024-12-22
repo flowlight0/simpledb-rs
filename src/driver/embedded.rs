@@ -48,7 +48,7 @@ impl MetadataControl for EmbeddedMetadata {
 
 pub struct EmbeddedResultSet {
     connection: Arc<Mutex<EmbeddedConnectionImpl>>,
-    scan: Box<dyn Scan>,
+    scan: Option<Box<dyn Scan>>,
     schema: Schema,
 }
 
@@ -57,7 +57,7 @@ impl EmbeddedResultSet {
         mut plan: Box<dyn Plan>,
         connection: Arc<Mutex<EmbeddedConnectionImpl>>,
     ) -> Result<Self, ExecutionError> {
-        let scan = plan.open(connection.lock().unwrap().get_transaction())?;
+        let scan = Some(plan.open(connection.lock().unwrap().get_transaction())?);
         Ok(EmbeddedResultSet {
             connection,
             scan,
@@ -74,19 +74,19 @@ impl ResultSetControl for EmbeddedResultSet {
     }
 
     fn next(&mut self) -> Result<bool, anyhow::Error> {
-        Ok(self.scan.next()?)
+        Ok(self.scan.as_mut().unwrap().next()?)
     }
 
     fn get_i32(&mut self, column_name: &str) -> Result<i32, anyhow::Error> {
-        Ok(self.scan.get_i32(column_name)?)
+        Ok(self.scan.as_mut().unwrap().get_i32(column_name)?)
     }
 
     fn get_string(&mut self, column_name: &str) -> Result<String, anyhow::Error> {
-        Ok(self.scan.get_string(column_name)?)
+        Ok(self.scan.as_mut().unwrap().get_string(column_name)?)
     }
 
     fn close(&mut self) -> Result<(), anyhow::Error> {
-        self.scan.close()?;
+        self.scan = None;
         Ok(self.connection.lock().unwrap().commit()?)
     }
 }
