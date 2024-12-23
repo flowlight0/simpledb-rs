@@ -56,6 +56,7 @@ mod tests {
 
     use crate::{
         db::SimpleDB,
+        plan::{table_plan::TablePlan, Plan},
         record::schema::Schema,
         scan::{table_scan::TableScan, Scan},
     };
@@ -98,22 +99,28 @@ mod tests {
             tx.clone(),
         )?;
 
-        // let mut index = metadata_manager
-        //     .lock()
-        //     .unwrap()
-        //     .get_index_info("test_table", tx.clone())?
-        //     .get("test_index")
-        //     .unwrap()
-        //     .open();
+        let mut index = metadata_manager
+            .lock()
+            .unwrap()
+            .get_index_info("test_table", tx.clone())?
+            .get("test_index")
+            .unwrap()
+            .open();
 
-        // index.before_first(Value::String("2".to_string()))?;
-        // while index.next()? {
-        //     let record_id = index.get()?;
-        //     table_scan.move_to_record_id(record_id)?;
-        //     assert_eq!(table_scan.get_string("B")?, "2".to_string());
-        //     table_scan.close()?;
-        // }
-        // index.close()?;
+        let mut table_plan = TablePlan::new(tx.clone(), "test_table", metadata_manager.clone())?;
+        let mut table_scan = table_plan.open(tx.clone())?;
+
+        index.before_first(Value::String("2".to_string()))?;
+
+        let mut count = 2;
+        while index.next()? {
+            let record_id = index.get()?;
+            table_scan.move_to_record_id(record_id)?;
+            assert_eq!(table_scan.get_i32("A")?, count % 3);
+            assert_eq!(table_scan.get_string("B")?, "2".to_string());
+            count += 4;
+        }
+        drop(index);
 
         tx.lock().unwrap().commit()?;
         Ok(())

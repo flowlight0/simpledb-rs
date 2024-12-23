@@ -1,9 +1,9 @@
-pub mod b_tree;
+pub mod btree;
 
-use b_tree::BTreeIndex;
+use btree::BTreeIndex;
 use enum_dispatch::enum_dispatch;
 
-use crate::{record::field::Value, scan::table_scan::RecordId};
+use crate::{record::field::Value, scan::RecordId};
 
 #[enum_dispatch]
 pub enum Index {

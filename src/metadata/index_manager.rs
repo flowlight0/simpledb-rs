@@ -5,7 +5,7 @@ use std::{
 
 use crate::{
     errors::TransactionError,
-    index::{b_tree::BTreeIndex, Index},
+    index::{btree::BTreeIndex, Index},
     record::{field::Spec, layout::Layout, schema::Schema},
     scan::{table_scan::TableScan, Scan},
     tx::transaction::Transaction,

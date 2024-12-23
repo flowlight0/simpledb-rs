@@ -19,8 +19,6 @@ pub struct TableScan {
     current_slot: Slot,
 }
 
-pub struct RecordId(usize, usize); // block number, slot number
-
 impl TableScan {
     pub fn new(
         tx: Arc<Mutex<Transaction>>,
@@ -58,14 +56,6 @@ impl TableScan {
 
     pub fn get_block_number(&self) -> usize {
         self.record_page.block.block_slot
-    }
-
-    pub(crate) fn move_to_record_id(&self, record_id: RecordId) -> Result<(), TransactionError> {
-        todo!()
-    }
-
-    fn move_to_block(&mut self, block_number: usize) -> Result<(), TransactionError> {
-        todo!()
     }
 }
 

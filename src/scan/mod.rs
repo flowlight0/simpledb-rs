@@ -1,5 +1,7 @@
 use crate::{errors::TransactionError, record::field::Value};
 
+pub struct RecordId(usize, usize); // block number, slot number
+
 pub trait Scan: Send + Sync {
     fn before_first(&mut self) -> Result<(), TransactionError>;
     fn next(&mut self) -> Result<bool, TransactionError>;
@@ -31,6 +33,11 @@ pub trait Scan: Send + Sync {
 
     #[allow(unused_variables)]
     fn insert(&mut self) -> Result<(), TransactionError> {
+        unimplemented!("Update operation is not supported")
+    }
+
+    #[allow(unused_variables)]
+    fn move_to_record_id(&self, record_id: RecordId) -> Result<(), TransactionError> {
         unimplemented!("Update operation is not supported")
     }
 }
