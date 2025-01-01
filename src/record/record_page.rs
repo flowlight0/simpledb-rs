@@ -40,6 +40,15 @@ impl Slot {
         }
     }
 
+    pub fn prev(&self) -> Slot {
+        match self {
+            Slot::Index(0) => Slot::Start,
+            Slot::Index(index) => Slot::Index(index - 1),
+            Slot::Start => Slot::Start,
+            Slot::End => panic!("Slot::prev() called on Slot::End"),
+        }
+    }
+
     pub fn get_index(&self) -> usize {
         match self {
             Slot::Index(index) => *index,
@@ -256,7 +265,6 @@ mod tests {
 
         let tx = Arc::new(Mutex::new(db.new_transaction()?));
         let block = db.file_manager.lock().unwrap().append_block("testfile")?;
-        tx.lock().unwrap().pin(&block)?;
         let mut record_page = RecordPage::new(tx.clone(), block.clone(), layout.clone());
         record_page.format()?;
 

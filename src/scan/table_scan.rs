@@ -54,7 +54,7 @@ impl TableScan {
         })
     }
 
-    pub fn get_block_number(&self) -> usize {
+    pub fn get_block_slot(&self) -> usize {
         self.record_page.block.block_slot
     }
 }

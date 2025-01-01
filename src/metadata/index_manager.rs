@@ -5,7 +5,7 @@ use std::{
 
 use crate::{
     errors::TransactionError,
-    index::{btree::BTreeIndex, Index},
+    index::{btree::btree_index::BTreeIndex, Index},
     record::{field::Spec, layout::Layout, schema::Schema},
     scan::{table_scan::TableScan, Scan},
     tx::transaction::Transaction,
@@ -20,6 +20,10 @@ const INDEX_TABLE_NAME: &str = "idxcat";
 const FIELD_NAME_COLUMN: &str = "field_name";
 const INDEX_NAME_COLUMN: &str = "index_name";
 const TABLE_NAME_COLUMN: &str = "table_name";
+pub const INDEX_VALUE_COLUMN: &str = "data_value";
+pub const INDEX_BLOCK_SLOT_COLUMN: &str = "block_slot";
+pub const INDEX_RECORD_SLOT_COLUMN: &str = "record_slot";
+
 const MAX_LENGTH: usize = 255;
 
 pub struct IndexInfo {
@@ -33,12 +37,12 @@ pub struct IndexInfo {
 
 fn create_index_layout(table_schema: &Schema, field_name: &str) -> Layout {
     let mut schema = Schema::new();
-    schema.add_i32_field("block");
-    schema.add_i32_field("id");
+    schema.add_i32_field(INDEX_BLOCK_SLOT_COLUMN);
+    schema.add_i32_field(INDEX_RECORD_SLOT_COLUMN);
     let field_spec = table_schema.get_field_spec(field_name);
     match field_spec {
-        Spec::I32 => schema.add_i32_field("data_value"),
-        Spec::VarChar(len) => schema.add_string_field("data_value", len),
+        Spec::I32 => schema.add_i32_field(INDEX_VALUE_COLUMN),
+        Spec::VarChar(len) => schema.add_string_field(INDEX_VALUE_COLUMN, len),
     }
     Layout::new(schema)
 }
@@ -62,12 +66,12 @@ impl IndexInfo {
         }
     }
 
-    pub fn open(&self) -> Index {
-        Index::BTree(BTreeIndex::new(
+    pub fn open(&self) -> Result<Index, TransactionError> {
+        Ok(Index::BTree(BTreeIndex::new(
             self.tx.clone(),
             self.index_name.clone(),
             self.index_layout.clone(),
-        ))
+        )?))
     }
 
     fn get_num_accessed_blocks(&self) -> usize {

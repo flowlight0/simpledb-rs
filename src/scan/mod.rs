@@ -1,6 +1,7 @@
 use crate::{errors::TransactionError, record::field::Value};
 
-pub struct RecordId(usize, usize); // block number, slot number
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct RecordId(pub usize, pub usize); // block number, slot number
 
 pub trait Scan: Send + Sync {
     fn before_first(&mut self) -> Result<(), TransactionError>;

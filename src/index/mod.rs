@@ -1,9 +1,9 @@
 pub mod btree;
 
-use btree::BTreeIndex;
+use btree::btree_index::BTreeIndex;
 use enum_dispatch::enum_dispatch;
 
-use crate::{record::field::Value, scan::RecordId};
+use crate::{errors::TransactionError, record::field::Value, scan::RecordId};
 
 #[enum_dispatch]
 pub enum Index {
@@ -12,10 +12,9 @@ pub enum Index {
 
 #[enum_dispatch(Index)]
 pub trait IndexControl {
-    fn before_first(&mut self, search_key: Value) -> Result<(), anyhow::Error>;
-    fn next(&mut self) -> Result<bool, anyhow::Error>;
-    fn get(&self) -> Result<RecordId, anyhow::Error>;
-    fn insert(&mut self, value: Value, record_id: RecordId) -> Result<(), anyhow::Error>;
-    fn delete(&mut self, value: Value, record_id: RecordId) -> Result<(), anyhow::Error>;
-    fn close(&mut self) -> Result<(), anyhow::Error>;
+    fn before_first(&mut self, search_key: &Value) -> Result<(), TransactionError>;
+    fn next(&mut self) -> Result<bool, TransactionError>;
+    fn get(&self) -> Result<RecordId, TransactionError>;
+    fn insert(&mut self, value: &Value, record_id: &RecordId) -> Result<(), TransactionError>;
+    fn delete(&mut self, value: &Value, record_id: &RecordId) -> Result<(), TransactionError>;
 }

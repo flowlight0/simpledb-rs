@@ -173,6 +173,7 @@ impl BufferManager {
         let timestamp = Instant::now();
         while timestamp.elapsed().as_millis() < PIN_TIME_LIMIT_IN_MILLIS {
             let mut buffers = self.buffers.lock().unwrap();
+            dbg!(self.num_availables, block.clone());
             if let Some(buffer_index) = try_to_pin(&mut buffers, &mut self.num_availables, block)? {
                 return Ok(buffer_index);
             } else {

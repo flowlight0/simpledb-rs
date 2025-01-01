@@ -123,7 +123,7 @@ fn calculate_table_stat(
     let mut table_scan = TableScan::new(tx, table_name, layout)?;
     while table_scan.next()? {
         num_records += 1;
-        num_blocks = table_scan.get_block_number() + 1;
+        num_blocks = table_scan.get_block_slot() + 1;
     }
     Ok(StatInfo::new(num_blocks, num_records))
 }
