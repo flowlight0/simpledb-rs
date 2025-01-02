@@ -61,7 +61,6 @@ impl Page {
     }
 
     pub fn read_from_file(&mut self, file: &mut File) -> Result<(), std::io::Error> {
-        dbg!("read_from_file");
         file.read_exact(&mut self.byte_buffer).unwrap();
         Ok(())
     }

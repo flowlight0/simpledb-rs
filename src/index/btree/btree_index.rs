@@ -1,7 +1,6 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    db,
     errors::TransactionError,
     file::BlockId,
     index::IndexControl,
@@ -23,6 +22,7 @@ pub struct BTreeIndex {
     directory_layout: Layout,
     directory_root_block: BlockId,
     btree_leaf: Option<BTreeLeaf>,
+    btree_leaf_file_name: String,
 }
 impl BTreeIndex {
     pub(crate) fn new(
@@ -75,6 +75,7 @@ impl BTreeIndex {
             directory_layout,
             directory_root_block,
             btree_leaf: None,
+            btree_leaf_file_name: leaf_table,
         })
     }
 
@@ -92,7 +93,9 @@ impl IndexControl for BTreeIndex {
             self.directory_layout.clone(),
         )?;
 
-        let leaf_block = root.search(search_key)?;
+        let leaf_block_slot = root.search(search_key)?;
+        let leaf_block = BlockId::new(&self.btree_leaf_file_name, leaf_block_slot);
+
         self.btree_leaf = Some(BTreeLeaf::new(
             self.tx.clone(),
             leaf_block,
@@ -159,12 +162,6 @@ mod tests {
         let block_size = 4096;
         let num_buffers = 256;
         let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
-        for i in 0..=DUMMY_BLOCK_SLOT {
-            db.file_manager
-                .lock()
-                .unwrap()
-                .append_block(&format!("testfile{}", i))?;
-        }
 
         let tx = Arc::new(Mutex::new(db.new_transaction()?));
         let metadata_manager = db.metadata_manager.clone();
@@ -193,9 +190,12 @@ mod tests {
             .unwrap()
             .open()?;
 
+        let mut expected_record_ids = vec![];
         {
             for i in 0..50 {
-                dbg!(i);
+                if i % 4 == 2 {
+                    expected_record_ids.push(i);
+                }
                 index.insert(
                     &Value::String((i % 4).to_string()),
                     &RecordId(DUMMY_BLOCK_SLOT, i),
@@ -204,15 +204,16 @@ mod tests {
         }
 
         index.before_first(&Value::String("2".to_string()))?;
-        let mut count = 2;
+        let mut actual_record_ids = vec![];
         while index.next()? {
             let record_id = index.get()?;
             assert_eq!(record_id.0, DUMMY_BLOCK_SLOT);
-            assert_eq!(record_id.1, count);
-            count += 4;
+            actual_record_ids.push(record_id.1);
         }
-        drop(index);
+        actual_record_ids.sort();
+        assert_eq!(actual_record_ids, expected_record_ids);
 
+        drop(index);
         tx.lock().unwrap().commit()?;
         Ok(())
     }

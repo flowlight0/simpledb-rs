@@ -32,7 +32,7 @@ impl BTreeDirectory {
         })
     }
 
-    pub(crate) fn search(&mut self, search_key: &Value) -> Result<BlockId, TransactionError> {
+    pub(crate) fn search(&mut self, search_key: &Value) -> Result<usize, TransactionError> {
         let mut current_contents = BTreePage::new(
             self.tx.clone(),
             self.contents.block.clone(),
@@ -47,14 +47,9 @@ impl BTreeDirectory {
             current_contents =
                 BTreePage::new(self.tx.clone(), child_block.clone(), self.layout.clone())?;
         }
-        dbg!("Find level 0 block");
+
         assert_eq!(current_contents.get_flag()?, 0);
-        let child_block_slot = self.find_child_block_slot(search_key)?;
-        let child_block = BlockId {
-            file_name: self.file_name.clone(),
-            block_slot: child_block_slot,
-        };
-        Ok(child_block)
+        self.find_child_block_slot(search_key)
     }
 
     pub(crate) fn make_new_root(
@@ -129,7 +124,6 @@ impl BTreeDirectory {
 
     fn find_child_block_slot(&self, search_key: &Value) -> Result<usize, TransactionError> {
         let slot = self.contents.find_slot_before(search_key)?;
-        dbg!("Found slot: {:?}", &slot);
         let mut slot_index = slot.index();
 
         if self.contents.get_data_value(slot_index + 1)? == *search_key {
