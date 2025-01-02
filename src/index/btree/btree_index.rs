@@ -1,5 +1,7 @@
 use std::sync::{Arc, Mutex};
 
+use anyhow::Context;
+
 use crate::{
     errors::TransactionError,
     file::BlockId,
@@ -24,6 +26,7 @@ pub struct BTreeIndex {
     btree_leaf: Option<BTreeLeaf>,
     btree_leaf_file_name: String,
 }
+
 impl BTreeIndex {
     pub(crate) fn new(
         tx: Arc<Mutex<Transaction>>,
@@ -83,6 +86,20 @@ impl BTreeIndex {
         1 + (((num_blocks + 1) as f64).log2().ceil()
             / ((records_per_block + 1) as f64).log2().ceil()) as usize
     }
+
+    #[allow(dead_code)]
+    pub(crate) fn debug_print(&self) -> Result<(), TransactionError> {
+        // Print tree structure of BTreeDirectory and BTreeLeaf
+
+        let root = BTreeDirectory::new(
+            self.tx.clone(),
+            self.directory_root_block.clone(),
+            self.directory_layout.clone(),
+        )?;
+        root.debug_print(&self.btree_leaf_file_name, &self.leaf_layout, 0)?;
+
+        Ok(())
+    }
 }
 
 impl IndexControl for BTreeIndex {
@@ -102,6 +119,12 @@ impl IndexControl for BTreeIndex {
             self.leaf_layout.clone(),
             search_key.clone(),
         )?);
+        dbg!(self
+            .btree_leaf
+            .as_mut()
+            .unwrap()
+            .contents
+            .get_data_value(0)?);
         Ok(())
     }
 
@@ -121,16 +144,30 @@ impl IndexControl for BTreeIndex {
 
         match leaf.insert(record_id)? {
             Some(entry) => {
+                eprintln!(
+                    "Leaf became full (entry = {:?}, record_id = {:?})",
+                    &entry, record_id
+                );
                 let mut root = BTreeDirectory::new(
                     self.tx.clone(),
                     self.directory_root_block.clone(),
                     self.directory_layout.clone(),
                 )?;
+
                 match root.insert(&entry)? {
                     Some(new_root_entry) => {
                         root.make_new_root(&new_root_entry)?;
                     }
                     None => {}
+                }
+                self.debug_print()?;
+
+                for i in 0..root.contents.get_num_records()? {
+                    eprintln!(
+                        "Directory[{:?}] = {:?}",
+                        i,
+                        root.contents.get_data_value(i)?
+                    );
                 }
             }
             None => {}
@@ -156,10 +193,9 @@ mod tests {
 
     const DUMMY_BLOCK_SLOT: usize = 10;
 
-    #[test]
-    fn test_b_tree_index_retrieval() -> Result<(), anyhow::Error> {
+    fn test_b_tree_index_retrieval(n: usize) -> Result<(), anyhow::Error> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
-        let block_size = 4096;
+        let block_size = 1024;
         let num_buffers = 256;
         let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
 
@@ -192,7 +228,8 @@ mod tests {
 
         let mut expected_record_ids = vec![];
         {
-            for i in 0..50 {
+            for i in 0..n {
+                dbg!(i);
                 if i % 4 == 2 {
                     expected_record_ids.push(i);
                 }
@@ -216,5 +253,17 @@ mod tests {
         drop(index);
         tx.lock().unwrap().commit()?;
         Ok(())
+    }
+
+    #[test]
+    fn test_b_tree_index_retrieval_small() -> Result<(), anyhow::Error> {
+        test_b_tree_index_retrieval(30)
+    }
+
+    #[test]
+    fn test_b_tree_index_retrieval_large() -> Result<(), anyhow::Error> {
+        // Confirm that B-tree index insertion & retrieval still works
+        // when split occurs in the leaf node
+        test_b_tree_index_retrieval(300)
     }
 }

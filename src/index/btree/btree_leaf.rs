@@ -11,10 +11,9 @@ use crate::{
 use super::{btree_page::BTreePage, DirectoryEntry};
 
 pub struct BTreeLeaf {
-    contents: BTreePage,
+    pub contents: BTreePage,
     current_slot: Slot,
     search_key: Value,
-    file_name: String,
 }
 
 impl BTreeLeaf {
@@ -24,14 +23,12 @@ impl BTreeLeaf {
         layout: Layout,
         search_key: Value,
     ) -> Result<Self, TransactionError> {
-        let file_name = block.file_name.clone();
         let contents = BTreePage::new(tx, block, layout)?;
         let current_slot = contents.find_slot_before(&search_key)?;
         Ok(Self {
             contents,
             current_slot,
             search_key,
-            file_name,
         })
     }
 
@@ -78,7 +75,8 @@ impl BTreeLeaf {
         let overflow_pointer = self.contents.get_flag()?;
 
         let first_value = self.contents.get_data_value(0)?;
-        if overflow_pointer >= 0 && self.contents.get_data_value(0)? > self.search_key {
+        if overflow_pointer >= 0 && first_value > self.search_key {
+            unreachable!();
             let new_block = self.contents.split(0, overflow_pointer)?;
 
             self.current_slot = Slot::Start;
@@ -111,7 +109,7 @@ impl BTreeLeaf {
             Ok(None)
         } else {
             let mut split_pos = self.contents.get_num_records()? / 2;
-            let split_key = self.contents.get_data_value(split_pos)?;
+            let mut split_key = self.contents.get_data_value(split_pos)?;
 
             // Move split position such that the same key is not in both blocks
             if split_key == first_key {
@@ -119,6 +117,7 @@ impl BTreeLeaf {
                 while self.contents.get_data_value(split_pos)? == split_key {
                     split_pos += 1;
                 }
+                split_key = self.contents.get_data_value(split_pos)?;
             } else {
                 // move left to find the split position
                 while self.contents.get_data_value(split_pos - 1)? == split_key {
@@ -149,5 +148,17 @@ impl BTreeLeaf {
             self.current_slot = Slot::Start;
             Ok(true)
         }
+    }
+
+    #[allow(dead_code)]
+    pub(crate) fn debug_print(&self, depth: usize) -> Result<(), TransactionError> {
+        let spaces = " ".repeat(depth * 2);
+        for i in 0..self.contents.get_num_records()? {
+            let data_value = self.contents.get_data_value(i)?;
+            let record_id = self.contents.get_data_record_id(i)?;
+            eprintln!("{}LEAF[{}]: {:?} {:?}", spaces, i, data_value, record_id);
+        }
+
+        Ok(())
     }
 }
