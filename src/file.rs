@@ -167,6 +167,7 @@ impl FileManager {
         let mut file = binding.lock().unwrap();
         let num_blocks = file.metadata().unwrap().len() as usize / self.block_size;
         let new_block_contents = vec![0; self.block_size];
+        file.seek(SeekFrom::End(0))?;
         file.write(new_block_contents.as_slice())?;
         self.file_access_stats.write_count += 1;
         Ok(BlockId::new(file_name, num_blocks))
