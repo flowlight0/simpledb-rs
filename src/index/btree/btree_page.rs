@@ -278,6 +278,8 @@ impl BTreePage {
     ) -> Result<(), TransactionError> {
         let mut dest_slot = 0;
         let schema = self.layout.schema.clone();
+        // We don't need to decrement slot
+        // because the number of records is decremented when a record is deleted.
         while slot < self.get_num_records()? {
             new_btree_page.insert_empty_slot(dest_slot)?;
             for field in schema.get_fields() {
