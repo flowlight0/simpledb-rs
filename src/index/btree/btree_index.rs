@@ -259,4 +259,78 @@ mod tests {
         // when split occurs in the leaf node
         test_b_tree_index_retrieval(300)
     }
+
+    #[test]
+    fn test_b_tree_index_delete() -> Result<(), anyhow::Error> {
+        let n = 300;
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 1024;
+        let num_buffers = 256;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+        let metadata_manager = db.metadata_manager.clone();
+
+        let mut schema = Schema::new();
+        schema.add_i32_field("A");
+        schema.add_string_field("B", 20);
+
+        metadata_manager
+            .lock()
+            .unwrap()
+            .create_table("test_table", &schema, tx.clone())?;
+
+        metadata_manager.lock().unwrap().create_index(
+            "test_index",
+            "test_table",
+            "B",
+            tx.clone(),
+        )?;
+
+        let mut index = metadata_manager
+            .lock()
+            .unwrap()
+            .get_index_info("test_table", tx.clone())?
+            .get("test_index")
+            .unwrap()
+            .open()?;
+
+        let mut expected_record_ids = vec![];
+        let mut deletion_ids = vec![];
+
+        for i in 0..n {
+            if i % 4 == 2 {
+                if i % 3 == 2 {
+                    expected_record_ids.push(i);
+                } else {
+                    deletion_ids.push(i);
+                }
+            }
+            index.insert(
+                &Value::String((i % 4).to_string()),
+                &RecordId(DUMMY_BLOCK_SLOT, i),
+            )?;
+        }
+
+        for i in deletion_ids {
+            index.delete(
+                &Value::String((i % 4).to_string()),
+                &RecordId(DUMMY_BLOCK_SLOT, i),
+            )?;
+        }
+
+        index.before_first(&Value::String("2".to_string()))?;
+        let mut actual_record_ids = vec![];
+        while index.next()? {
+            let record_id = index.get()?;
+            assert_eq!(record_id.0, DUMMY_BLOCK_SLOT);
+            actual_record_ids.push(record_id.1);
+        }
+        actual_record_ids.sort();
+        assert_eq!(actual_record_ids, expected_record_ids);
+
+        drop(index);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
 }
