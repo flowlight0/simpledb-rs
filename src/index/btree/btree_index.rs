@@ -119,12 +119,6 @@ impl IndexControl for BTreeIndex {
             self.leaf_layout.clone(),
             search_key.clone(),
         )?);
-        dbg!(self
-            .btree_leaf
-            .as_mut()
-            .unwrap()
-            .contents
-            .get_data_value(0)?);
         Ok(())
     }
 
@@ -229,7 +223,6 @@ mod tests {
         let mut expected_record_ids = vec![];
         {
             for i in 0..n {
-                dbg!(i);
                 if i % 4 == 2 {
                     expected_record_ids.push(i);
                 }

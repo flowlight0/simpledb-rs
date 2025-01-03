@@ -128,8 +128,6 @@ impl BTreeDirectory {
         let slot = self.contents.find_slot_before(search_key)?;
         let mut slot_index = slot.index();
 
-        dbg!(self.contents.get_data_value(slot_index)?);
-        dbg!(self.contents.get_data_value(slot_index + 1)?);
         if self.contents.get_data_value(slot_index + 1)? == *search_key {
             slot_index += 1;
         }
