@@ -76,7 +76,6 @@ impl BTreeDirectory {
         directory_entry: &DirectoryEntry,
     ) -> Result<Option<DirectoryEntry>, TransactionError> {
         if self.contents.get_flag()? == 0 {
-            dbg!("dir_insert", &directory_entry);
             self.insert_entry(directory_entry)
         } else {
             let child_block_slot = self.find_child_block_slot(&directory_entry.data_value)?;

@@ -1,7 +1,5 @@
 use std::sync::{Arc, Mutex};
 
-use anyhow::Context;
-
 use crate::{
     errors::TransactionError,
     file::BlockId,
@@ -138,10 +136,6 @@ impl IndexControl for BTreeIndex {
 
         match leaf.insert(record_id)? {
             Some(entry) => {
-                eprintln!(
-                    "Leaf became full (entry = {:?}, record_id = {:?})",
-                    &entry, record_id
-                );
                 let mut root = BTreeDirectory::new(
                     self.tx.clone(),
                     self.directory_root_block.clone(),
@@ -154,15 +148,7 @@ impl IndexControl for BTreeIndex {
                     }
                     None => {}
                 }
-                self.debug_print()?;
-
-                for i in 0..root.contents.get_num_records()? {
-                    eprintln!(
-                        "Directory[{:?}] = {:?}",
-                        i,
-                        root.contents.get_data_value(i)?
-                    );
-                }
+                // self.debug_print()?;
             }
             None => {}
         }

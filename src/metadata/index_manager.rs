@@ -109,7 +109,6 @@ impl IndexManager {
         tx: Arc<Mutex<Transaction>>,
     ) -> Self {
         if is_new {
-            dbg!("Creating index table");
             let mut schema = Schema::new();
             schema.add_string_field(INDEX_NAME_COLUMN, MAX_LENGTH);
             schema.add_string_field(TABLE_NAME_COLUMN, MAX_LENGTH);
