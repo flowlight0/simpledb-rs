@@ -104,7 +104,9 @@ impl BTreeLeaf {
 
         if first_key == last_key {
             // Create an overflow block to hold all the but the first record
+            eprintln!("Leaf became full, creating overflow block");
             let new_block = self.contents.split(1, self.contents.get_flag()?)?;
+            eprintln!("Overflow block = {:?}", new_block.block_slot);
             self.contents.set_flag(new_block.block_slot as i32)?;
             Ok(None)
         } else {
@@ -146,7 +148,7 @@ impl BTreeLeaf {
                 self.contents.layout.clone(),
             )?;
             self.current_slot = Slot::Start;
-            Ok(true)
+            self.next()
         }
     }
 
