@@ -11,7 +11,7 @@ use crate::{
     tx::transaction::Transaction,
 };
 
-use super::Scan;
+use super::{RecordId, Scan};
 
 pub struct TableScan {
     file_name: String,
@@ -52,6 +52,10 @@ impl TableScan {
             record_page,
             current_slot: Slot::Start,
         })
+    }
+
+    pub fn get_record_id(&self) -> RecordId {
+        RecordId(self.get_block_slot(), self.current_slot.get_index())
     }
 
     pub fn get_block_slot(&self) -> usize {
@@ -143,6 +147,13 @@ impl Scan for TableScan {
                 }
             }
         }
+    }
+
+    fn move_to_record_id(&mut self, record_id: &RecordId) -> Result<(), TransactionError> {
+        let new_block = BlockId::new(&self.file_name, record_id.0);
+        self.record_page.reset_block(new_block)?;
+        self.current_slot = Slot::Index(record_id.1);
+        Ok(())
     }
 }
 

@@ -38,7 +38,7 @@ pub trait Scan: Send + Sync {
     }
 
     #[allow(unused_variables)]
-    fn move_to_record_id(&self, record_id: RecordId) -> Result<(), TransactionError> {
+    fn move_to_record_id(&mut self, record_id: &RecordId) -> Result<(), TransactionError> {
         unimplemented!("Update operation is not supported")
     }
 }

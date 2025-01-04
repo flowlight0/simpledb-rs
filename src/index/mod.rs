@@ -1,4 +1,5 @@
 pub mod btree;
+pub mod scan;
 
 use btree::btree_index::BTreeIndex;
 use enum_dispatch::enum_dispatch;
