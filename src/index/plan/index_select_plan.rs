@@ -2,6 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::{
     errors::TransactionError,
+    index::scan::index_select_scan::IndexSelectScan,
     metadata::index_manager::IndexInfo,
     plan::{table_plan::TablePlan, Plan},
     record::{field::Value, schema::Schema},
@@ -43,6 +44,15 @@ impl Plan for IndexSelectPlan {
     }
 
     fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Scan, TransactionError> {
-        todo!()
+        let scan = self.table_plan.open(tx.clone())?;
+        let value = self.value.clone();
+        match scan {
+            Scan::TableScan(table_scan) => Ok(Scan::from(IndexSelectScan::new(
+                table_scan,
+                self.index_info.open()?,
+                value,
+            )?)),
+            _ => panic!("Expected TableScan"),
+        }
     }
 }

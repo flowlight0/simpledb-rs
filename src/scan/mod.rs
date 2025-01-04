@@ -4,7 +4,9 @@ use project_scan::ProjectScan;
 use select_scan::SelectScan;
 use table_scan::TableScan;
 
-use crate::{errors::TransactionError, record::field::Value};
+use crate::{
+    errors::TransactionError, index::scan::index_select_scan::IndexSelectScan, record::field::Value,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct RecordId(pub usize, pub usize); // block number, slot number
@@ -15,6 +17,7 @@ pub enum Scan {
     ProjectScan(ProjectScan),
     SelectScan(SelectScan),
     ProductScan(ProductScan),
+    IndexSelectScan(IndexSelectScan),
 }
 
 #[enum_dispatch(Scan)]
