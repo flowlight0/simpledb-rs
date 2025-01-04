@@ -208,8 +208,8 @@ impl ConnectionControl for EmbeddedConnection {
 }
 
 // TODO: Locate these constants in the appropriate module
-const DEFAULT_BLOCK_SIZE: usize = 256;
-const DEFAULT_NUM_BUFFERS: usize = 32;
+const DEFAULT_BLOCK_SIZE: usize = 1024;
+const DEFAULT_NUM_BUFFERS: usize = 256;
 
 pub struct EmbeddedDriver {}
 

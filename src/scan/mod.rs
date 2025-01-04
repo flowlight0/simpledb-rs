@@ -59,6 +59,11 @@ pub trait ScanControl {
     }
 
     #[allow(unused_variables)]
+    fn get_record_id(&self) -> RecordId {
+        unimplemented!("Update operation is not supported")
+    }
+
+    #[allow(unused_variables)]
     fn move_to_record_id(&mut self, record_id: &RecordId) -> Result<(), TransactionError> {
         unimplemented!("Update operation is not supported")
     }

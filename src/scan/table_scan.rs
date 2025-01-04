@@ -149,6 +149,10 @@ impl ScanControl for TableScan {
         }
     }
 
+    fn get_record_id(&self) -> RecordId {
+        RecordId(self.get_block_slot(), self.current_slot.get_index())
+    }
+
     fn move_to_record_id(&mut self, record_id: &RecordId) -> Result<(), TransactionError> {
         let new_block = BlockId::new(&self.file_name, record_id.0);
         self.record_page.reset_block(new_block)?;

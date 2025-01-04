@@ -9,12 +9,10 @@ use crate::{
     buffer::BufferManager,
     errors::TransactionError,
     file::FileManager,
+    index::plan::index_update_planner::IndexUpdatePlanner,
     log::manager::LogManager,
     metadata::MetadataManager,
-    plan::{
-        basic_query_planner::BasicQueryPlanner, basic_update_planner::BasicUpdatePlanner,
-        planner::Planner,
-    },
+    plan::{basic_query_planner::BasicQueryPlanner, planner::Planner},
     tx::{concurrency::LockTable, transaction::Transaction},
 };
 
@@ -62,7 +60,7 @@ impl SimpleDB {
         tx.lock().unwrap().commit()?;
 
         let query_planner = Box::new(BasicQueryPlanner::new(metadata_manager.clone()));
-        let update_planner = Box::new(BasicUpdatePlanner::new(metadata_manager.clone()));
+        let update_planner = Box::new(IndexUpdatePlanner::new(metadata_manager.clone()));
         let planner = Arc::new(Mutex::new(Planner::new(query_planner, update_planner)));
 
         Ok(SimpleDB {
