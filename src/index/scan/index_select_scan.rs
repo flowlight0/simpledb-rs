@@ -2,7 +2,7 @@ use crate::{
     errors::TransactionError,
     index::{Index, IndexControl},
     record::field::Value,
-    scan::{table_scan::TableScan, ScanControl},
+    scan::{table_scan::TableScan, RecordId, ScanControl},
 };
 
 pub struct IndexSelectScan {
@@ -55,6 +55,10 @@ impl ScanControl for IndexSelectScan {
 
     fn has_field(&self, field_name: &str) -> bool {
         self.table_scan.has_field(field_name)
+    }
+
+    fn get_record_id(&self) -> RecordId {
+        self.table_scan.get_record_id()
     }
 }
 
