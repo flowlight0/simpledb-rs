@@ -12,7 +12,11 @@ pub struct IndexSelectScan {
 }
 
 impl IndexSelectScan {
-    fn new(table_scan: TableScan, index: Index, value: Value) -> Result<Self, TransactionError> {
+    pub fn new(
+        table_scan: TableScan,
+        index: Index,
+        value: Value,
+    ) -> Result<Self, TransactionError> {
         let mut scan = IndexSelectScan {
             table_scan,
             index,
