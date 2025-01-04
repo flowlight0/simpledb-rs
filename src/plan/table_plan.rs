@@ -54,9 +54,9 @@ impl Plan for TablePlan {
         &self.layout.schema
     }
 
-    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, TransactionError> {
-        let table_scan = TableScan::new(tx, &self.table_name, self.layout.clone())?;
-        Ok(Box::new(table_scan))
+    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Scan, TransactionError> {
+        let table_scan = Scan::from(TableScan::new(tx, &self.table_name, self.layout.clone())?);
+        Ok(table_scan)
     }
 }
 
@@ -66,11 +66,12 @@ mod tests {
     use crate::db::SimpleDB;
     use crate::record::layout::Layout;
     use crate::record::schema::Schema;
+    use crate::scan::ScanControl;
 
     #[test]
     fn test_table_plan() -> Result<(), TransactionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
-        let block_size = 256;
+        let block_size = 1024;
         let num_buffers = 3;
         let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
 
@@ -98,6 +99,8 @@ mod tests {
         let tx = Arc::new(Mutex::new(db.new_transaction()?));
         metadata_manager
             .stat_manager
+            .lock()
+            .unwrap()
             .refresh_statistics(tx.clone())?;
         drop(metadata_manager);
         let table_plan = TablePlan::new(tx.clone(), table_name, db.metadata_manager.clone())?;

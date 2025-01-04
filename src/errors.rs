@@ -9,6 +9,9 @@ pub enum TransactionError {
     #[error("BufferAbortError")]
     BufferAbortError,
 
+    #[error("TooSmallBlockoError: (block_size: {0}, record_size: {1})")]
+    TooSmallBlockError(usize, usize),
+
     #[error("IO error: {0}")]
     IO(#[from] std::io::Error),
 }

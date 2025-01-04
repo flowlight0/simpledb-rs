@@ -46,9 +46,9 @@ impl Plan for ProductPlan {
         &self.schema
     }
 
-    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, TransactionError> {
+    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Scan, TransactionError> {
         let s1 = self.p1.open(tx.clone())?;
         let s2 = self.p2.open(tx.clone())?;
-        Ok(Box::new(ProductScan::new(s1, s2)))
+        Ok(Scan::from(ProductScan::new(s1, s2)))
     }
 }

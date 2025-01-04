@@ -11,7 +11,7 @@ use crate::{
     tx::transaction::Transaction,
 };
 
-use super::Scan;
+use super::{RecordId, ScanControl};
 
 pub struct TableScan {
     file_name: String,
@@ -34,12 +34,18 @@ impl TableScan {
             } else {
                 (BlockId::get_first_block(&file_name), false)
             };
-            let mut rp = RecordPage::new(tx, block, layout);
+            let mut rp = RecordPage::new(tx.clone(), block, layout);
             if is_new {
                 rp.format()?;
             }
             rp
         };
+
+        let block_size = tx.lock().unwrap().get_block_size();
+        let slot_size = record_page.layout.slot_size;
+        if slot_size > block_size {
+            return Err(TransactionError::TooSmallBlockError(block_size, slot_size));
+        }
 
         Ok(Self {
             file_name,
@@ -48,12 +54,16 @@ impl TableScan {
         })
     }
 
-    pub fn get_block_number(&self) -> usize {
+    pub fn get_record_id(&self) -> RecordId {
+        RecordId(self.get_block_slot(), self.current_slot.get_index())
+    }
+
+    pub fn get_block_slot(&self) -> usize {
         self.record_page.block.block_slot
     }
 }
 
-impl Scan for TableScan {
+impl ScanControl for TableScan {
     fn before_first(&mut self) -> Result<(), TransactionError> {
         let block = BlockId::get_first_block(&self.file_name);
         self.record_page.reset_block(block)?;
@@ -137,6 +147,17 @@ impl Scan for TableScan {
                 }
             }
         }
+    }
+
+    fn get_record_id(&self) -> RecordId {
+        RecordId(self.get_block_slot(), self.current_slot.get_index())
+    }
+
+    fn move_to_record_id(&mut self, record_id: &RecordId) -> Result<(), TransactionError> {
+        let new_block = BlockId::new(&self.file_name, record_id.0);
+        self.record_page.reset_block(new_block)?;
+        self.current_slot = Slot::Index(record_id.1);
+        Ok(())
     }
 }
 

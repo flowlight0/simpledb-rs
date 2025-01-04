@@ -1,23 +1,26 @@
 use crate::{errors::TransactionError, record::field::Value};
 
-use super::Scan;
+use super::{Scan, ScanControl};
 
 pub struct ProjectScan {
-    base_scan: Box<dyn Scan>,
+    base_scan: Box<Scan>,
     fields: Vec<String>,
 }
 
 impl ProjectScan {
-    pub fn new(base_scan: Box<dyn Scan>, fields: Vec<String>) -> Self {
+    pub fn new(base_scan: Scan, fields: Vec<String>) -> Self {
         for field in &fields {
             assert!(base_scan.has_field(field));
         }
 
-        ProjectScan { base_scan, fields }
+        ProjectScan {
+            base_scan: Box::new(base_scan),
+            fields,
+        }
     }
 }
 
-impl Scan for ProjectScan {
+impl ScanControl for ProjectScan {
     fn before_first(&mut self) -> Result<(), TransactionError> {
         self.base_scan.before_first()
     }
@@ -82,8 +85,10 @@ mod tests {
             table_scan.set_i32("C", i + 2)?;
         }
 
-        let mut project_scan =
-            ProjectScan::new(Box::new(table_scan), vec!["A".to_string(), "C".to_string()]);
+        let mut project_scan = Scan::ProjectScan(ProjectScan::new(
+            Scan::from(table_scan),
+            vec!["A".to_string(), "C".to_string()],
+        ));
         project_scan.before_first()?;
         for i in 0..50 {
             assert!(project_scan.next()?);

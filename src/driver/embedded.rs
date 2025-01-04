@@ -9,7 +9,7 @@ use crate::{
     errors::ExecutionError,
     plan::{planner::Planner, Plan},
     record::{field::Type, schema::Schema},
-    scan::Scan,
+    scan::{Scan, ScanControl},
     tx::transaction::Transaction,
 };
 
@@ -48,7 +48,7 @@ impl MetadataControl for EmbeddedMetadata {
 
 pub struct EmbeddedResultSet {
     connection: Arc<Mutex<EmbeddedConnectionImpl>>,
-    scan: Option<Box<dyn Scan>>,
+    scan: Option<Scan>,
     schema: Schema,
 }
 
@@ -208,8 +208,8 @@ impl ConnectionControl for EmbeddedConnection {
 }
 
 // TODO: Locate these constants in the appropriate module
-const DEFAULT_BLOCK_SIZE: usize = 256;
-const DEFAULT_NUM_BUFFERS: usize = 32;
+const DEFAULT_BLOCK_SIZE: usize = 1024;
+const DEFAULT_NUM_BUFFERS: usize = 256;
 
 pub struct EmbeddedDriver {}
 

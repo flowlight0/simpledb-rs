@@ -6,7 +6,7 @@ use std::{
 use crate::{
     errors::TransactionError,
     record::layout::Layout,
-    scan::{table_scan::TableScan, Scan},
+    scan::{table_scan::TableScan, ScanControl},
     tx::transaction::Transaction,
 };
 
@@ -26,10 +26,12 @@ impl StatInfo {
         }
     }
 
+    // Return the number of blocks in the table
     pub fn get_num_blocks(&self) -> usize {
         self.num_blocks
     }
 
+    // Return the number of records in the table
     pub fn get_num_records(&self) -> usize {
         self.num_records
     }
@@ -41,15 +43,15 @@ impl StatInfo {
 }
 
 pub struct StatManager {
-    table_manager: TableManager,
+    table_manager: Arc<Mutex<TableManager>>,
     table_stats: HashMap<String, StatInfo>,
     num_calls: usize,
 }
 
 impl StatManager {
-    pub fn new(table_manager: &TableManager) -> Result<Self, TransactionError> {
+    pub fn new(table_manager: Arc<Mutex<TableManager>>) -> Result<Self, TransactionError> {
         Ok(Self {
-            table_manager: table_manager.clone(),
+            table_manager,
             table_stats: HashMap::new(),
             num_calls: 0,
         })
@@ -85,6 +87,8 @@ impl StatManager {
 
         let tcat_layout = Arc::new(
             self.table_manager
+                .lock()
+                .unwrap()
                 .get_layout("tblcat", tx.clone())?
                 .unwrap(),
         );
@@ -99,6 +103,8 @@ impl StatManager {
         for table_name in table_names {
             let layout = Arc::new(
                 self.table_manager
+                    .lock()
+                    .unwrap()
                     .get_layout(&table_name, tx.clone())?
                     .unwrap(),
             );
@@ -119,7 +125,7 @@ fn calculate_table_stat(
     let mut table_scan = TableScan::new(tx, table_name, layout)?;
     while table_scan.next()? {
         num_records += 1;
-        num_blocks = table_scan.get_block_number() + 1;
+        num_blocks = table_scan.get_block_slot() + 1;
     }
     Ok(StatInfo::new(num_blocks, num_records))
 }

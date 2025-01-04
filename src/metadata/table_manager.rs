@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use crate::{
     errors::TransactionError,
     record::{layout::Layout, schema::Schema},
-    scan::{table_scan::TableScan, Scan},
+    scan::{table_scan::TableScan, ScanControl},
     tx::transaction::Transaction,
 };
 
@@ -109,6 +109,8 @@ impl TableManager {
         )
     }
 
+    // Get the layout of a table
+    // If the table does not exist, return None
     pub fn get_layout(
         &self,
         table_name: &str,

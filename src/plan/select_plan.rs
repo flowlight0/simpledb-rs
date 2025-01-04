@@ -1,8 +1,11 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    errors::TransactionError, parser::predicate::Predicate, record::schema::Schema,
-    scan::select_scan::SelectScan, tx::transaction::Transaction,
+    errors::TransactionError,
+    parser::predicate::Predicate,
+    record::schema::Schema,
+    scan::{select_scan::SelectScan, Scan},
+    tx::transaction::Transaction,
 };
 
 use super::Plan;
@@ -46,12 +49,12 @@ impl Plan for SelectPlan {
         self.plan.schema()
     }
 
-    fn open(
-        &mut self,
-        tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Box<dyn crate::scan::Scan>, TransactionError> {
+    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Scan, TransactionError> {
         let base_scan = self.plan.open(tx)?;
-        Ok(Box::new(SelectScan::new(base_scan, self.predicate.clone())))
+        Ok(Scan::from(SelectScan::new(
+            base_scan,
+            self.predicate.clone(),
+        )))
     }
 }
 
@@ -67,12 +70,12 @@ mod tests {
     use crate::record::layout::Layout;
     use crate::record::schema::Schema;
     use crate::scan::table_scan::TableScan;
-    use crate::scan::Scan;
+    use crate::scan::ScanControl;
 
     #[test]
     fn test_select_plan() -> Result<(), TransactionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
-        let block_size = 256;
+        let block_size = 1024;
         let num_buffers = 3;
         let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
         let mut schema = Schema::new();
@@ -97,8 +100,11 @@ mod tests {
         tx.lock().unwrap().commit()?;
 
         let tx = Arc::new(Mutex::new(db.new_transaction()?));
+
         metadata_manager
             .stat_manager
+            .lock()
+            .unwrap()
             .refresh_statistics(tx.clone())?;
         drop(metadata_manager);
 

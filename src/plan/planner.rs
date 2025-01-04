@@ -54,12 +54,12 @@ impl Planner {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::db::SimpleDB;
+    use crate::{db::SimpleDB, scan::ScanControl};
 
     #[test]
     fn test_planner() -> Result<(), ExecutionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
-        let block_size = 256;
+        let block_size = 1024;
         let num_buffers = 100;
         let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
         let tx = Arc::new(Mutex::new(db.new_transaction()?));
