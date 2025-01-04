@@ -97,7 +97,6 @@ impl IndexInfo {
 pub struct IndexManager {
     table_manager: Arc<Mutex<TableManager>>,
     stat_manager: Arc<Mutex<StatManager>>,
-    tx: Arc<Mutex<Transaction>>,
     layout: Arc<Layout>,
 }
 
@@ -129,7 +128,6 @@ impl IndexManager {
         IndexManager {
             table_manager,
             stat_manager,
-            tx,
             layout,
         }
     }
