@@ -1,22 +1,22 @@
 use crate::{errors::TransactionError, parser::predicate::Predicate, record::field::Value};
 
-use super::Scan;
+use super::{Scan, ScanControl};
 
 pub struct SelectScan {
-    base_scan: Box<dyn Scan>,
+    base_scan: Box<Scan>,
     predicate: Predicate,
 }
 
 impl SelectScan {
-    pub fn new(base_scan: Box<dyn Scan>, predicate: Predicate) -> Self {
+    pub fn new(base_scan: Scan, predicate: Predicate) -> Self {
         SelectScan {
-            base_scan,
+            base_scan: Box::new(base_scan),
             predicate,
         }
     }
 }
 
-impl Scan for SelectScan {
+impl ScanControl for SelectScan {
     fn before_first(&mut self) -> Result<(), TransactionError> {
         self.base_scan.before_first()
     }
@@ -91,8 +91,8 @@ mod tests {
         let db = SimpleDB::new(temp_dir, block_size, 3)?;
 
         let tx = Arc::new(Mutex::new(db.new_transaction()?));
-        let mut table_scan: Box<dyn Scan> =
-            Box::new(TableScan::new(tx.clone(), "testtable", layout.clone())?);
+        let mut table_scan =
+            Scan::TableScan(TableScan::new(tx.clone(), "testtable", layout.clone())?);
         table_scan.before_first()?;
         for i in 0..50 {
             table_scan.insert()?;
@@ -102,7 +102,7 @@ mod tests {
         }
 
         let mut select_scan = SelectScan::new(
-            table_scan,
+            Scan::from(table_scan),
             Predicate::new(vec![
                 Term::Equality(
                     Expression::Field("A".to_string()),

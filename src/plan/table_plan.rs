@@ -54,9 +54,9 @@ impl Plan for TablePlan {
         &self.layout.schema
     }
 
-    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, TransactionError> {
-        let table_scan = TableScan::new(tx, &self.table_name, self.layout.clone())?;
-        Ok(Box::new(table_scan))
+    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Scan, TransactionError> {
+        let table_scan = Scan::from(TableScan::new(tx, &self.table_name, self.layout.clone())?);
+        Ok(table_scan)
     }
 }
 
@@ -66,6 +66,7 @@ mod tests {
     use crate::db::SimpleDB;
     use crate::record::layout::Layout;
     use crate::record::schema::Schema;
+    use crate::scan::ScanControl;
 
     #[test]
     fn test_table_plan() -> Result<(), TransactionError> {

@@ -1,19 +1,22 @@
 use crate::{errors::TransactionError, record::field::Value};
 
-use super::Scan;
+use super::{Scan, ScanControl};
 
 pub struct ProductScan {
-    scan1: Box<dyn Scan>,
-    scan2: Box<dyn Scan>,
+    scan1: Box<Scan>,
+    scan2: Box<Scan>,
 }
 
 impl ProductScan {
-    pub fn new(scan1: Box<dyn Scan>, scan2: Box<dyn Scan>) -> Self {
-        ProductScan { scan1, scan2 }
+    pub fn new(scan1: Scan, scan2: Scan) -> Self {
+        ProductScan {
+            scan1: Box::new(scan1),
+            scan2: Box::new(scan2),
+        }
     }
 }
 
-impl Scan for ProductScan {
+impl ScanControl for ProductScan {
     fn before_first(&mut self) -> Result<(), TransactionError> {
         self.scan1.before_first()?;
         self.scan1.next()?;
@@ -107,7 +110,7 @@ mod tests {
             scan2.set_string("E", &i.to_string())?;
         }
 
-        let mut product_scan = ProductScan::new(Box::new(scan1), Box::new(scan2));
+        let mut product_scan = ProductScan::new(Scan::from(scan1), Scan::from(scan2));
         product_scan.before_first()?;
         for i in 0..10 {
             for j in 0..10 {

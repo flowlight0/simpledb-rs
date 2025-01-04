@@ -101,7 +101,7 @@ mod tests {
     use crate::errors::TransactionError;
     use crate::record::schema::Schema;
     use crate::scan::table_scan::TableScan;
-    use crate::scan::Scan;
+    use crate::scan::{Scan, ScanControl};
 
     #[test]
     fn test_metadata_manager() -> Result<(), TransactionError> {
@@ -128,7 +128,7 @@ mod tests {
         );
         assert_eq!(&layout.schema, &schema);
 
-        let mut table_scan = TableScan::new(tx.clone(), "testtable", layout.clone())?;
+        let mut table_scan = Scan::from(TableScan::new(tx.clone(), "testtable", layout.clone())?);
         for i in 0..50 {
             table_scan.insert()?;
             table_scan.set_i32("A", i)?;

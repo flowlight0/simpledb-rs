@@ -9,7 +9,7 @@ use crate::{
     errors::ExecutionError,
     plan::{planner::Planner, Plan},
     record::{field::Type, schema::Schema},
-    scan::Scan,
+    scan::{Scan, ScanControl},
     tx::transaction::Transaction,
 };
 
@@ -48,7 +48,7 @@ impl MetadataControl for EmbeddedMetadata {
 
 pub struct EmbeddedResultSet {
     connection: Arc<Mutex<EmbeddedConnectionImpl>>,
-    scan: Option<Box<dyn Scan>>,
+    scan: Option<Scan>,
     schema: Schema,
 }
 

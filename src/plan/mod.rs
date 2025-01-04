@@ -29,7 +29,7 @@ pub trait Plan {
     fn schema(&self) -> &Schema;
 
     // Open the plan and return the scan
-    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, TransactionError>;
+    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Scan, TransactionError>;
 }
 
 pub trait QueryPlanner: Send + Sync {

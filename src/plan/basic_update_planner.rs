@@ -8,6 +8,7 @@ use crate::{
         statement::{CreateCommand, UpdateCommand},
     },
     record::{field::Value, schema::Schema},
+    scan::ScanControl,
     tx::transaction::Transaction,
 };
 
@@ -131,6 +132,7 @@ mod tests {
     use crate::plan::basic_query_planner::BasicQueryPlanner;
     use crate::plan::QueryPlanner;
     use crate::record::field::Spec;
+    use crate::scan::ScanControl;
 
     #[test]
     fn test_basic_update_planner() -> Result<(), TransactionError> {

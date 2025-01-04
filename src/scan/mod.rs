@@ -1,9 +1,24 @@
+use enum_dispatch::enum_dispatch;
+use product_scan::ProductScan;
+use project_scan::ProjectScan;
+use select_scan::SelectScan;
+use table_scan::TableScan;
+
 use crate::{errors::TransactionError, record::field::Value};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct RecordId(pub usize, pub usize); // block number, slot number
 
-pub trait Scan: Send + Sync {
+#[enum_dispatch]
+pub enum Scan {
+    TableScan(TableScan),
+    ProjectScan(ProjectScan),
+    SelectScan(SelectScan),
+    ProductScan(ProductScan),
+}
+
+#[enum_dispatch(Scan)]
+pub trait ScanControl {
     fn before_first(&mut self) -> Result<(), TransactionError>;
     fn next(&mut self) -> Result<bool, TransactionError>;
     fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError>;

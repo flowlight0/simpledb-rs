@@ -42,7 +42,7 @@ impl Plan for IndexSelectPlan {
         self.table_plan.schema()
     }
 
-    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, TransactionError> {
+    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Scan, TransactionError> {
         todo!()
     }
 }

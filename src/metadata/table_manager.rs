@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use crate::{
     errors::TransactionError,
     record::{layout::Layout, schema::Schema},
-    scan::{table_scan::TableScan, Scan},
+    scan::{table_scan::TableScan, ScanControl},
     tx::transaction::Transaction,
 };
 

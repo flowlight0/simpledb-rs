@@ -11,7 +11,7 @@ use crate::{
     tx::transaction::Transaction,
 };
 
-use super::{RecordId, Scan};
+use super::{RecordId, ScanControl};
 
 pub struct TableScan {
     file_name: String,
@@ -63,7 +63,7 @@ impl TableScan {
     }
 }
 
-impl Scan for TableScan {
+impl ScanControl for TableScan {
     fn before_first(&mut self) -> Result<(), TransactionError> {
         let block = BlockId::get_first_block(&self.file_name);
         self.record_page.reset_block(block)?;

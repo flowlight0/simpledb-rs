@@ -6,7 +6,7 @@ use std::{
 use crate::{
     errors::TransactionError,
     record::layout::Layout,
-    scan::{table_scan::TableScan, Scan},
+    scan::{table_scan::TableScan, ScanControl},
     tx::transaction::Transaction,
 };
 

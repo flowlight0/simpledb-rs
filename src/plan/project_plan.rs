@@ -42,8 +42,8 @@ impl Plan for ProjectPlan {
         &self.schema
     }
 
-    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Box<dyn Scan>, TransactionError> {
+    fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Scan, TransactionError> {
         let scan = self.plan.open(tx)?;
-        Ok(Box::new(ProjectScan::new(scan, self.schema.get_fields())))
+        Ok(Scan::from(ProjectScan::new(scan, self.schema.get_fields())))
     }
 }

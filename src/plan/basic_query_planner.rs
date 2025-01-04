@@ -75,7 +75,7 @@ mod tests {
 
     use crate::record::schema::Schema;
     use crate::scan::table_scan::TableScan;
-    use crate::scan::Scan;
+    use crate::scan::ScanControl;
 
     #[test]
     fn test_basic_query_planner() -> Result<(), TransactionError> {

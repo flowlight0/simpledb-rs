@@ -1,11 +1,11 @@
 use crate::{
     errors::TransactionError,
     index::{Index, IndexControl},
-    scan::{table_scan::TableScan, Scan},
+    scan::{table_scan::TableScan, Scan, ScanControl},
 };
 
 pub struct IndexJoinScan {
-    lhs: Box<dyn Scan>,
+    lhs: Box<Scan>,
     rhs_index: Index,
     join_field: String,
     rhs: TableScan,
@@ -14,7 +14,7 @@ pub struct IndexJoinScan {
 
 impl IndexJoinScan {
     pub fn new(
-        lhs: Box<dyn Scan>,
+        lhs: Box<Scan>,
         rhs_index: Index,
         join_field: String,
         rhs: TableScan,
@@ -36,7 +36,7 @@ impl IndexJoinScan {
     }
 }
 
-impl Scan for IndexJoinScan {
+impl ScanControl for IndexJoinScan {
     fn before_first(&mut self) -> Result<(), TransactionError> {
         self.lhs.before_first()?;
         self.is_empty = !self.lhs.next()?;
@@ -174,7 +174,11 @@ mod tests {
         }
 
         let mut index_join_scan = IndexJoinScan::new(
-            Box::new(TableScan::new(tx.clone(), table1, layout1.clone())?),
+            Box::new(Scan::TableScan(TableScan::new(
+                tx.clone(),
+                table1,
+                layout1.clone(),
+            )?)),
             index,
             "B".to_string(),
             TableScan::new(tx.clone(), table2, layout2.clone())?,

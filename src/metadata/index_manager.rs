@@ -7,7 +7,7 @@ use crate::{
     errors::TransactionError,
     index::{btree::btree_index::BTreeIndex, Index},
     record::{field::Spec, layout::Layout, schema::Schema},
-    scan::{table_scan::TableScan, Scan},
+    scan::{table_scan::TableScan, ScanControl},
     tx::transaction::Transaction,
 };
 

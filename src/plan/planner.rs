@@ -54,7 +54,7 @@ impl Planner {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::db::SimpleDB;
+    use crate::{db::SimpleDB, scan::ScanControl};
 
     #[test]
     fn test_planner() -> Result<(), ExecutionError> {

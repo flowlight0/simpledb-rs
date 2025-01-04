@@ -2,7 +2,7 @@ use crate::{
     errors::TransactionError,
     index::{Index, IndexControl},
     record::field::Value,
-    scan::{table_scan::TableScan, Scan},
+    scan::{table_scan::TableScan, ScanControl},
 };
 
 pub struct IndexSelectScan {
@@ -27,7 +27,7 @@ impl IndexSelectScan {
     }
 }
 
-impl Scan for IndexSelectScan {
+impl ScanControl for IndexSelectScan {
     fn before_first(&mut self) -> Result<(), TransactionError> {
         self.index.before_first(&self.value)
     }
