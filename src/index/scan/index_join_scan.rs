@@ -14,13 +14,13 @@ pub struct IndexJoinScan {
 
 impl IndexJoinScan {
     pub fn new(
-        lhs: Box<Scan>,
+        lhs: Scan,
         rhs_index: Index,
         join_field: String,
         rhs: TableScan,
     ) -> Result<Self, TransactionError> {
         let mut scan = IndexJoinScan {
-            lhs,
+            lhs: Box::new(lhs),
             rhs_index,
             join_field,
             rhs,
@@ -174,11 +174,7 @@ mod tests {
         }
 
         let mut index_join_scan = IndexJoinScan::new(
-            Box::new(Scan::TableScan(TableScan::new(
-                tx.clone(),
-                table1,
-                layout1.clone(),
-            )?)),
+            Scan::from(TableScan::new(tx.clone(), table1, layout1.clone())?),
             index,
             "B".to_string(),
             TableScan::new(tx.clone(), table2, layout2.clone())?,

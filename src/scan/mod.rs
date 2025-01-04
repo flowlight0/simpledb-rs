@@ -5,7 +5,9 @@ use select_scan::SelectScan;
 use table_scan::TableScan;
 
 use crate::{
-    errors::TransactionError, index::scan::index_select_scan::IndexSelectScan, record::field::Value,
+    errors::TransactionError,
+    index::scan::{index_join_scan::IndexJoinScan, index_select_scan::IndexSelectScan},
+    record::field::Value,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -18,6 +20,7 @@ pub enum Scan {
     SelectScan(SelectScan),
     ProductScan(ProductScan),
     IndexSelectScan(IndexSelectScan),
+    IndexJoinScan(IndexJoinScan),
 }
 
 #[enum_dispatch(Scan)]
