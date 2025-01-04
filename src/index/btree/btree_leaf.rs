@@ -76,9 +76,7 @@ impl BTreeLeaf {
 
         let first_value = self.contents.get_data_value(0)?;
         if overflow_pointer >= 0 && first_value > self.search_key {
-            unreachable!();
             let new_block = self.contents.split(0, overflow_pointer)?;
-
             self.current_slot = Slot::Start;
             self.contents.set_flag(-1)?;
             self.contents.insert_leaf(0, &self.search_key, record_id)?;
