@@ -26,10 +26,12 @@ impl StatInfo {
         }
     }
 
+    // Return the number of blocks in the table
     pub fn get_num_blocks(&self) -> usize {
         self.num_blocks
     }
 
+    // Return the number of records in the table
     pub fn get_num_records(&self) -> usize {
         self.num_records
     }

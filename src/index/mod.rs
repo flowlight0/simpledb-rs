@@ -1,4 +1,5 @@
 pub mod btree;
+pub mod plan;
 pub mod scan;
 
 use btree::btree_index::BTreeIndex;

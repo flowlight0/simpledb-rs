@@ -74,18 +74,18 @@ impl IndexInfo {
         )?))
     }
 
-    fn get_num_accessed_blocks(&self) -> usize {
+    pub fn get_num_accessed_blocks(&self) -> usize {
         let block_size = self.tx.lock().unwrap().get_block_size();
         let records_per_block = block_size / self.index_layout.slot_size;
         let num_blocks = self.stat_info.get_num_records() / records_per_block;
         BTreeIndex::get_search_cost(num_blocks, records_per_block)
     }
 
-    fn get_num_records(&self) -> usize {
+    pub fn get_num_records(&self) -> usize {
         self.stat_info.get_num_records() / self.stat_info.get_distinct_values(&self.field_name)
     }
 
-    fn get_distinct_values(&self, field_name: &str) -> usize {
+    pub fn get_distinct_values(&self, field_name: &str) -> usize {
         if field_name == self.field_name {
             1
         } else {
