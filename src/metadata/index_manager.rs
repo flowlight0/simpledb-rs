@@ -175,12 +175,12 @@ impl IndexManager {
             )?;
             let index_info = IndexInfo::new(
                 index_name.clone(),
-                field_name,
+                field_name.clone(),
                 layout.schema.clone(),
                 tx.clone(),
                 stat_info,
             );
-            result.insert(index_name, index_info);
+            result.insert(field_name, index_info);
         }
         Ok(result)
     }

@@ -144,7 +144,7 @@ mod tests {
             .lock()
             .unwrap()
             .get_index_info(table2, tx.clone())?
-            .get(index2)
+            .get("B")
             .unwrap()
             .open()?;
 

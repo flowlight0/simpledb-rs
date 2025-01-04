@@ -202,7 +202,7 @@ mod tests {
             .lock()
             .unwrap()
             .get_index_info("test_table", tx.clone())?
-            .get("test_index")
+            .get("B")
             .unwrap()
             .open()?;
 
@@ -277,7 +277,7 @@ mod tests {
             .lock()
             .unwrap()
             .get_index_info("test_table", tx.clone())?
-            .get("test_index")
+            .get("B")
             .unwrap()
             .open()?;
 
