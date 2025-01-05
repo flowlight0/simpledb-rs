@@ -5,7 +5,10 @@ use crate::{
     tx::transaction::Transaction,
 };
 
-use super::{product_plan::ProductPlan, table_plan::TablePlan, Plan, QueryPlanner};
+use super::{
+    product_plan::ProductPlan, project_plan::ProjectPlan, select_plan::SelectPlan,
+    table_plan::TablePlan, Plan, PlanControl, QueryPlanner,
+};
 
 pub struct BasicQueryPlanner {
     metadata_manager: Arc<Mutex<MetadataManager>>,
@@ -22,44 +25,41 @@ impl QueryPlanner for BasicQueryPlanner {
         &self,
         query: &QueryData,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Box<dyn super::Plan>, TransactionError> {
+    ) -> Result<Plan, TransactionError> {
         // Step 1
         let mut plans = vec![];
         for table_name in &query.tables {
             let table_plan = TablePlan::new(tx.clone(), table_name, self.metadata_manager.clone())?;
-            plans.push(Box::new(table_plan));
+            plans.push(Plan::from(table_plan));
         }
 
         // Step 2
-        let mut plan: Box<dyn Plan> = plans.pop().unwrap();
+        let mut plan: Plan = plans.pop().unwrap();
         for next_plan in plans {
             let curr_plan = plan;
-            let plan1 = Box::new(ProductPlan::new(curr_plan, next_plan));
+            let plan1 = ProductPlan::new(curr_plan, next_plan);
             let num_blocks1 = plan1.get_num_accessed_blocks();
             let curr_plan = plan1.p1;
             let next_plan = plan1.p2;
-            let plan2 = Box::new(ProductPlan::new(next_plan, curr_plan));
+            let plan2 = Box::new(ProductPlan::new(*next_plan, *curr_plan));
             let num_blocks2 = plan2.get_num_accessed_blocks();
 
             let next_plan = plan2.p1;
             let curr_plan = plan2.p2;
             if num_blocks1 < num_blocks2 {
-                plan = Box::new(ProductPlan::new(curr_plan, next_plan));
+                plan = Plan::from(ProductPlan::new(*curr_plan, *next_plan));
             } else {
-                plan = Box::new(ProductPlan::new(next_plan, curr_plan));
+                plan = Plan::from(ProductPlan::new(*next_plan, *curr_plan));
             }
         }
 
         // Step 3
         if let Some(predicate) = &query.predicate {
-            plan = Box::new(super::select_plan::SelectPlan::new(plan, predicate.clone()));
+            plan = Plan::from(SelectPlan::new(plan, predicate.clone()));
         }
 
         // Step 4
-        plan = Box::new(super::project_plan::ProjectPlan::new(
-            plan,
-            query.fields.clone(),
-        ));
+        plan = Plan::from(ProjectPlan::new(plan, query.fields.clone()));
 
         Ok(plan)
     }

@@ -30,7 +30,7 @@ impl Planner {
         &self,
         query: &str,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Box<dyn Plan>, ExecutionError> {
+    ) -> Result<Plan, ExecutionError> {
         // Discard the parse error because it requires static lifetime for the query
         let query_data = QueryParser::new()
             .parse(query)
@@ -54,7 +54,7 @@ impl Planner {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{db::SimpleDB, scan::ScanControl};
+    use crate::{db::SimpleDB, plan::PlanControl, scan::ScanControl};
 
     #[test]
     fn test_planner() -> Result<(), ExecutionError> {

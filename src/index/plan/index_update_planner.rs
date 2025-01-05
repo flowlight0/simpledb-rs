@@ -8,7 +8,7 @@ use crate::{
         predicate::{Expression, Predicate},
         statement::{CreateCommand, UpdateCommand},
     },
-    plan::{select_plan::SelectPlan, table_plan::TablePlan, Plan, UpdatePlanner},
+    plan::{select_plan::SelectPlan, table_plan::TablePlan, Plan, PlanControl, UpdatePlanner},
     record::{field::Value, schema::Schema},
     scan::{Scan, ScanControl},
     tx::transaction::Transaction,
@@ -66,10 +66,11 @@ impl IndexUpdatePlanner {
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<usize, TransactionError> {
         let table_plan = TablePlan::new(tx.clone(), table_name, self.metadata_manager.clone())?;
-        let mut plan: Box<dyn Plan> = if let Some(predicate) = predicate {
-            Box::new(SelectPlan::new(Box::new(table_plan), predicate.clone()))
+        let table_plan = Plan::from(table_plan);
+        let mut plan = if let Some(predicate) = predicate {
+            Plan::from(SelectPlan::new(table_plan, predicate.clone()))
         } else {
-            Box::new(table_plan)
+            table_plan
         };
         let index_info_map = self
             .metadata_manager
@@ -104,10 +105,11 @@ impl IndexUpdatePlanner {
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<usize, TransactionError> {
         let table_plan = TablePlan::new(tx.clone(), table_name, self.metadata_manager.clone())?;
-        let mut plan: Box<dyn Plan> = if let Some(predicate) = predicate {
-            Box::new(SelectPlan::new(Box::new(table_plan), predicate.clone()))
+        let table_plan = Plan::from(table_plan);
+        let mut plan = if let Some(predicate) = predicate {
+            Plan::from(SelectPlan::new(table_plan, predicate.clone()))
         } else {
-            Box::new(table_plan)
+            table_plan
         };
 
         let index_info_map = self

@@ -7,25 +7,28 @@ use crate::{
     tx::transaction::Transaction,
 };
 
-use super::Plan;
+use super::{Plan, PlanControl};
 
 pub struct ProjectPlan {
-    pub plan: Box<dyn Plan>,
+    pub plan: Box<Plan>,
     pub schema: Schema,
 }
 
 impl ProjectPlan {
-    pub fn new(plan: Box<dyn Plan>, fields: Vec<String>) -> Self {
+    pub fn new(plan: Plan, fields: Vec<String>) -> Self {
         let mut schema = Schema::new();
         for field in &fields {
             let field_spec = &plan.schema().get_field_spec(field);
             schema.add_field(field, field_spec);
         }
-        ProjectPlan { plan, schema }
+        ProjectPlan {
+            plan: Box::new(plan),
+            schema,
+        }
     }
 }
 
-impl Plan for ProjectPlan {
+impl PlanControl for ProjectPlan {
     fn get_num_accessed_blocks(&self) -> usize {
         self.plan.get_num_accessed_blocks()
     }

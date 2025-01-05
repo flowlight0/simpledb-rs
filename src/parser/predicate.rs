@@ -1,6 +1,6 @@
 use crate::{
     errors::TransactionError,
-    plan::Plan,
+    plan::{Plan, PlanControl},
     record::field::Value,
     scan::{Scan, ScanControl},
 };
@@ -59,7 +59,7 @@ impl Term {
         }
     }
 
-    pub fn get_reduction_factor(&self, plan: &Box<dyn Plan>) -> usize {
+    pub fn get_reduction_factor(&self, plan: &Plan) -> usize {
         match self {
             Term::Equality(lhs, rhs) => {
                 let lhs_field = lhs.try_get_field();
@@ -153,7 +153,7 @@ impl Predicate {
         Ok(true)
     }
 
-    pub fn get_reduction_factor(&self, plan: &Box<dyn Plan>) -> usize {
+    pub fn get_reduction_factor(&self, plan: &Plan) -> usize {
         let mut factor = 1;
         for term in &self.terms {
             factor *= term.get_reduction_factor(plan);

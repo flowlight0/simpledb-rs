@@ -7,7 +7,7 @@ use std::{
 use crate::{
     db::SimpleDB,
     errors::ExecutionError,
-    plan::{planner::Planner, Plan},
+    plan::{planner::Planner, Plan, PlanControl},
     record::{field::Type, schema::Schema},
     scan::{Scan, ScanControl},
     tx::transaction::Transaction,
@@ -54,7 +54,7 @@ pub struct EmbeddedResultSet {
 
 impl EmbeddedResultSet {
     fn new(
-        mut plan: Box<dyn Plan>,
+        mut plan: Plan,
         connection: Arc<Mutex<EmbeddedConnectionImpl>>,
     ) -> Result<Self, ExecutionError> {
         let scan = Some(plan.open(connection.lock().unwrap().get_transaction())?);

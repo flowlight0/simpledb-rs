@@ -12,7 +12,7 @@ use crate::{
     tx::transaction::Transaction,
 };
 
-use super::{select_plan::SelectPlan, table_plan::TablePlan, Plan, UpdatePlanner};
+use super::{select_plan::SelectPlan, table_plan::TablePlan, Plan, PlanControl, UpdatePlanner};
 
 pub struct BasicUpdatePlanner {
     metadata_manager: Arc<Mutex<MetadataManager>>,
@@ -45,11 +45,15 @@ impl BasicUpdatePlanner {
         predicate: &Option<Predicate>,
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<usize, TransactionError> {
-        let table_plan = TablePlan::new(tx.clone(), table_name, self.metadata_manager.clone())?;
-        let mut plan: Box<dyn Plan> = if let Some(predicate) = predicate {
-            Box::new(SelectPlan::new(Box::new(table_plan), predicate.clone()))
+        let table_plan = Plan::from(TablePlan::new(
+            tx.clone(),
+            table_name,
+            self.metadata_manager.clone(),
+        )?);
+        let mut plan = if let Some(predicate) = predicate {
+            Plan::from(SelectPlan::new(table_plan, predicate.clone()))
         } else {
-            Box::new(table_plan)
+            table_plan
         };
         let mut scan = plan.open(tx.clone())?;
         let mut count = 0;
@@ -69,10 +73,11 @@ impl BasicUpdatePlanner {
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<usize, TransactionError> {
         let table_plan = TablePlan::new(tx.clone(), table_name, self.metadata_manager.clone())?;
-        let mut plan: Box<dyn Plan> = if let Some(predicate) = predicate {
-            Box::new(SelectPlan::new(Box::new(table_plan), predicate.clone()))
+        let table_plan = Plan::from(table_plan);
+        let mut plan = if let Some(predicate) = predicate {
+            Plan::from(SelectPlan::new(table_plan, predicate.clone()))
         } else {
-            Box::new(table_plan)
+            table_plan
         };
 
         let mut scan = plan.open(tx.clone())?;

@@ -8,7 +8,7 @@ use crate::{
     tx::transaction::Transaction,
 };
 
-use super::Plan;
+use super::PlanControl;
 
 pub struct TablePlan {
     table_name: String,
@@ -37,7 +37,7 @@ impl TablePlan {
     }
 }
 
-impl Plan for TablePlan {
+impl PlanControl for TablePlan {
     fn get_num_accessed_blocks(&self) -> usize {
         self.stat_info.get_num_blocks()
     }
