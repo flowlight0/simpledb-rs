@@ -70,14 +70,27 @@ mod tests {
         let mut schema = Schema::new();
         schema.add_i32_field("A");
         schema.add_string_field("B", 20);
+        let temp_table_id = {
+            let temp_table = TempTable::new(tx.clone(), &schema);
+            // Get the table name suffix
+            let table_name_suffix = temp_table.get_table_name().split('_').last().unwrap();
+            table_name_suffix.parse::<usize>().unwrap()
+        };
+
         {
             let temp_table = TempTable::new(tx.clone(), &schema);
-            assert_eq!(temp_table.get_table_name(), "temp_0");
+            assert_eq!(
+                temp_table.get_table_name(),
+                format!("temp_{}", temp_table_id + 1)
+            );
         }
 
         {
             let temp_table = TempTable::new(tx.clone(), &schema);
-            assert_eq!(temp_table.get_table_name(), "temp_1");
+            assert_eq!(
+                temp_table.get_table_name(),
+                format!("temp_{}", temp_table_id + 2)
+            );
         }
 
         Ok(())
