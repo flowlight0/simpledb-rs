@@ -6,7 +6,7 @@ use std::{
 use crate::{
     errors::TransactionError,
     plan::{Plan, PlanControl},
-    record::schema::Schema,
+    record::schema::{self, Schema},
     scan::{Scan, ScanControl},
     tx::transaction::Transaction,
 };
@@ -27,9 +27,9 @@ impl SortPlan {
     pub fn new(
         base_plan: Plan,
         tx: Arc<Mutex<Transaction>>,
-        schema: Schema,
         comparator: Arc<RecordComparator>,
     ) -> Self {
+        let schema = base_plan.schema().clone();
         Self {
             base_plan: RefCell::new(Some(Box::new(base_plan))),
             tx,
@@ -202,7 +202,7 @@ mod tests {
         }
 
         let comparator = Arc::new(RecordComparator::new(&&vec!["A".to_string()]));
-        let mut sort_plan = SortPlan::new(Plan::from(base_plan), tx.clone(), schema, comparator);
+        let mut sort_plan = SortPlan::new(Plan::from(base_plan), tx.clone(), comparator);
         let mut sort_scan = sort_plan.open(tx.clone())?;
         sort_scan.before_first()?;
         for i in 0..20 {
