@@ -11,7 +11,7 @@ pub enum Type {
     String,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Ord)]
 pub enum Value {
     I32(i32),
     String(String),

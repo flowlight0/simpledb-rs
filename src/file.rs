@@ -1,4 +1,4 @@
-use std::fs::File;
+use std::fs::{read_dir, remove_file, File};
 use std::io::{Result, Seek, SeekFrom, Write};
 
 use std::sync::{Arc, Mutex, RwLock};
@@ -123,6 +123,14 @@ impl FileManager {
         } else {
             false
         };
+
+        for entry in read_dir(&directory).unwrap() {
+            let entry = entry.unwrap();
+            let path = entry.path();
+            if path.is_file() {
+                remove_file(path).unwrap();
+            }
+        }
 
         FileManager {
             directory,

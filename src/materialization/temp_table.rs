@@ -35,6 +35,10 @@ impl TempTable {
         }
     }
 
+    pub(crate) fn get_tx(&self) -> Arc<Mutex<Transaction>> {
+        self.tx.clone()
+    }
+
     pub fn get_table_name(&self) -> &str {
         &self.table_name
     }
