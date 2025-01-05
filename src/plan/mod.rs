@@ -9,6 +9,7 @@ use table_plan::TablePlan;
 use crate::{
     errors::TransactionError,
     index::plan::{index_join_plan::IndexJoinPlan, index_select_plan::IndexSelectPlan},
+    materialization::materialize_plan::MaterializePlan,
     parser::statement::{QueryData, UpdateCommand},
     record::schema::Schema,
     scan::Scan,
@@ -30,6 +31,7 @@ pub enum Plan {
     TablePlan(TablePlan),
     IndexJoinPlan(IndexJoinPlan),
     IndexSelectPlan(IndexSelectPlan),
+    MaterializePlan(MaterializePlan),
 }
 
 #[enum_dispatch(Plan)]
