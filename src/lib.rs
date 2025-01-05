@@ -5,6 +5,7 @@ pub mod errors;
 pub mod file;
 pub mod index;
 pub mod log;
+pub mod materialization;
 pub mod metadata;
 pub mod page;
 pub mod parser;
