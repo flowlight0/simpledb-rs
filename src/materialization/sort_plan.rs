@@ -6,7 +6,7 @@ use std::{
 use crate::{
     errors::TransactionError,
     plan::{Plan, PlanControl},
-    record::schema::{self, Schema},
+    record::schema::Schema,
     scan::{Scan, ScanControl},
     tx::transaction::Transaction,
 };
