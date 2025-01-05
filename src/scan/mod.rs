@@ -7,7 +7,7 @@ use table_scan::TableScan;
 use crate::{
     errors::TransactionError,
     index::scan::{index_join_scan::IndexJoinScan, index_select_scan::IndexSelectScan},
-    materialization::sort_scan::SortScan,
+    materialization::{group_by_scan::GroupByScan, sort_scan::SortScan},
     record::field::Value,
 };
 
@@ -23,6 +23,7 @@ pub enum Scan {
     IndexSelectScan(IndexSelectScan),
     IndexJoinScan(IndexJoinScan),
     SortScan(SortScan),
+    GroupByScan(GroupByScan),
 }
 
 #[enum_dispatch(Scan)]
