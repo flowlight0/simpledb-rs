@@ -4,7 +4,7 @@ use crate::{
     errors::TransactionError,
     index::scan::index_select_scan::IndexSelectScan,
     metadata::index_manager::IndexInfo,
-    plan::{table_plan::TablePlan, Plan},
+    plan::{table_plan::TablePlan, PlanControl},
     record::{field::Value, schema::Schema},
     scan::Scan,
     tx::transaction::Transaction,
@@ -26,7 +26,7 @@ impl IndexSelectPlan {
     }
 }
 
-impl Plan for IndexSelectPlan {
+impl PlanControl for IndexSelectPlan {
     fn get_num_accessed_blocks(&self) -> usize {
         self.index_info.get_num_accessed_blocks() + self.get_num_output_records()
     }

@@ -7,24 +7,28 @@ use crate::{
     tx::transaction::Transaction,
 };
 
-use super::Plan;
+use super::{Plan, PlanControl};
 
 pub struct ProductPlan {
-    pub p1: Box<dyn Plan>,
-    pub p2: Box<dyn Plan>,
+    pub p1: Box<Plan>,
+    pub p2: Box<Plan>,
     schema: Schema,
 }
 
 impl ProductPlan {
-    pub fn new(p1: Box<dyn Plan>, p2: Box<dyn Plan>) -> Self {
+    pub fn new(p1: Plan, p2: Plan) -> Self {
         let mut schema = Schema::new();
         schema.add_all(&p1.schema());
         schema.add_all(&p2.schema());
-        Self { p1, p2, schema }
+        Self {
+            p1: Box::new(p1),
+            p2: Box::new(p2),
+            schema,
+        }
     }
 }
 
-impl Plan for ProductPlan {
+impl PlanControl for ProductPlan {
     fn get_num_accessed_blocks(&self) -> usize {
         self.p1.get_num_accessed_blocks()
             + self.p1.get_num_output_records() * self.p2.get_num_accessed_blocks()

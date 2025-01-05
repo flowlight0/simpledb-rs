@@ -8,20 +8,23 @@ use crate::{
     tx::transaction::Transaction,
 };
 
-use super::Plan;
+use super::{Plan, PlanControl};
 
 pub struct SelectPlan {
-    plan: Box<dyn Plan>,
+    plan: Box<Plan>,
     predicate: Predicate,
 }
 
 impl SelectPlan {
-    pub fn new(plan: Box<dyn Plan>, predicate: Predicate) -> Self {
-        SelectPlan { plan, predicate }
+    pub fn new(plan: Plan, predicate: Predicate) -> Self {
+        SelectPlan {
+            plan: Box::new(plan),
+            predicate,
+        }
     }
 }
 
-impl Plan for SelectPlan {
+impl PlanControl for SelectPlan {
     fn get_num_accessed_blocks(&self) -> usize {
         self.plan.get_num_accessed_blocks()
     }
@@ -110,7 +113,7 @@ mod tests {
 
         let table_plan = TablePlan::new(tx.clone(), table_name, db.metadata_manager)?;
         let select_plan = select_plan::SelectPlan::new(
-            Box::new(table_plan),
+            Plan::from(table_plan),
             Predicate::new(vec![Term::Equality(
                 Expression::Field("A".to_string()),
                 Expression::I32Constant(1),

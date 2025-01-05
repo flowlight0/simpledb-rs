@@ -2,13 +2,13 @@ use std::sync::{Arc, Mutex};
 
 use crate::{
     errors::TransactionError, index::scan::index_join_scan::IndexJoinScan,
-    metadata::index_manager::IndexInfo, plan::Plan, record::schema::Schema, scan::Scan,
+    metadata::index_manager::IndexInfo, plan::PlanControl, record::schema::Schema, scan::Scan,
     tx::transaction::Transaction,
 };
 
 pub struct IndexJoinPlan {
-    p1: Box<dyn Plan>,
-    p2: Box<dyn Plan>,
+    p1: Box<dyn PlanControl>,
+    p2: Box<dyn PlanControl>,
     index_info: IndexInfo,
     join_field: String,
     schema: Schema,
@@ -16,8 +16,8 @@ pub struct IndexJoinPlan {
 
 impl IndexJoinPlan {
     pub fn new(
-        p1: Box<dyn Plan>,
-        p2: Box<dyn Plan>,
+        p1: Box<dyn PlanControl>,
+        p2: Box<dyn PlanControl>,
         index_info: IndexInfo,
         join_field: String,
     ) -> Self {
@@ -34,7 +34,7 @@ impl IndexJoinPlan {
     }
 }
 
-impl Plan for IndexJoinPlan {
+impl PlanControl for IndexJoinPlan {
     fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Scan, TransactionError> {
         let lhs = self.p1.open(tx.clone())?;
         let rhs = self.p2.open(tx.clone())?;

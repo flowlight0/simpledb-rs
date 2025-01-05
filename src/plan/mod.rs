@@ -1,7 +1,14 @@
 use std::sync::{Arc, Mutex};
 
+use enum_dispatch::enum_dispatch;
+use product_plan::ProductPlan;
+use project_plan::ProjectPlan;
+use select_plan::SelectPlan;
+use table_plan::TablePlan;
+
 use crate::{
     errors::TransactionError,
+    index::plan::{index_join_plan::IndexJoinPlan, index_select_plan::IndexSelectPlan},
     parser::statement::{QueryData, UpdateCommand},
     record::schema::Schema,
     scan::Scan,
@@ -15,7 +22,18 @@ pub mod project_plan;
 pub mod select_plan;
 pub mod table_plan;
 
-pub trait Plan {
+#[enum_dispatch]
+pub enum Plan {
+    ProductPlan(ProductPlan),
+    ProjectPlan(ProjectPlan),
+    SelectPlan(SelectPlan),
+    TablePlan(TablePlan),
+    IndexJoinPlan(IndexJoinPlan),
+    IndexSelectPlan(IndexSelectPlan),
+}
+
+#[enum_dispatch(Plan)]
+pub trait PlanControl {
     // Return the number of blocks accessed by the plan
     fn get_num_accessed_blocks(&self) -> usize;
 
@@ -37,7 +55,7 @@ pub trait QueryPlanner: Send + Sync {
         &self,
         query: &QueryData,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Box<dyn Plan>, TransactionError>;
+    ) -> Result<Plan, TransactionError>;
 }
 
 pub trait UpdatePlanner: Send + Sync {
