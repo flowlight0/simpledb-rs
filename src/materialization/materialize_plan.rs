@@ -11,7 +11,7 @@ use crate::{
 use super::temp_table::TempTable;
 
 pub struct MaterializePlan {
-    base_plan: Box<Plan>,
+    pub(crate) base_plan: Box<Plan>,
     tx: Arc<Mutex<Transaction>>,
 }
 
