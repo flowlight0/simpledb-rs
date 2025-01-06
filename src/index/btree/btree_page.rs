@@ -46,7 +46,7 @@ impl BTreePage {
 
         let mut slot = Slot::Index(0);
         while slot.index() < self.get_num_records()? {
-            let value = self.get_data_value(slot.get_index())?;
+            let value = self.get_data_value(slot.index())?;
             match (value, &key) {
                 (Value::I32(value), Value::I32(key)) => {
                     if value >= *key {

@@ -54,14 +54,13 @@ impl BTreeLeaf {
     }
 
     pub(crate) fn get_data_record_id(&self) -> Result<RecordId, TransactionError> {
-        self.contents
-            .get_data_record_id(self.current_slot.get_index())
+        self.contents.get_data_record_id(self.current_slot.index())
     }
 
     pub fn delete(&mut self, record_id: &RecordId) -> Result<(), TransactionError> {
         while self.next()? {
             if self.get_data_record_id()? == *record_id {
-                self.contents.delete(self.current_slot.get_index())?;
+                self.contents.delete(self.current_slot.index())?;
                 return Ok(());
             }
         }
@@ -88,7 +87,7 @@ impl BTreeLeaf {
 
         self.current_slot = self.current_slot.next();
         self.contents
-            .insert_leaf(self.current_slot.get_index(), &self.search_key, record_id)?;
+            .insert_leaf(self.current_slot.index(), &self.search_key, record_id)?;
 
         if !self.contents.is_full()? {
             return Ok(None);

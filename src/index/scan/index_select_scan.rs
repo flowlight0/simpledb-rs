@@ -2,7 +2,7 @@ use crate::{
     errors::TransactionError,
     index::{Index, IndexControl},
     record::field::Value,
-    scan::{table_scan::TableScan, RecordId, ScanControl},
+    scan::{table_scan::TableScan, RecordPointer, ScanControl},
 };
 
 pub struct IndexSelectScan {
@@ -35,8 +35,8 @@ impl ScanControl for IndexSelectScan {
     fn next(&mut self) -> Result<bool, TransactionError> {
         let has_next = self.index.next()?;
         if has_next {
-            let record_id = self.index.get()?;
-            self.table_scan.move_to_record_id(&record_id)?;
+            let record_pointer = RecordPointer::from(self.index.get()?);
+            self.table_scan.move_to_record_pointer(&record_pointer)?;
         }
         Ok(has_next)
     }
@@ -57,8 +57,8 @@ impl ScanControl for IndexSelectScan {
         self.table_scan.has_field(field_name)
     }
 
-    fn get_record_id(&self) -> RecordId {
-        self.table_scan.get_record_id()
+    fn get_record_pointer(&self) -> RecordPointer {
+        self.table_scan.get_record_pointer()
     }
 }
 
@@ -67,6 +67,7 @@ mod tests {
     use crate::{
         db::SimpleDB,
         record::{layout::Layout, schema::Schema},
+        scan::RecordId,
     };
 
     use super::*;
@@ -118,7 +119,10 @@ mod tests {
 
             let b_value = (i % 4).to_string();
             table_scan.set_string("B", &b_value)?;
-            index.insert(&Value::String(b_value.clone()), &table_scan.get_record_id())?;
+            index.insert(
+                &Value::String(b_value.clone()),
+                &RecordId::from(table_scan.get_record_pointer()),
+            )?;
             if b_value == "2".to_owned() {
                 expected_values.push(i);
             }

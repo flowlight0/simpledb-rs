@@ -1,6 +1,6 @@
 use crate::{errors::TransactionError, parser::predicate::Predicate, record::field::Value};
 
-use super::{RecordId, Scan, ScanControl};
+use super::{RecordPointer, Scan, ScanControl};
 
 pub struct SelectScan {
     base_scan: Box<Scan>,
@@ -62,8 +62,8 @@ impl ScanControl for SelectScan {
         self.base_scan.insert()
     }
 
-    fn get_record_id(&self) -> RecordId {
-        self.base_scan.get_record_id()
+    fn get_record_pointer(&self) -> RecordPointer {
+        self.base_scan.get_record_pointer()
     }
 }
 

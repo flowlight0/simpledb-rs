@@ -3,6 +3,8 @@ pub mod group_by_plan;
 pub mod group_by_scan;
 pub mod materialize_plan;
 pub mod max_function;
+pub mod merge_join_plan;
+pub mod merge_join_scan;
 mod record_comparator;
 pub mod sort_plan;
 pub mod sort_scan;

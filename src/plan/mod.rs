@@ -10,7 +10,8 @@ use crate::{
     errors::TransactionError,
     index::plan::{index_join_plan::IndexJoinPlan, index_select_plan::IndexSelectPlan},
     materialization::{
-        group_by_plan::GroupByPlan, materialize_plan::MaterializePlan, sort_plan::SortPlan,
+        group_by_plan::GroupByPlan, materialize_plan::MaterializePlan,
+        merge_join_plan::MergeJoinPlan, sort_plan::SortPlan,
     },
     parser::statement::{QueryData, UpdateCommand},
     record::schema::Schema,
@@ -36,6 +37,7 @@ pub enum Plan {
     MaterializePlan(MaterializePlan),
     SortPlan(SortPlan),
     GroupByPlan(GroupByPlan),
+    MergeJoinPlan(MergeJoinPlan),
 }
 
 #[enum_dispatch(Plan)]

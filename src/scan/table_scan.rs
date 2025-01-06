@@ -11,7 +11,7 @@ use crate::{
     tx::transaction::Transaction,
 };
 
-use super::{RecordId, ScanControl};
+use super::{RecordPointer, ScanControl};
 
 pub struct TableScan {
     file_name: String,
@@ -54,10 +54,6 @@ impl TableScan {
         })
     }
 
-    pub fn get_record_id(&self) -> RecordId {
-        RecordId(self.get_block_slot(), self.current_slot.get_index())
-    }
-
     pub fn get_block_slot(&self) -> usize {
         self.record_page.block.block_slot
     }
@@ -91,12 +87,12 @@ impl ScanControl for TableScan {
 
     fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
         self.record_page
-            .get_i32(self.current_slot.get_index(), field_name)
+            .get_i32(self.current_slot.index(), field_name)
     }
 
     fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError> {
         self.record_page
-            .get_string(self.current_slot.get_index(), field_name)
+            .get_string(self.current_slot.index(), field_name)
     }
 
     fn get_value(&mut self, field_name: &str) -> Result<Value, TransactionError> {
@@ -112,12 +108,12 @@ impl ScanControl for TableScan {
 
     fn set_i32(&mut self, field_name: &str, value: i32) -> Result<(), TransactionError> {
         self.record_page
-            .set_i32(self.current_slot.get_index(), field_name, value)
+            .set_i32(self.current_slot.index(), field_name, value)
     }
 
     fn set_string(&mut self, field_name: &str, value: &str) -> Result<(), TransactionError> {
         self.record_page
-            .set_string(self.current_slot.get_index(), field_name, value)
+            .set_string(self.current_slot.index(), field_name, value)
     }
 
     fn set_value(&mut self, field_name: &str, value: &Value) -> Result<(), TransactionError> {
@@ -128,7 +124,7 @@ impl ScanControl for TableScan {
     }
 
     fn delete(&mut self) -> Result<(), TransactionError> {
-        self.record_page.delete(self.current_slot.get_index())
+        self.record_page.delete(self.current_slot.index())
     }
 
     fn insert(&mut self) -> Result<(), TransactionError> {
@@ -149,14 +145,17 @@ impl ScanControl for TableScan {
         }
     }
 
-    fn get_record_id(&self) -> RecordId {
-        RecordId(self.get_block_slot(), self.current_slot.get_index())
+    fn get_record_pointer(&self) -> RecordPointer {
+        RecordPointer(self.get_block_slot(), self.current_slot)
     }
 
-    fn move_to_record_id(&mut self, record_id: &RecordId) -> Result<(), TransactionError> {
+    fn move_to_record_pointer(
+        &mut self,
+        record_id: &RecordPointer,
+    ) -> Result<(), TransactionError> {
         let new_block = BlockId::new(&self.file_name, record_id.0);
         self.record_page.reset_block(new_block)?;
-        self.current_slot = Slot::Index(record_id.1);
+        self.current_slot = record_id.1;
         Ok(())
     }
 }
