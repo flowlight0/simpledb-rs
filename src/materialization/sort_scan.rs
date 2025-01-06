@@ -3,7 +3,7 @@ use std::{cell::RefCell, cmp::Ordering, sync::Arc};
 use crate::{
     errors::TransactionError,
     record::field::Value,
-    scan::{Scan, ScanControl},
+    scan::{RecordPointer, Scan, ScanControl},
 };
 
 use super::{record_comparator::RecordComparator, temp_table::TempTable};
@@ -13,6 +13,7 @@ pub struct SortScan {
     has_nexts: Vec<bool>,
     comparator: Arc<RecordComparator>,
     current_scan_index: Option<usize>,
+    saved_position: Vec<RecordPointer>,
 }
 
 impl SortScan {
@@ -46,7 +47,24 @@ impl SortScan {
             has_nexts,
             comparator,
             current_scan_index: None,
+            saved_position: vec![],
         })
+    }
+
+    pub(crate) fn restore_position(&mut self) -> Result<(), TransactionError> {
+        for (i, scan) in self.scans.iter().enumerate() {
+            scan.borrow_mut()
+                .move_to_record_pointer(&self.saved_position[i])?;
+        }
+        Ok(())
+    }
+
+    pub(crate) fn save_position(&mut self) {
+        self.saved_position = self
+            .scans
+            .iter()
+            .map(|scan| scan.borrow().get_record_pointer())
+            .collect();
     }
 }
 

@@ -7,12 +7,29 @@ use table_scan::TableScan;
 use crate::{
     errors::TransactionError,
     index::scan::{index_join_scan::IndexJoinScan, index_select_scan::IndexSelectScan},
-    materialization::{group_by_scan::GroupByScan, sort_scan::SortScan},
-    record::field::Value,
+    materialization::{
+        group_by_scan::GroupByScan, merge_join_scan::MergeJoinScan, sort_scan::SortScan,
+    },
+    record::{field::Value, record_page::Slot},
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct RecordId(pub usize, pub usize); // block number, slot number
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct RecordPointer(pub usize, pub Slot); // block number, slot
+
+impl From<RecordId> for RecordPointer {
+    fn from(record_id: RecordId) -> Self {
+        RecordPointer(record_id.0, Slot::Index(record_id.1))
+    }
+}
+
+impl From<RecordPointer> for RecordId {
+    fn from(record_pointer: RecordPointer) -> Self {
+        RecordId(record_pointer.0, record_pointer.1.index())
+    }
+}
 
 #[enum_dispatch]
 pub enum Scan {
@@ -24,6 +41,7 @@ pub enum Scan {
     IndexJoinScan(IndexJoinScan),
     SortScan(SortScan),
     GroupByScan(GroupByScan),
+    MergeJoinScan(MergeJoinScan),
 }
 
 #[enum_dispatch(Scan)]
@@ -62,12 +80,15 @@ pub trait ScanControl {
     }
 
     #[allow(unused_variables)]
-    fn get_record_id(&self) -> RecordId {
+    fn get_record_pointer(&self) -> RecordPointer {
         unimplemented!("Update operation is not supported")
     }
 
     #[allow(unused_variables)]
-    fn move_to_record_id(&mut self, record_id: &RecordId) -> Result<(), TransactionError> {
+    fn move_to_record_pointer(
+        &mut self,
+        record_pointer: &RecordPointer,
+    ) -> Result<(), TransactionError> {
         unimplemented!("Update operation is not supported")
     }
 }

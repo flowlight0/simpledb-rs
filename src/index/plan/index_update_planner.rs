@@ -10,7 +10,7 @@ use crate::{
     },
     plan::{select_plan::SelectPlan, table_plan::TablePlan, Plan, PlanControl, UpdatePlanner},
     record::{field::Value, schema::Schema},
-    scan::{Scan, ScanControl},
+    scan::{RecordId, Scan, ScanControl},
     tx::transaction::Transaction,
 };
 
@@ -40,7 +40,7 @@ impl IndexUpdatePlanner {
         };
 
         table_scan.insert()?;
-        let record_id = table_scan.get_record_id();
+        let record_pointer = table_scan.get_record_pointer();
 
         let index_info_map = self
             .metadata_manager
@@ -53,7 +53,7 @@ impl IndexUpdatePlanner {
 
             if let Some(index_info) = index_info_map.get(field) {
                 let mut index = index_info.open()?;
-                index.insert(value, &record_id)?;
+                index.insert(value, &RecordId::from(record_pointer))?;
             }
         }
         Ok(1)
@@ -82,11 +82,11 @@ impl IndexUpdatePlanner {
         let mut count = 0;
         while scan.next()? {
             // First, delete the record's ID from each index
-            let record_id = scan.get_record_id();
+            let record_pointer = scan.get_record_pointer();
             for (field_name, index_info) in index_info_map.iter() {
                 let value = scan.get_value(field_name)?;
                 let mut index = index_info.open()?;
-                index.delete(&value, &record_id)?;
+                index.delete(&value, &RecordId::from(record_pointer))?;
             }
 
             // Then, delete the record from the table
@@ -133,7 +133,7 @@ impl IndexUpdatePlanner {
             scan.set_value(field_name, &new_value)?;
 
             if let Some(index) = &mut index {
-                let record_id = scan.get_record_id();
+                let record_id = RecordId::from(scan.get_record_pointer());
                 index.delete(&old_value, &record_id)?;
                 index.insert(&new_value, &record_id)?;
             }

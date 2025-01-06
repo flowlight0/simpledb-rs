@@ -17,7 +17,7 @@ pub struct RecordPage {
     pub layout: Arc<Layout>,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Slot {
     Index(usize),
     Start,
@@ -28,7 +28,8 @@ impl Slot {
     pub fn index(&self) -> usize {
         match self {
             Slot::Index(index) => *index,
-            _ => panic!("Slot::index() called on Slot::Start or Slot::End"),
+            Slot::Start => panic!("Slot::index() called on Slot::Start"),
+            Slot::End => panic!("Slot::index() called on Slot::End"),
         }
     }
 
@@ -46,13 +47,6 @@ impl Slot {
             Slot::Index(index) => Slot::Index(index - 1),
             Slot::Start => Slot::Start,
             Slot::End => panic!("Slot::prev() called on Slot::End"),
-        }
-    }
-
-    pub fn get_index(&self) -> usize {
-        match self {
-            Slot::Index(index) => *index,
-            _ => panic!("Slot::get_index() called on Slot::Start or Slot::End"),
         }
     }
 }

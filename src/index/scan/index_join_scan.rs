@@ -1,7 +1,7 @@
 use crate::{
     errors::TransactionError,
     index::{Index, IndexControl},
-    scan::{table_scan::TableScan, Scan, ScanControl},
+    scan::{table_scan::TableScan, RecordPointer, Scan, ScanControl},
 };
 
 pub struct IndexJoinScan {
@@ -50,8 +50,8 @@ impl ScanControl for IndexJoinScan {
         }
         loop {
             if self.rhs_index.next()? {
-                let record_id = self.rhs_index.get()?;
-                self.rhs.move_to_record_id(&record_id)?;
+                self.rhs
+                    .move_to_record_pointer(&RecordPointer::from(self.rhs_index.get()?))?;
                 return Ok(true);
             }
             if !self.lhs.next()? {
@@ -100,6 +100,7 @@ mod tests {
     use crate::{
         db::SimpleDB,
         record::{field::Value, layout::Layout, schema::Schema},
+        scan::RecordId,
     };
 
     use super::*;
@@ -168,7 +169,10 @@ mod tests {
                     scan2.insert()?;
                     scan2.set_string("B", &i.to_string())?;
                     scan2.set_i32("C", i * 10)?;
-                    index.insert(&Value::String(i.to_string()), &scan2.get_record_id())?;
+                    index.insert(
+                        &Value::String(i.to_string()),
+                        &RecordId::from(scan2.get_record_pointer()),
+                    )?;
                 }
             }
         }
