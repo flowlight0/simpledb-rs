@@ -38,6 +38,7 @@ pub enum Plan {
     SortPlan(SortPlan),
     GroupByPlan(GroupByPlan),
     MergeJoinPlan(MergeJoinPlan),
+    MultiBufferProductPlan(MultiBufferProductPlan),
 }
 
 #[enum_dispatch(Plan)]
