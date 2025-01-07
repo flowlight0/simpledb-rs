@@ -3,8 +3,8 @@ use crate::{errors::TransactionError, record::field::Value};
 use super::{Scan, ScanControl};
 
 pub struct ProductScan {
-    scan1: Box<Scan>,
-    scan2: Box<Scan>,
+    pub(crate) scan1: Box<Scan>,
+    pub(crate) scan2: Box<Scan>,
 }
 
 impl ProductScan {
