@@ -3,16 +3,18 @@ use crate::{errors::TransactionError, record::field::Value};
 use super::{Scan, ScanControl};
 
 pub struct ProductScan {
-    scan1: Box<Scan>,
-    scan2: Box<Scan>,
+    pub(crate) scan1: Box<Scan>,
+    pub(crate) scan2: Box<Scan>,
 }
 
 impl ProductScan {
-    pub fn new(scan1: Scan, scan2: Scan) -> Self {
-        ProductScan {
+    pub fn new(scan1: Scan, scan2: Scan) -> Result<Self, TransactionError> {
+        let mut scan = ProductScan {
             scan1: Box::new(scan1),
             scan2: Box::new(scan2),
-        }
+        };
+        scan.before_first()?;
+        Ok(scan)
     }
 }
 
@@ -110,7 +112,7 @@ mod tests {
             scan2.set_string("E", &i.to_string())?;
         }
 
-        let mut product_scan = ProductScan::new(Scan::from(scan1), Scan::from(scan2));
+        let mut product_scan = ProductScan::new(Scan::from(scan1), Scan::from(scan2))?;
         product_scan.before_first()?;
         for i in 0..10 {
             for j in 0..10 {

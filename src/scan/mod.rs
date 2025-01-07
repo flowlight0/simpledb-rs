@@ -10,6 +10,7 @@ use crate::{
     materialization::{
         group_by_scan::GroupByScan, merge_join_scan::MergeJoinScan, sort_scan::SortScan,
     },
+    multibuffer::{chunk_scan::ChunkScan, multibuffer_product_scan::MultiBufferProductScan},
     record::{field::Value, record_page::Slot},
 };
 
@@ -42,6 +43,8 @@ pub enum Scan {
     SortScan(SortScan),
     GroupByScan(GroupByScan),
     MergeJoinScan(MergeJoinScan),
+    ChunkScan(ChunkScan),
+    MultiBufferProductScan(MultiBufferProductScan),
 }
 
 #[enum_dispatch(Scan)]

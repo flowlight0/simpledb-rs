@@ -240,6 +240,11 @@ impl Transaction {
         Ok(self.file_manager.lock().unwrap().get_num_blocks(file_name))
     }
 
+    pub fn get_num_available_buffers(&self) -> usize {
+        let buffer_manager = self.buffer_manager.lock().unwrap();
+        buffer_manager.get_num_availables()
+    }
+
     fn do_rollback(&mut self) -> Result<(), TransactionError> {
         let mut log_manager = self.log_manager.lock().unwrap();
         let log_iter = log_manager.get_backward_iter()?;

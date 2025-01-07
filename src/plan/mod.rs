@@ -13,6 +13,7 @@ use crate::{
         group_by_plan::GroupByPlan, materialize_plan::MaterializePlan,
         merge_join_plan::MergeJoinPlan, sort_plan::SortPlan,
     },
+    multibuffer::multibuffer_product_plan::MultiBufferProductPlan,
     parser::statement::{QueryData, UpdateCommand},
     record::schema::Schema,
     scan::Scan,
@@ -38,6 +39,7 @@ pub enum Plan {
     SortPlan(SortPlan),
     GroupByPlan(GroupByPlan),
     MergeJoinPlan(MergeJoinPlan),
+    MultiBufferProductPlan(MultiBufferProductPlan),
 }
 
 #[enum_dispatch(Plan)]
