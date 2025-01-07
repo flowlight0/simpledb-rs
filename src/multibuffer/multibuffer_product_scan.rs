@@ -27,18 +27,19 @@ impl MultiBufferProductScan {
     pub(crate) fn new(
         tx: Arc<Mutex<Transaction>>,
         lhs_scan: Scan,
-        rhs_file_name: &str,
+        rhs_table_name: &str,
         layout: Arc<Layout>,
     ) -> Result<Self, TransactionError> {
-        let file_num_blocks = tx.lock().unwrap().get_num_blocks(rhs_file_name)?;
+        let rhs_file_name = format!("{}.tbl", rhs_table_name);
+        let file_num_blocks = tx.lock().unwrap().get_num_blocks(&rhs_file_name)?;
         let num_available_buffers = tx.lock().unwrap().get_num_available_buffers();
         let chunk_size = buffer_needs::best_factor(num_available_buffers, file_num_blocks);
         let dummy_scan = TempTable::new(tx.clone(), &layout.schema).open()?;
 
         let mut scan = MultiBufferProductScan {
             tx,
-            product_scan: Some(ProductScan::new(lhs_scan, Scan::from(dummy_scan))),
-            rhs_file_name: rhs_file_name.to_string(),
+            product_scan: Some(ProductScan::new(lhs_scan, Scan::from(dummy_scan))?),
+            rhs_file_name,
             layout,
             file_num_blocks,
             chunk_size,
@@ -68,7 +69,7 @@ impl MultiBufferProductScan {
         let product_scan = self.product_scan.take().unwrap();
         let mut lhs_scan = *product_scan.scan1;
         lhs_scan.before_first()?;
-        self.product_scan = Some(ProductScan::new(lhs_scan, Scan::from(rhs_scan)));
+        self.product_scan = Some(ProductScan::new(lhs_scan, Scan::from(rhs_scan))?);
         self.next_block_slot = next_chunk_block_end;
         Ok(true)
     }
