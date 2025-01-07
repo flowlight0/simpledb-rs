@@ -7,12 +7,13 @@ use crate::{
         predicate::{Expression, Predicate},
         statement::{CreateCommand, UpdateCommand},
     },
+    plan::{select_plan::SelectPlan, table_plan::TablePlan, Plan, PlanControl},
     record::{field::Value, schema::Schema},
     scan::ScanControl,
     tx::transaction::Transaction,
 };
 
-use super::{select_plan::SelectPlan, table_plan::TablePlan, Plan, PlanControl, UpdatePlanner};
+use super::UpdatePlanner;
 
 pub struct BasicUpdatePlanner {
     metadata_manager: Arc<Mutex<MetadataManager>>,
@@ -134,10 +135,10 @@ mod tests {
     use crate::parser::predicate::{Expression, Predicate, Term};
 
     use crate::parser::statement::{FieldDefinition, QueryData};
-    use crate::plan::basic_query_planner::BasicQueryPlanner;
-    use crate::plan::QueryPlanner;
+
+    use crate::planner::basic_query_planner::BasicQueryPlanner;
+    use crate::planner::QueryPlanner;
     use crate::record::field::Spec;
-    use crate::scan::ScanControl;
 
     #[test]
     fn test_basic_update_planner() -> Result<(), TransactionError> {

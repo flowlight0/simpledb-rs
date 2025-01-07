@@ -12,7 +12,7 @@ use crate::{
     index::plan::index_update_planner::IndexUpdatePlanner,
     log::manager::LogManager,
     metadata::MetadataManager,
-    plan::{basic_query_planner::BasicQueryPlanner, planner::Planner},
+    planner::{basic_query_planner::BasicQueryPlanner, Planner},
     tx::{concurrency::LockTable, transaction::Transaction},
 };
 
