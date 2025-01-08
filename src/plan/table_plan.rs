@@ -10,6 +10,7 @@ use crate::{
 
 use super::PlanControl;
 
+#[derive(Clone)]
 pub struct TablePlan {
     table_name: String,
     layout: Arc<Layout>,

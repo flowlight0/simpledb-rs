@@ -14,6 +14,7 @@ use crate::{
 
 use super::multibuffer_product_scan::MultiBufferProductScan;
 
+#[derive(Clone)]
 pub struct MultiBufferProductPlan {
     tx: Arc<Mutex<Transaction>>,
     lhs: MaterializePlan,

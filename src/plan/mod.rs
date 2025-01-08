@@ -25,6 +25,7 @@ pub mod select_plan;
 pub mod table_plan;
 
 #[enum_dispatch]
+#[derive(Clone)]
 pub enum Plan {
     ProductPlan(ProductPlan),
     ProjectPlan(ProjectPlan),

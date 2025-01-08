@@ -15,6 +15,7 @@ use super::{
     sort_plan::SortPlan,
 };
 
+#[derive(Clone)]
 pub struct GroupByPlan {
     sort_plan: Box<Plan>,
     group_fields: Vec<String>,

@@ -16,6 +16,7 @@ use super::{
     temp_table::TempTable,
 };
 
+#[derive(Clone)]
 pub struct SortPlan {
     base_plan: RefCell<Option<Box<Plan>>>,
     tx: Arc<Mutex<Transaction>>,

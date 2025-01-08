@@ -14,7 +14,9 @@ use crate::{
 
 pub mod basic_query_planner;
 pub mod basic_update_planner;
+pub mod heuristic_query_planner;
 pub mod index_update_planner;
+mod table_planner;
 
 pub trait QueryPlanner: Send + Sync {
     fn create_plan(

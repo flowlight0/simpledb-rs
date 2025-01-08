@@ -15,6 +15,7 @@ use super::{
     merge_join_scan::MergeJoinScan, record_comparator::RecordComparator, sort_plan::SortPlan,
 };
 
+#[derive(Clone)]
 pub struct MergeJoinPlan {
     p1: SortPlan,
     p2: SortPlan,

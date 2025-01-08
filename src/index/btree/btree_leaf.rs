@@ -24,7 +24,7 @@ impl BTreeLeaf {
         search_key: Value,
     ) -> Result<Self, TransactionError> {
         let contents = BTreePage::new(tx, block, layout)?;
-        let current_slot = contents.find_slot_before(&search_key)?;
+        let current_slot = contents.find_slot_before(&search_key, false)?;
         Ok(Self {
             contents,
             current_slot,

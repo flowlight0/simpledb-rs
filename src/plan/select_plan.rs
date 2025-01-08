@@ -10,6 +10,7 @@ use crate::{
 
 use super::{Plan, PlanControl};
 
+#[derive(Clone)]
 pub struct SelectPlan {
     plan: Box<Plan>,
     predicate: Predicate,
