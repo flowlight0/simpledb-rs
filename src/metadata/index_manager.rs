@@ -26,6 +26,7 @@ pub const INDEX_RECORD_SLOT_COLUMN: &str = "record_slot";
 
 const MAX_LENGTH: usize = 255;
 
+#[derive(Clone)]
 pub struct IndexInfo {
     index_name: String,
     field_name: String,

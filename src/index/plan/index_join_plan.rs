@@ -1,32 +1,32 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    errors::TransactionError, index::scan::index_join_scan::IndexJoinScan,
-    metadata::index_manager::IndexInfo, plan::PlanControl, record::schema::Schema, scan::Scan,
+    errors::TransactionError,
+    index::scan::index_join_scan::IndexJoinScan,
+    metadata::index_manager::IndexInfo,
+    plan::{Plan, PlanControl},
+    record::schema::Schema,
+    scan::Scan,
     tx::transaction::Transaction,
 };
 
+#[derive(Clone)]
 pub struct IndexJoinPlan {
-    p1: Box<dyn PlanControl>,
-    p2: Box<dyn PlanControl>,
+    p1: Box<Plan>,
+    p2: Box<Plan>,
     index_info: IndexInfo,
     join_field: String,
     schema: Schema,
 }
 
 impl IndexJoinPlan {
-    pub fn new(
-        p1: Box<dyn PlanControl>,
-        p2: Box<dyn PlanControl>,
-        index_info: IndexInfo,
-        join_field: String,
-    ) -> Self {
+    pub fn new(p1: Plan, p2: Plan, index_info: IndexInfo, join_field: String) -> Self {
         let mut schema = Schema::new();
         schema.add_all(&p1.schema());
         schema.add_all(&p2.schema());
         Self {
-            p1,
-            p2,
+            p1: Box::new(p1),
+            p2: Box::new(p2),
             index_info,
             join_field,
             schema,

@@ -1,14 +1,17 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    errors::TransactionError, metadata::MetadataManager, parser::statement::QueryData,
+    errors::TransactionError,
+    metadata::MetadataManager,
+    parser::statement::QueryData,
+    plan::{
+        product_plan::ProductPlan, project_plan::ProjectPlan, select_plan::SelectPlan,
+        table_plan::TablePlan, Plan, PlanControl,
+    },
     tx::transaction::Transaction,
 };
 
-use super::{
-    product_plan::ProductPlan, project_plan::ProjectPlan, select_plan::SelectPlan,
-    table_plan::TablePlan, Plan, PlanControl, QueryPlanner,
-};
+use super::QueryPlanner;
 
 pub struct BasicQueryPlanner {
     metadata_manager: Arc<Mutex<MetadataManager>>,

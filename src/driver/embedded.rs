@@ -7,7 +7,8 @@ use std::{
 use crate::{
     db::SimpleDB,
     errors::ExecutionError,
-    plan::{planner::Planner, Plan, PlanControl},
+    plan::{Plan, PlanControl},
+    planner::Planner,
     record::{field::Type, schema::Schema},
     scan::{Scan, ScanControl},
     tx::transaction::Transaction,

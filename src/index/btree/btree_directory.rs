@@ -4,7 +4,11 @@ use crate::{
     errors::TransactionError,
     file::BlockId,
     index::btree::btree_leaf::BTreeLeaf,
-    record::{field::Value, layout::Layout},
+    metadata::index_manager::INDEX_VALUE_COLUMN,
+    record::{
+        field::{Type, Value},
+        layout::Layout,
+    },
     tx::transaction::Transaction,
 };
 
@@ -102,7 +106,7 @@ impl BTreeDirectory {
     ) -> Result<Option<DirectoryEntry>, TransactionError> {
         let slot = self
             .contents
-            .find_slot_before(&directory_entry.data_value)?;
+            .find_slot_before(&directory_entry.data_value, true)?;
         let new_slot_index = slot.index() + 1;
         self.contents.insert_directory(
             new_slot_index,
@@ -124,7 +128,7 @@ impl BTreeDirectory {
     }
 
     fn find_child_block_slot(&self, search_key: &Value) -> Result<usize, TransactionError> {
-        let slot = self.contents.find_slot_before(search_key)?;
+        let slot = self.contents.find_slot_before(search_key, true)?;
         let mut slot_index = slot.index();
 
         if self.contents.get_data_value(slot_index + 1)? == *search_key {
@@ -166,11 +170,17 @@ impl BTreeDirectory {
                     block_slot,
                 };
 
+                let dummy_search_key =
+                    match btree_leaf_layout.schema.get_field_type(INDEX_VALUE_COLUMN) {
+                        Type::I32 => Value::I32(3),
+                        Type::String => Value::String("3".to_owned()),
+                    };
+
                 let child_btree_leaf = BTreeLeaf::new(
                     self.tx.clone(),
                     child_block,
                     btree_leaf_layout.clone(),
-                    Value::String("3".to_owned()), // dummy
+                    dummy_search_key,
                 )?;
                 child_btree_leaf.debug_print(depth + 1)?;
             }

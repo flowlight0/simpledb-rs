@@ -9,10 +9,11 @@ use crate::{
     buffer::BufferManager,
     errors::TransactionError,
     file::FileManager,
-    index::plan::index_update_planner::IndexUpdatePlanner,
     log::manager::LogManager,
     metadata::MetadataManager,
-    plan::{basic_query_planner::BasicQueryPlanner, planner::Planner},
+    planner::{
+        basic_query_planner::BasicQueryPlanner, index_update_planner::IndexUpdatePlanner, Planner,
+    },
     tx::{concurrency::LockTable, transaction::Transaction},
 };
 

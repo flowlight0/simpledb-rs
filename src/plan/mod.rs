@@ -14,20 +14,18 @@ use crate::{
         merge_join_plan::MergeJoinPlan, sort_plan::SortPlan,
     },
     multibuffer::multibuffer_product_plan::MultiBufferProductPlan,
-    parser::statement::{QueryData, UpdateCommand},
     record::schema::Schema,
     scan::Scan,
     tx::transaction::Transaction,
 };
-pub mod basic_query_planner;
-pub mod basic_update_planner;
-pub mod planner;
+
 pub mod product_plan;
 pub mod project_plan;
 pub mod select_plan;
 pub mod table_plan;
 
 #[enum_dispatch]
+#[derive(Clone)]
 pub enum Plan {
     ProductPlan(ProductPlan),
     ProjectPlan(ProjectPlan),
@@ -58,20 +56,4 @@ pub trait PlanControl {
 
     // Open the plan and return the scan
     fn open(&mut self, tx: Arc<Mutex<Transaction>>) -> Result<Scan, TransactionError>;
-}
-
-pub trait QueryPlanner: Send + Sync {
-    fn create_plan(
-        &self,
-        query: &QueryData,
-        tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Plan, TransactionError>;
-}
-
-pub trait UpdatePlanner: Send + Sync {
-    fn execute_update(
-        &self,
-        update_command: &UpdateCommand,
-        tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, TransactionError>;
 }

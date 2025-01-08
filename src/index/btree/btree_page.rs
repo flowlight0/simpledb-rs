@@ -40,9 +40,21 @@ impl BTreePage {
     // It then returns the slot number immediately before that slot.
     // It means that, if the returned slot index is i, self.get_data_value(i)? < key <= self.get_data_value(i + 1)?.
     //
-    // This method assumes "self.get_data_value(0)? <= key" always holds true.
-    pub(crate) fn find_slot_before(&self, key: &Value) -> Result<Slot, TransactionError> {
-        assert!(self.get_data_value(0)? <= *key);
+    // This method assumes "self.get_data_value(0)? <= key" always holds true
+    // when the B-tree page corresponds to the B-tree directory.
+    pub(crate) fn find_slot_before(
+        &self,
+        key: &Value,
+        is_on_directory: bool,
+    ) -> Result<Slot, TransactionError> {
+        if is_on_directory {
+            assert!(
+                self.get_data_value(0)? <= *key,
+                "minimum record (= {:?}) <= search key (= {:?}) didn't hold when traversing a directory",
+                self.get_data_value(0)?,
+                key
+            );
+        }
 
         let mut slot = Slot::Index(0);
         while slot.index() < self.get_num_records()? {
@@ -349,15 +361,21 @@ mod tests {
             btree_page.insert_directory(i, Value::I32(i as i32), i)?;
         }
 
-        assert_eq!(Slot::Start, btree_page.find_slot_before(&Value::I32(0))?);
-        assert_eq!(Slot::Index(0), btree_page.find_slot_before(&Value::I32(1))?);
+        assert_eq!(
+            Slot::Start,
+            btree_page.find_slot_before(&Value::I32(0), true)?
+        );
+        assert_eq!(
+            Slot::Index(0),
+            btree_page.find_slot_before(&Value::I32(1), true)?
+        );
         assert_eq!(
             Slot::Index(48),
-            btree_page.find_slot_before(&Value::I32(49))?
+            btree_page.find_slot_before(&Value::I32(49), true)?
         );
         assert_eq!(
             Slot::Index(49),
-            btree_page.find_slot_before(&Value::I32(50))?
+            btree_page.find_slot_before(&Value::I32(50), true)?
         );
         Ok(())
     }

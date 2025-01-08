@@ -10,6 +10,7 @@ use crate::{
     tx::transaction::Transaction,
 };
 
+#[derive(Clone)]
 pub struct IndexSelectPlan {
     table_plan: TablePlan,
     index_info: IndexInfo,
@@ -17,10 +18,10 @@ pub struct IndexSelectPlan {
 }
 
 impl IndexSelectPlan {
-    pub fn new(table_plan: TablePlan, index_info: IndexInfo, value: &Value) -> Self {
+    pub fn new(table_plan: TablePlan, index_info: &IndexInfo, value: &Value) -> Self {
         IndexSelectPlan {
             table_plan,
-            index_info,
+            index_info: index_info.clone(),
             value: value.clone(),
         }
     }

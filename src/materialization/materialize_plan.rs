@@ -10,6 +10,7 @@ use crate::{
 
 use super::temp_table::TempTable;
 
+#[derive(Clone)]
 pub struct MaterializePlan {
     pub(crate) base_plan: Box<Plan>,
     tx: Arc<Mutex<Transaction>>,

@@ -3,12 +3,36 @@ use std::sync::{Arc, Mutex};
 use lalrpop_util::{lexer::Token, ParseError};
 
 use crate::{
-    errors::{ExecutionError, QueryError},
-    parser::grammar::{QueryParser, UpdateCommandParser},
+    errors::{ExecutionError, QueryError, TransactionError},
+    parser::{
+        grammar::{QueryParser, UpdateCommandParser},
+        statement::{QueryData, UpdateCommand},
+    },
+    plan::Plan,
     tx::transaction::Transaction,
 };
 
-use super::{Plan, QueryPlanner, UpdatePlanner};
+pub mod basic_query_planner;
+pub mod basic_update_planner;
+pub mod heuristic_query_planner;
+pub mod index_update_planner;
+mod table_planner;
+
+pub trait QueryPlanner: Send + Sync {
+    fn create_plan(
+        &self,
+        query: &QueryData,
+        tx: Arc<Mutex<Transaction>>,
+    ) -> Result<Plan, TransactionError>;
+}
+
+pub trait UpdatePlanner: Send + Sync {
+    fn execute_update(
+        &self,
+        update_command: &UpdateCommand,
+        tx: Arc<Mutex<Transaction>>,
+    ) -> Result<usize, TransactionError>;
+}
 
 pub struct Planner {
     query_planner: Box<dyn QueryPlanner>,

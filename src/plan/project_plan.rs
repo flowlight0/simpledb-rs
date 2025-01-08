@@ -9,6 +9,7 @@ use crate::{
 
 use super::{Plan, PlanControl};
 
+#[derive(Clone)]
 pub struct ProjectPlan {
     pub plan: Box<Plan>,
     pub schema: Schema,

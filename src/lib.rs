@@ -11,6 +11,7 @@ pub mod multibuffer;
 pub mod page;
 pub mod parser;
 pub mod plan;
+pub mod planner;
 pub mod proto;
 pub mod record;
 pub mod scan;

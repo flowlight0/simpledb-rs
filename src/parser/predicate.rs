@@ -1,7 +1,7 @@
 use crate::{
     errors::TransactionError,
     plan::{Plan, PlanControl},
-    record::field::Value,
+    record::{field::Value, schema::Schema},
     scan::{Scan, ScanControl},
 };
 
@@ -39,6 +39,13 @@ impl Expression {
             Expression::I32Constant(value) => Some(Value::I32(*value)),
             Expression::StringConstant(value) => Some(Value::String(value.clone())),
             _ => None,
+        }
+    }
+
+    fn is_applied_to(&self, schema: &Schema) -> bool {
+        match self {
+            Expression::Field(field_name) => schema.has_field(field_name),
+            _ => true,
         }
     }
 }
@@ -132,6 +139,13 @@ impl Term {
         }
         return None;
     }
+
+    // Returns true if the fields in the term are all in the schema.
+    fn is_applied_to(&self, schema: &Schema) -> bool {
+        match self {
+            Term::Equality(lhs, rhs) => lhs.is_applied_to(schema) && rhs.is_applied_to(schema),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -159,6 +173,46 @@ impl Predicate {
             factor *= term.get_reduction_factor(plan);
         }
         factor
+    }
+
+    pub(crate) fn select_sub_predicates(&self, schema: &Schema) -> Option<Predicate> {
+        let mut terms = Vec::new();
+        for term in &self.terms {
+            if term.is_applied_to(schema) {
+                terms.push(term.clone());
+            }
+        }
+
+        if terms.is_empty() {
+            return None;
+        } else {
+            Some(Predicate::new(terms))
+        }
+    }
+
+    pub(crate) fn join_sub_predicates(
+        &self,
+        schema1: &Schema,
+        schema2: &Schema,
+    ) -> Option<Predicate> {
+        let mut join_schema = Schema::new();
+        join_schema.add_all(schema1);
+        join_schema.add_all(schema2);
+
+        let mut terms = vec![];
+        for term in &self.terms {
+            if term.is_applied_to(schema1) || term.is_applied_to(schema2) {
+                continue;
+            }
+            if term.is_applied_to(&join_schema) {
+                terms.push(term.clone());
+            }
+        }
+        if terms.is_empty() {
+            return None;
+        } else {
+            Some(Predicate::new(terms))
+        }
     }
 
     pub(crate) fn equates_with_constant(&self, field_name: &str) -> Option<Value> {
