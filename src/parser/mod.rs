@@ -2,6 +2,7 @@ pub mod grammar;
 pub mod predicate;
 pub mod statement;
 
+
 #[cfg(test)]
 mod tests {
     use crate::{
@@ -21,11 +22,11 @@ mod tests {
         );
         assert_eq!(
             grammar::PredicateParser::new()
-                .parse("i32 = 222 AND string = '222'")
+                .parse("col = 222 AND string = '222'")
                 .unwrap(),
             Predicate::new(vec![
                 Term::Equality(
-                    Expression::Field("i32".to_string()),
+                    Expression::Field("col".to_string()),
                     Expression::I32Constant(222)
                 ),
                 Term::Equality(
@@ -40,10 +41,10 @@ mod tests {
     fn test_insert() {
         assert_eq!(
             grammar::StatementParser::new()
-                .parse("INSERT INTO table (aaa, bbb) VALUES (333, '222')")
+                .parse("INSERT INTO mytable (aaa, bbb) VALUES (333, '222')")
                 .unwrap(),
             Statement::UpdateCommand(UpdateCommand::Insert(
-                "table".to_string(),
+                "mytable".to_string(),
                 vec!["aaa".to_string(), "bbb".to_string()],
                 vec![Value::I32(333), Value::String("222".to_string())]
             ))
@@ -54,19 +55,19 @@ mod tests {
     fn test_delete() {
         assert_eq!(
             grammar::StatementParser::new()
-                .parse("DELETE FROM table")
+                .parse("DELETE FROM mytable")
                 .unwrap(),
-            Statement::UpdateCommand(UpdateCommand::Delete("table".to_string(), None))
+            Statement::UpdateCommand(UpdateCommand::Delete("mytable".to_string(), None))
         );
 
         assert_eq!(
             grammar::StatementParser::new()
-                .parse("DELETE FROM table WHERE i32 = 222")
+                .parse("DELETE FROM mytable WHERE col = 222")
                 .unwrap(),
             Statement::UpdateCommand(UpdateCommand::Delete(
-                "table".to_string(),
+                "mytable".to_string(),
                 Some(Predicate::new(vec![Term::Equality(
-                    Expression::Field("i32".to_string()),
+                    Expression::Field("col".to_string()),
                     Expression::I32Constant(222)
                 )]))
             ))
@@ -77,10 +78,10 @@ mod tests {
     fn test_modify() {
         assert_eq!(
             grammar::StatementParser::new()
-                .parse("MODIFY table SET aaa = 333")
+                .parse("MODIFY mytable SET aaa = 333")
                 .unwrap(),
             Statement::UpdateCommand(UpdateCommand::Modify(
-                "table".to_string(),
+                "mytable".to_string(),
                 "aaa".to_string(),
                 Expression::I32Constant(333),
                 None
@@ -89,14 +90,14 @@ mod tests {
 
         assert_eq!(
             grammar::StatementParser::new()
-                .parse("MODIFY table SET aaa = 333 WHERE i32 = 222")
+                .parse("MODIFY mytable SET aaa = 333 WHERE col = 222")
                 .unwrap(),
             Statement::UpdateCommand(UpdateCommand::Modify(
-                "table".to_string(),
+                "mytable".to_string(),
                 "aaa".to_string(),
                 Expression::I32Constant(333),
                 Some(Predicate::new(vec![Term::Equality(
-                    Expression::Field("i32".to_string()),
+                    Expression::Field("col".to_string()),
                     Expression::I32Constant(222)
                 )]))
             ))
@@ -121,7 +122,7 @@ mod tests {
     fn test_create_view() {
         assert_eq!(
             grammar::StatementParser::new()
-                .parse("CREATE VIEW view_name AS SELECT aaa, bbb FROM table_name WHERE i32 = 222")
+                .parse("CREATE VIEW view_name AS SELECT aaa, bbb FROM table_name WHERE col = 222")
                 .unwrap(),
             Statement::UpdateCommand(UpdateCommand::Create(CreateCommand::View(
                 "view_name".to_string(),
@@ -129,7 +130,7 @@ mod tests {
                     vec!["aaa".to_string(), "bbb".to_string()],
                     vec!["table_name".to_string()],
                     Some(Predicate::new(vec![Term::Equality(
-                        Expression::Field("i32".to_string()),
+                        Expression::Field("col".to_string()),
                         Expression::I32Constant(222)
                     )]))
                 )

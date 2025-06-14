@@ -5,29 +5,62 @@ use crate::record::field::{Spec, Value};
 
 grammar;
 
+match {
+    r"(?i)SELECT" => SELECT,
+    r"(?i)FROM" => FROM,
+    r"(?i)WHERE" => WHERE,
+    r"(?i)INSERT" => INSERT,
+    r"(?i)INTO" => INTO,
+    r"(?i)VALUES" => VALUES,
+    r"(?i)DELETE" => DELETE,
+    r"(?i)MODIFY" => MODIFY,
+    r"(?i)SET" => SET,
+    r"(?i)CREATE" => CREATE,
+    r"(?i)TABLE" => TABLE,
+    r"(?i)VIEW" => VIEW,
+    r"(?i)INDEX" => INDEX,
+    r"(?i)ON" => ON,
+    r"(?i)AS" => AS,
+    r"(?i)AND" => AND,
+    r"(?i)I32" => I32,
+    r"(?i)VARCHAR" => VARCHAR,
+} else {
+    "(" => LPAREN,
+    ")" => RPAREN,
+    "," => COMMA,
+    "=" => EQ,
+} else {
+    r"-?[0-9]+" => I32_LITERAL,
+    r"'[^']+'" => STRING_LITERAL,
+} else {
+    r"[a-zA-Z][a-zA-Z0-9_]*" => ID,
+} else {
+    r"[ \t\n]+" => WHITESPACE,
+}
+
 pub Statement: statement::Statement = {
     <q:Query> => statement::Statement::Query(q),
     <c:UpdateCommand> => statement::Statement::UpdateCommand(c),
 }
 
 pub Query: statement::QueryData = {
-    "SELECT" <fs:Comma<IdToken>> "FROM" <ts:Comma<IdToken>> "WHERE" <p:Predicate> => statement::QueryData::new(fs, ts, Some(p)),
-    "SELECT" <fs:Comma<IdToken>> "FROM" <ts:Comma<IdToken>> => statement::QueryData::new(fs, ts, None),
+    SELECT <fs:Comma<IdToken>> FROM <ts:Comma<IdToken>> WHERE <p:Predicate> => statement::QueryData::new(fs, ts, Some(p)),
+    SELECT <fs:Comma<IdToken>> FROM <ts:Comma<IdToken>> => statement::QueryData::new(fs, ts, None),
 }
 
 pub UpdateCommand: statement::UpdateCommand = {
-    "INSERT INTO" <t:IdToken> "(" <fs:Comma<IdToken>> ")" "VALUES" "(" <vs:Comma<Constant>> ")" => statement::UpdateCommand::Insert(t, fs, vs),
-    "DELETE FROM" <t:IdToken> => statement::UpdateCommand::Delete(t, None),
-    "DELETE FROM" <t:IdToken> "WHERE" <p:Predicate> => statement::UpdateCommand::Delete(t, Some(p)),
-    "MODIFY" <t:IdToken> "SET" <f:IdToken> "=" <e:Expression> => statement::UpdateCommand::Modify(t, f, e, None),
-    "MODIFY" <t:IdToken> "SET" <f:IdToken> "=" <e:Expression> "WHERE" <p:Predicate> => statement::UpdateCommand::Modify(t, f, e, Some(p)),
+    INSERT INTO <t:IdToken> LPAREN <fs:Comma<IdToken>> RPAREN VALUES LPAREN <vs:Comma<Constant>> RPAREN => statement::UpdateCommand::Insert(t, fs, vs),
+    DELETE FROM <t:IdToken> => statement::UpdateCommand::Delete(t, None),
+    DELETE FROM <t:IdToken> WHERE <p:Predicate> => statement::UpdateCommand::Delete(t, Some(p)),
+    MODIFY <t:IdToken> SET <f:IdToken> EQ <e:Expression> => statement::UpdateCommand::Modify(t, f, e, None),
+    MODIFY <t:IdToken> SET <f:IdToken> EQ <e:Expression> WHERE <p:Predicate> => statement::UpdateCommand::Modify(t, f, e, Some(p)),
     <c:CreateCommand> => statement::UpdateCommand::Create(c),
 }
 
 CreateCommand: statement::CreateCommand = {
-    "CREATE TABLE" <t:IdToken> "(" <ds:Comma<FieldDefinition>> ")" => statement::CreateCommand::Table(t, ds),
-    "CREATE VIEW" <t:IdToken> "AS" <q:Query> => statement::CreateCommand::View(t, q),
-    "CREATE INDEX" <t:IdToken> "ON" <n:IdToken> "(" <f:IdToken> ")" => statement::CreateCommand::Index(t, n, f),
+    CREATE TABLE <t:IdToken> LPAREN <ds:Comma<FieldDefinition>> RPAREN => statement::CreateCommand::Table(t, ds),
+    CREATE VIEW <t:IdToken> AS <q:Query> => statement::CreateCommand::View(t, q),
+    CREATE INDEX <t:IdToken> ON <n:IdToken> LPAREN <f:IdToken> RPAREN => statement::CreateCommand::Index(t, n, f),
 }
 
 FieldDefinition: statement::FieldDefinition = {
@@ -35,8 +68,8 @@ FieldDefinition: statement::FieldDefinition = {
 }
 
 FieldType: Spec = {
-    "I32" => Spec::I32,
-    "VARCHAR" "(" <i:I32Constant> ")" => Spec::VarChar(i as usize),
+    I32 => Spec::I32,
+    VARCHAR LPAREN <i:I32Constant> RPAREN => Spec::VarChar(i as usize),
 }
 
 pub Predicate: predicate::Predicate = {
@@ -44,7 +77,7 @@ pub Predicate: predicate::Predicate = {
 }
 
 pub Term: predicate::Term = {
-    <l:Expression> "=" <r:Expression> => predicate::Term::Equality(l, r),
+    <l:Expression> EQ <r:Expression> => predicate::Term::Equality(l, r),
 }
 
 Expression: predicate::Expression = {
@@ -59,20 +92,20 @@ Constant: Value = {
 }
 
 I32Constant: i32 = {
-    r"-?[0-9]+" => i32::from_str(<>).unwrap(),
+    I32_LITERAL => i32::from_str(<>).unwrap(),
 }
 
 StringConstant: String = {
-    r"'[^']+'" => String::from(&<>[1..<>.len()-1].to_string()),
+    STRING_LITERAL => String::from(&<>[1..<>.len()-1].to_string()),
 }
 
 IdToken: String = {
-    r"[a-zA-Z][a-zA-Z0-9_]*" => String::from(<>),
+    ID => String::from(<>),
 }
 
 
 Comma<T>: Vec<T> = {
-    <mut v:(<T> ",")*> <e:T> => {
+    <mut v:(<T> COMMA)*> <e:T> => {
         v.push(e);
         v
     }
@@ -80,7 +113,7 @@ Comma<T>: Vec<T> = {
 
 
 And<T>: Vec<T> = {
-    <mut v:(<T> "AND")*> <e:T> => {
+    <mut v:(<T> AND)*> <e:T> => {
         v.push(e);
         v
     }

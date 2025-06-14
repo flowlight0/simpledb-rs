@@ -92,12 +92,12 @@ mod tests {
             .planner
             .lock()
             .unwrap()
-            .execute_update("CREATE TABLE table1 (A I32, B VARCHAR(20))", tx.clone())?;
+            .execute_update("create table table1 (A I32, B VARCHAR(20))", tx.clone())?;
         assert_eq!(updated, 0);
 
         for i in 0..10 {
             let updated = db.planner.lock().unwrap().execute_update(
-                &format!("INSERT INTO table1 (A, B) VALUES ({}, '{}')", i % 2, i),
+                &format!("insert into table1 (A, B) values ({}, '{}')", i % 2, i),
                 tx.clone(),
             )?;
             assert_eq!(updated, 1);
@@ -107,14 +107,14 @@ mod tests {
             .planner
             .lock()
             .unwrap()
-            .execute_update("DELETE FROM table1 WHERE A = 0", tx.clone())?;
+            .execute_update("delete from table1 where A = 0", tx.clone())?;
         assert_eq!(deleted, 5);
 
         let mut query = db
             .planner
             .lock()
             .unwrap()
-            .create_query_plan("SELECT B FROM table1", tx.clone())?;
+            .create_query_plan("select B from table1", tx.clone())?;
         let mut scan = query.open(tx.clone())?;
 
         for i in 0..5 {
