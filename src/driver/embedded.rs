@@ -228,3 +228,36 @@ impl DriverControl for EmbeddedDriver {
         Ok((db_name, Connection::Embedded(EmbeddedConnection::new(db)?)))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_embedded_driver_basic_flow() -> Result<(), anyhow::Error> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let db_url = format!("jdbc:simpledb:{}", temp_dir.to_string_lossy());
+
+        let driver = EmbeddedDriver::new();
+        let (db_name, mut connection) = driver.connect(&db_url)?;
+        assert_eq!(db_name, temp_dir.to_string_lossy());
+
+        let mut statement = connection.create_statement()?;
+        statement.execute_update("create table test (A I32, B VARCHAR(20))")?;
+        statement.execute_update("insert into test (A, B) values (1, 'a')")?;
+        statement.execute_update("insert into test (A, B) values (2, 'b')")?;
+
+        let mut result_set = statement.execute_query("select B from test where A = 1")?;
+        let metadata = result_set.get_metadata()?;
+        assert_eq!(metadata.get_column_count()?, 1);
+        assert_eq!(metadata.get_column_name(0)?, "B");
+
+        assert!(result_set.next()?);
+        assert_eq!(result_set.get_string("B")?, "a");
+        assert!(!result_set.next()?);
+        result_set.close()?;
+
+        connection.close()?;
+        Ok(())
+    }
+}
