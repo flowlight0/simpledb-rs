@@ -90,7 +90,8 @@ fn main() -> Result<(), anyhow::Error> {
             break;
         }
 
-        let result = if command.starts_with("SELECT") {
+        let trimmed = command.trim_start();
+        let result = if trimmed.to_ascii_uppercase().starts_with("SELECT") {
             do_query(&mut statement, &command)
         } else {
             do_update(&mut statement, &command)
