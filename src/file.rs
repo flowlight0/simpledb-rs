@@ -128,7 +128,11 @@ impl FileManager {
             let entry = entry.unwrap();
             let path = entry.path();
             if path.is_file() {
-                remove_file(path).unwrap();
+                if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
+                    if name.starts_with("temp_") {
+                        remove_file(path).unwrap();
+                    }
+                }
             }
         }
 
@@ -246,6 +250,22 @@ mod tests {
         }
         assert_eq!(file_manager.file_access_stats.write_count, 10);
         assert_eq!(file_manager.file_access_stats.read_count, 0);
+        Ok(())
+    }
+
+    #[test]
+    fn test_cleanup_temp_files() -> Result<()> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        std::fs::create_dir_all(&temp_dir).unwrap();
+        std::fs::write(temp_dir.join("table"), b"data").unwrap();
+        std::fs::write(temp_dir.join("temp_dummy"), b"tmp").unwrap();
+
+        let block_size = 256;
+        let file_manager = FileManager::new(temp_dir.clone(), block_size);
+
+        assert!(!file_manager.is_new);
+        assert!(temp_dir.join("table").exists());
+        assert!(!temp_dir.join("temp_dummy").exists());
         Ok(())
     }
 }
