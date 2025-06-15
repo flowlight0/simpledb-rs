@@ -40,3 +40,29 @@ pub enum ExecutionError {
     #[error("QueryError: {0}")]
     QueryError(#[from] QueryError),
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_error_conversion() {
+        let parse_error: ParseError<usize, Token<'_>, &str> = ParseError::UnrecognizedToken {
+            token: (0, Token(0, "foo"), 3),
+            expected: vec!["bar".to_string()],
+        };
+
+        let query_error = QueryError::from(parse_error);
+        match query_error {
+            QueryError::ParseError(inner) => {
+                assert_eq!(
+                    inner,
+                    ParseError::UnrecognizedToken {
+                        token: (0, "foo".to_string(), 3),
+                        expected: vec!["bar".to_string()],
+                    }
+                );
+            }
+        }
+    }
+}
