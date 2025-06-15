@@ -136,7 +136,7 @@ mod tests {
         let db_url = format!("jdbc:simpledb:{}", temp_dir.to_string_lossy());
 
         let script = format!(
-            "{db_url}\ncreate table T(A I32)\ninsert into T(A) values (1)\nselect A from T\nexit\n"
+            "{db_url}\ncreate table T(A I32)\ninsert into T(A) values (1)\nselect A from T\nselect A from T\nexit\n"
         );
 
         let mut reader = Cursor::new(script.clone().into_bytes());
@@ -148,6 +148,7 @@ mod tests {
         let expected = format!(
             "Connect> \nSQL ({db_name})> 0 records processed\n\n\
 SQL ({db_name})> 1 records processed\n\n\
+SQL ({db_name})>            A\n------------\n           1\n\n\
 SQL ({db_name})>            A\n------------\n           1\n\n\
 SQL ({db_name})> "
         );
