@@ -1,14 +1,18 @@
-use std::io::{stdin, stdout, Write};
+use std::io::{stdin, stdout, Write, BufRead};
 
 use simpledb_rs::{
     driver::{
-        embedded::EmbeddedDriver, network::driver::NetworkDriver, ConnectionControl, Driver,
-        DriverControl, MetadataControl, ResultSetControl, Statement, StatementControl,
+        embedded::EmbeddedDriver, ConnectionControl, Driver, DriverControl, MetadataControl,
+        ResultSetControl, Statement, StatementControl,
     },
     record::field::Type,
 };
 
-fn do_query(statement: &mut Statement, command: &str) -> Result<(), anyhow::Error> {
+fn do_query<W: Write>(
+    statement: &mut Statement,
+    command: &str,
+    writer: &mut W,
+) -> Result<(), anyhow::Error> {
     let mut result_set = statement.execute_query(command)?;
     let metadata = result_set.get_metadata()?;
     let num_columns = metadata.get_column_count()?;
@@ -23,13 +27,13 @@ fn do_query(statement: &mut Statement, command: &str) -> Result<(), anyhow::Erro
         }
 
         total_width += width;
-        print!("{:>width$}", column_name, width = width);
+        write!(writer, "{:>width$}", column_name, width = width)?;
     }
-    println!();
+    writeln!(writer)?;
     for _ in 0..total_width {
-        print!("-");
+        write!(writer, "-")?;
     }
-    println!();
+    writeln!(writer)?;
 
     // print records
     while result_set.next()? {
@@ -39,72 +43,116 @@ fn do_query(statement: &mut Statement, command: &str) -> Result<(), anyhow::Erro
             let width = metadata.get_column_display_size(i)?;
             // String fmt = "%" + md.getColumnDisplaySize(i);
             if i > 0 {
-                print!(" ");
+                write!(writer, " ")?;
             }
 
             match column_type {
                 Type::I32 => {
                     let val = result_set.get_i32(&column_name)?;
-                    print!("{:>width$}", val, width = width);
+                    write!(writer, "{:>width$}", val, width = width)?;
                 }
                 Type::String => {
                     let val = result_set.get_string(&column_name)?;
-                    print!("{:>width$}", val, width = width);
+                    write!(writer, "{:>width$}", val, width = width)?;
                 }
             }
         }
-        println!();
+        writeln!(writer)?;
     }
     result_set.close()?;
     Ok(())
 }
 
-fn do_update(statement: &mut Statement, command: &str) -> Result<(), anyhow::Error> {
+fn do_update<W: Write>(
+    statement: &mut Statement,
+    command: &str,
+    writer: &mut W,
+) -> Result<(), anyhow::Error> {
     let num_records = statement.execute_update(command)?;
-    println!("{} records processed", num_records);
+    writeln!(writer, "{} records processed", num_records)?;
     Ok(())
 }
 
-fn main() -> Result<(), anyhow::Error> {
-    print!("Connect> ");
-    stdout().flush()?;
+pub fn run_client<R: BufRead, W: Write>(
+    driver: Driver,
+    reader: &mut R,
+    writer: &mut W,
+) -> Result<(), anyhow::Error> {
+    write!(writer, "Connect> ")?;
+    writer.flush()?;
     let mut db_url = String::new();
-    stdin().read_line(&mut db_url).unwrap();
+    reader.read_line(&mut db_url)?;
 
-    let driver: Driver = if db_url.contains("//") {
-        Driver::Network(NetworkDriver::new())
-    } else {
-        Driver::Embedded(EmbeddedDriver::new())
-    };
-
-    let (db_name, mut connection) = driver.connect(&db_url)?;
+    let (db_name, mut connection) = driver.connect(db_url.trim_end())?;
     let mut statement = connection.create_statement()?;
 
-    print!("\nSQL ({})> ", &db_name);
-    stdout().flush()?;
+    write!(writer, "\nSQL ({})> ", db_name)?;
+    writer.flush()?;
     loop {
-        // process one line of input
         let mut command = String::new();
-        stdin().read_line(&mut command).unwrap();
+        if reader.read_line(&mut command)? == 0 {
+            break;
+        }
         if command.starts_with("exit") {
             break;
         }
 
         let trimmed = command.trim_start();
         let result = if trimmed.to_ascii_uppercase().starts_with("SELECT") {
-            do_query(&mut statement, &command)
+            do_query(&mut statement, &command, writer)
         } else {
-            do_update(&mut statement, &command)
+            do_update(&mut statement, &command, writer)
         };
 
         if let Err(e) = result {
             eprintln!("Error: {}", e);
             connection.rollback()?;
         }
-        print!("\nSQL ({})> ", &db_name);
-        stdout().flush()?;
+        write!(writer, "\nSQL ({})> ", db_name)?;
+        writer.flush()?;
     }
     connection.commit()?;
     connection.close()?;
     Ok(())
+}
+
+fn main() -> Result<(), anyhow::Error> {
+    run_client(
+        Driver::Embedded(EmbeddedDriver::new()),
+        &mut stdin().lock(),
+        &mut stdout(),
+    )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    // Cursor provides an in-memory buffer that implements `BufRead` and `Write`.
+    use std::io::Cursor;
+
+    #[test]
+    fn test_run_client_select() -> Result<(), anyhow::Error> {
+        let temp_dir = tempfile::tempdir()?.into_path().join("directory");
+        let db_url = format!("jdbc:simpledb:{}", temp_dir.to_string_lossy());
+
+        let script = format!(
+            "{db_url}\ncreate table T(A I32)\ninsert into T(A) values (1)\nselect A from T\nselect A from T\nexit\n"
+        );
+
+        let mut reader = Cursor::new(script.clone().into_bytes());
+        let mut output = Vec::new();
+        run_client(Driver::Embedded(EmbeddedDriver::new()), &mut reader, &mut output)?;
+
+        let output_str = String::from_utf8(output).unwrap();
+        let db_name = db_url.trim_start_matches("jdbc:simpledb:");
+        let expected = format!(
+            "Connect> \nSQL ({db_name})> 0 records processed\n\n\
+SQL ({db_name})> 1 records processed\n\n\
+SQL ({db_name})>            A\n------------\n           1\n\n\
+SQL ({db_name})>            A\n------------\n           1\n\n\
+SQL ({db_name})> "
+        );
+        assert_eq!(output_str, expected);
+        Ok(())
+    }
 }
