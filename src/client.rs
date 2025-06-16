@@ -1,4 +1,7 @@
-use std::io::{stdin, stdout, Write, BufRead};
+use std::io::{stdout, Write};
+use std::path::PathBuf;
+
+use rustyline::{DefaultEditor, error::ReadlineError};
 
 use simpledb_rs::{
     driver::{
@@ -73,29 +76,35 @@ fn do_update<W: Write>(
     Ok(())
 }
 
-pub fn run_client<R: BufRead, W: Write>(
+pub fn run_client<W: Write>(
     driver: Driver,
-    reader: &mut R,
+    editor: &mut DefaultEditor,
     writer: &mut W,
 ) -> Result<(), anyhow::Error> {
-    write!(writer, "Connect> ")?;
-    writer.flush()?;
-    let mut db_url = String::new();
-    reader.read_line(&mut db_url)?;
+    let history_path = PathBuf::from(".simpledb_history");
+    let _ = editor.load_history(&history_path);
+
+    let db_url = match editor.readline("Connect> ") {
+        Ok(line) => line,
+        Err(ReadlineError::Interrupted) | Err(ReadlineError::Eof) => return Ok(()),
+        Err(e) => return Err(e.into()),
+    };
 
     let (db_name, mut connection) = driver.connect(db_url.trim_end())?;
     let mut statement = connection.create_statement()?;
 
-    write!(writer, "\nSQL ({})> ", db_name)?;
-    writer.flush()?;
     loop {
-        let mut command = String::new();
-        if reader.read_line(&mut command)? == 0 {
-            break;
-        }
+        let prompt = format!("\nSQL ({})> ", db_name);
+        let command = match editor.readline(&prompt) {
+            Ok(line) => line,
+            Err(ReadlineError::Interrupted) | Err(ReadlineError::Eof) => break,
+            Err(e) => return Err(e.into()),
+        };
         if command.starts_with("exit") {
             break;
         }
+
+        let _ = editor.add_history_entry(command.as_str());
 
         let trimmed = command.trim_start();
         let result = if trimmed.to_ascii_uppercase().starts_with("SELECT") {
@@ -108,51 +117,65 @@ pub fn run_client<R: BufRead, W: Write>(
             eprintln!("Error: {}", e);
             connection.rollback()?;
         }
-        write!(writer, "\nSQL ({})> ", db_name)?;
-        writer.flush()?;
     }
+    let _ = editor.save_history(&history_path);
     connection.commit()?;
     connection.close()?;
     Ok(())
 }
 
 fn main() -> Result<(), anyhow::Error> {
+    let mut editor = DefaultEditor::new()?;
     run_client(
         Driver::Embedded(EmbeddedDriver::new()),
-        &mut stdin().lock(),
+        &mut editor,
         &mut stdout(),
     )
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    // Cursor provides an in-memory buffer that implements `BufRead` and `Write`.
-    use std::io::Cursor;
+    use std::fs;
+    use std::io::Write;
+    use std::process::{Command, Stdio};
 
     #[test]
     fn test_run_client_select() -> Result<(), anyhow::Error> {
-        let temp_dir = tempfile::tempdir()?.into_path().join("directory");
-        let db_url = format!("jdbc:simpledb:{}", temp_dir.to_string_lossy());
-
+        let work_dir = tempfile::tempdir()?;
+        let db_url = format!("jdbc:simpledb:{}", work_dir.path().join("db").to_string_lossy());
         let script = format!(
-            "{db_url}\ncreate table T(A I32)\ninsert into T(A) values (1)\nselect A from T\nselect A from T\nexit\n"
+            "{db_url}\ncreate table T(A I32)\ninsert into T(A) values (1)\nselect A from T\nselect A from T\nexit\n",
         );
+        let crate_root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let status = Command::new(env!("CARGO"))
+            .current_dir(&crate_root)
+            .args(["build", "--quiet", "--bin", "client"])
+            .status()
+            .expect("build client");
+        assert!(status.success());
+        let exe_path = crate_root.join("target").join("debug").join("client");
+        let mut child = Command::new(exe_path)
+            .current_dir(work_dir.path())
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::null())
+            .spawn()
+            .expect("spawn client");
+        child
+            .stdin
+            .as_mut()
+            .unwrap()
+            .write_all(script.as_bytes())?;
+        let output = child.wait_with_output()?;
+        assert!(output.status.success());
 
-        let mut reader = Cursor::new(script.clone().into_bytes());
-        let mut output = Vec::new();
-        run_client(Driver::Embedded(EmbeddedDriver::new()), &mut reader, &mut output)?;
-
-        let output_str = String::from_utf8(output).unwrap();
-        let db_name = db_url.trim_start_matches("jdbc:simpledb:");
-        let expected = format!(
-            "Connect> \nSQL ({db_name})> 0 records processed\n\n\
-SQL ({db_name})> 1 records processed\n\n\
-SQL ({db_name})>            A\n------------\n           1\n\n\
-SQL ({db_name})>            A\n------------\n           1\n\n\
-SQL ({db_name})> "
-        );
+        let output_str = String::from_utf8(output.stdout).unwrap();
+        let expected = "0 records processed\n1 records processed\n           A\n------------\n           1\n           A\n------------\n           1\n";
         assert_eq!(output_str, expected);
+
+        let history_file = work_dir.path().join(".simpledb_history");
+        let history_content = fs::read_to_string(history_file)?;
+        assert!(history_content.contains("select A from T"));
         Ok(())
     }
 }
