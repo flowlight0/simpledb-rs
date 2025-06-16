@@ -14,7 +14,7 @@ I'll add the list of completed exercises here.
 
 ## Interactive Client
 
-The `client` binary now uses `rustyline` for input. This allows convenient line editing and command history. Previous statements are stored in `~/.simpledb_history` and loaded automatically the next time the client runs.
+The `client` binary now uses `rustyline` for input. This allows convenient line editing and command history. Previous statements are stored in a `.simpledb_history` file in the current directory and loaded automatically the next time the client runs.
 
 ## Useful links
 

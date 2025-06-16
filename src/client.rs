@@ -81,14 +81,8 @@ pub fn run_client<W: Write>(
     editor: &mut DefaultEditor,
     writer: &mut W,
 ) -> Result<(), anyhow::Error> {
-    let history_path = std::env::var("HOME")
-        .map(PathBuf::from)
-        .map(|p| p.join(".simpledb_history"))
-        .ok();
-
-    if let Some(ref path) = history_path {
-        let _ = editor.load_history(path);
-    }
+    let history_path = PathBuf::from(".simpledb_history");
+    let _ = editor.load_history(&history_path);
 
     let db_url = match editor.readline("Connect> ") {
         Ok(line) => line,
@@ -124,9 +118,7 @@ pub fn run_client<W: Write>(
             connection.rollback()?;
         }
     }
-    if let Some(ref path) = history_path {
-        let _ = editor.save_history(path);
-    }
+    let _ = editor.save_history(&history_path);
     connection.commit()?;
     connection.close()?;
     Ok(())
@@ -149,20 +141,21 @@ mod tests {
 
     #[test]
     fn test_run_client_select() -> Result<(), anyhow::Error> {
-        let temp_dir = tempfile::tempdir()?.into_path().join("directory");
-        let db_url = format!("jdbc:simpledb:{}", temp_dir.to_string_lossy());
+        let work_dir = tempfile::tempdir()?;
+        let db_url = format!("jdbc:simpledb:{}", work_dir.path().join("db").to_string_lossy());
         let script = format!(
             "{db_url}\ncreate table T(A I32)\ninsert into T(A) values (1)\nselect A from T\nselect A from T\nexit\n",
         );
-
-        let home_dir = tempfile::tempdir()?;
-        std::env::set_var("HOME", home_dir.path());
-
-        let mut exe_path = std::env::current_exe()?;
-        exe_path.pop();
-        exe_path.pop();
-        exe_path.push("client");
+        let crate_root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let status = Command::new(env!("CARGO"))
+            .current_dir(&crate_root)
+            .args(["build", "--quiet", "--bin", "client"])
+            .status()
+            .expect("build client");
+        assert!(status.success());
+        let exe_path = crate_root.join("target").join("debug").join("client");
         let mut child = Command::new(exe_path)
+            .current_dir(work_dir.path())
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::null())
@@ -180,7 +173,7 @@ mod tests {
         let expected = "0 records processed\n1 records processed\n           A\n------------\n           1\n           A\n------------\n           1\n";
         assert_eq!(output_str, expected);
 
-        let history_file = home_dir.path().join(".simpledb_history");
+        let history_file = work_dir.path().join(".simpledb_history");
         let history_content = fs::read_to_string(history_file)?;
         assert!(history_content.contains("select A from T"));
         Ok(())
