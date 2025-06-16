@@ -49,6 +49,8 @@ service ResultSetService {
     rpc Next (ResultSetNextRequest) returns (ResultSetNextResponse) {}
     rpc GetI32 (ResultSetGetI32Request) returns (ResultSetGetI32Response) {}
     rpc GetString (ResultSetGetStringRequest) returns (ResultSetGetStringResponse) {}
+    rpc BeforeFirst (ResultSetBeforeFirstRequest) returns (ResultSetBeforeFirstResponse) {}
+    rpc Absolute (ResultSetAbsoluteRequest) returns (ResultSetAbsoluteResponse) {}
     rpc Close (ResultSetCloseRequest) returns (ResultSetCloseResponse) {}
 }
 
@@ -91,7 +93,24 @@ message ResultSetCloseRequest {
 }
 
 message ResultSetCloseResponse {
-    
+
+}
+
+message ResultSetBeforeFirstRequest {
+    uint64 id = 1;
+}
+
+message ResultSetBeforeFirstResponse {
+
+}
+
+message ResultSetAbsoluteRequest {
+    uint64 id = 1;
+    uint64 n = 2;
+}
+
+message ResultSetAbsoluteResponse {
+    bool has_row = 1;
 }
 
 

@@ -38,6 +38,8 @@ pub enum ResultSet {
 pub trait ResultSetControl {
     fn get_metadata(&self) -> Result<Metadata, anyhow::Error>;
     fn next(&mut self) -> Result<bool, anyhow::Error>;
+    fn before_first(&mut self) -> Result<(), anyhow::Error>;
+    fn absolute(&mut self, n: usize) -> Result<bool, anyhow::Error>;
     fn get_i32(&mut self, column_name: &str) -> Result<i32, anyhow::Error>;
     fn get_string(&mut self, column_name: &str) -> Result<String, anyhow::Error>;
     fn close(&mut self) -> Result<(), anyhow::Error>;
