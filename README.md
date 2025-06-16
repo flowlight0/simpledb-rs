@@ -12,6 +12,10 @@ The main goal of this repoistory is my own learning. The code from Chapter 3 to 
 
 I'll add the list of completed exercises here.
 
+## Interactive Client
+
+The `client` binary now uses `rustyline` for input. This allows convenient line editing and command history. Previous statements are stored in `~/.simpledb_history` and loaded automatically the next time the client runs.
+
 ## Useful links
 
 - https://github.com/mnogu/simpledb-rs: Better implementation of SimpleDB in Rust
