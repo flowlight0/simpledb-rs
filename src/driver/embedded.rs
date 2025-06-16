@@ -78,6 +78,21 @@ impl ResultSetControl for EmbeddedResultSet {
         Ok(self.scan.as_mut().unwrap().next()?)
     }
 
+    fn before_first(&mut self) -> Result<(), anyhow::Error> {
+        self.scan.as_mut().unwrap().before_first()?;
+        Ok(())
+    }
+
+    fn absolute(&mut self, n: usize) -> Result<bool, anyhow::Error> {
+        self.before_first()?;
+        for _ in 0..=n {
+            if !self.next()? {
+                return Ok(false);
+            }
+        }
+        Ok(true)
+    }
+
     fn get_i32(&mut self, column_name: &str) -> Result<i32, anyhow::Error> {
         Ok(self.scan.as_mut().unwrap().get_i32(column_name)?)
     }
@@ -247,14 +262,22 @@ mod tests {
         statement.execute_update("insert into test (A, B) values (1, 'a')")?;
         statement.execute_update("insert into test (A, B) values (2, 'b')")?;
 
-        let mut result_set = statement.execute_query("select B from test where A = 1")?;
+        let mut result_set = statement.execute_query("select B from test")?;
         let metadata = result_set.get_metadata()?;
         assert_eq!(metadata.get_column_count()?, 1);
         assert_eq!(metadata.get_column_name(0)?, "B");
 
         assert!(result_set.next()?);
         assert_eq!(result_set.get_string("B")?, "a");
+        assert!(result_set.next()?);
+        assert_eq!(result_set.get_string("B")?, "b");
         assert!(!result_set.next()?);
+        result_set.before_first()?;
+        assert!(result_set.absolute(0)?);
+        assert_eq!(result_set.get_string("B")?, "a");
+        assert!(result_set.absolute(1)?);
+        assert_eq!(result_set.get_string("B")?, "b");
+        assert!(!result_set.absolute(2)?);
         result_set.close()?;
 
         connection.close()?;

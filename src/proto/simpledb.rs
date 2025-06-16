@@ -93,6 +93,25 @@ pub struct ResultSetCloseRequest {
 }
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct ResultSetCloseResponse {}
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct ResultSetBeforeFirstRequest {
+    #[prost(uint64, tag = "1")]
+    pub id: u64,
+}
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct ResultSetBeforeFirstResponse {}
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct ResultSetAbsoluteRequest {
+    #[prost(uint64, tag = "1")]
+    pub id: u64,
+    #[prost(uint64, tag = "2")]
+    pub n: u64,
+}
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct ResultSetAbsoluteResponse {
+    #[prost(bool, tag = "1")]
+    pub has_row: bool,
+}
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct StatementExecuteQueryRequest {
     #[prost(uint64, tag = "1")]
@@ -534,6 +553,54 @@ pub mod result_set_service_client {
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.ResultSetService", "GetString"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn before_first(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ResultSetBeforeFirstRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ResultSetBeforeFirstResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/simpledb.ResultSetService/BeforeFirst",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("simpledb.ResultSetService", "BeforeFirst"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn absolute(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ResultSetAbsoluteRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ResultSetAbsoluteResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/simpledb.ResultSetService/Absolute",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("simpledb.ResultSetService", "Absolute"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn close(
@@ -1398,6 +1465,20 @@ pub mod result_set_service_server {
             tonic::Response<super::ResultSetGetStringResponse>,
             tonic::Status,
         >;
+        async fn before_first(
+            &self,
+            request: tonic::Request<super::ResultSetBeforeFirstRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ResultSetBeforeFirstResponse>,
+            tonic::Status,
+        >;
+        async fn absolute(
+            &self,
+            request: tonic::Request<super::ResultSetAbsoluteRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ResultSetAbsoluteResponse>,
+            tonic::Status,
+        >;
         async fn close(
             &self,
             request: tonic::Request<super::ResultSetCloseRequest>,
@@ -1647,6 +1728,96 @@ pub mod result_set_service_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let method = GetStringSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/simpledb.ResultSetService/BeforeFirst" => {
+                    #[allow(non_camel_case_types)]
+                    struct BeforeFirstSvc<T: ResultSetService>(pub Arc<T>);
+                    impl<
+                        T: ResultSetService,
+                    > tonic::server::UnaryService<super::ResultSetBeforeFirstRequest>
+                    for BeforeFirstSvc<T> {
+                        type Response = super::ResultSetBeforeFirstResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::ResultSetBeforeFirstRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as ResultSetService>::before_first(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = BeforeFirstSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/simpledb.ResultSetService/Absolute" => {
+                    #[allow(non_camel_case_types)]
+                    struct AbsoluteSvc<T: ResultSetService>(pub Arc<T>);
+                    impl<
+                        T: ResultSetService,
+                    > tonic::server::UnaryService<super::ResultSetAbsoluteRequest>
+                    for AbsoluteSvc<T> {
+                        type Response = super::ResultSetAbsoluteResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::ResultSetAbsoluteRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as ResultSetService>::absolute(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = AbsoluteSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

@@ -12,6 +12,8 @@ use crate::proto::simpledb::{
     ResultSetCloseRequest, ResultSetCloseResponse, ResultSetGetI32Request, ResultSetGetI32Response,
     ResultSetGetMetadataRequest, ResultSetGetMetadataResponse, ResultSetGetStringRequest,
     ResultSetGetStringResponse, ResultSetNextRequest, ResultSetNextResponse,
+    ResultSetBeforeFirstRequest, ResultSetBeforeFirstResponse, ResultSetAbsoluteRequest,
+    ResultSetAbsoluteResponse,
 };
 
 use super::connection::NetworkConnection;
@@ -106,6 +108,35 @@ impl ResultSetService for RemoteResultSet {
         Ok(Response::new(ResultSetGetStringResponse { value }))
     }
 
+    async fn before_first(
+        &self,
+        request: Request<ResultSetBeforeFirstRequest>,
+    ) -> Result<Response<ResultSetBeforeFirstResponse>, Status> {
+        let request = request.into_inner();
+        let result_set_id = request.id;
+        let mut lock = self.embedded_result_set_dict.lock().unwrap();
+        let embedded_result_set = lock
+            .get_mut(&result_set_id)
+            .expect(&format!("Unknown result_set_id: {}", result_set_id));
+        embedded_result_set.before_first().unwrap();
+        Ok(Response::new(ResultSetBeforeFirstResponse {}))
+    }
+
+    async fn absolute(
+        &self,
+        request: Request<ResultSetAbsoluteRequest>,
+    ) -> Result<Response<ResultSetAbsoluteResponse>, Status> {
+        let request = request.into_inner();
+        let result_set_id = request.id;
+        let n = request.n as usize;
+        let mut lock = self.embedded_result_set_dict.lock().unwrap();
+        let embedded_result_set = lock
+            .get_mut(&result_set_id)
+            .expect(&format!("Unknown result_set_id: {}", result_set_id));
+        let has_row = embedded_result_set.absolute(n).unwrap();
+        Ok(Response::new(ResultSetAbsoluteResponse { has_row }))
+    }
+
     async fn close(
         &self,
         request: Request<ResultSetCloseRequest>,
@@ -176,6 +207,26 @@ impl ResultSetControl for NetworkResultSet {
             .unwrap()
             .into_inner();
         Ok(response.has_next)
+    }
+
+    fn before_first(&mut self) -> Result<(), anyhow::Error> {
+        let mut client = ResultSetServiceClient::new(self.connection.get_channel());
+        let request = Request::new(ResultSetBeforeFirstRequest { id: self.result_set_id });
+        self.run_time.block_on(client.before_first(request))?;
+        Ok(())
+    }
+
+    fn absolute(&mut self, n: usize) -> Result<bool, anyhow::Error> {
+        let mut client = ResultSetServiceClient::new(self.connection.get_channel());
+        let request = Request::new(ResultSetAbsoluteRequest {
+            id: self.result_set_id,
+            n: n as u64,
+        });
+        let response = self
+            .run_time
+            .block_on(client.absolute(request))?
+            .into_inner();
+        Ok(response.has_row)
     }
 
     fn get_i32(&mut self, column_name: &str) -> Result<i32, anyhow::Error> {
