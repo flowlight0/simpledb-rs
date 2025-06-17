@@ -135,6 +135,9 @@ impl ScanControl for TableScan {
     }
 
     fn get_value(&mut self, field_name: &str) -> Result<Value, TransactionError> {
+        if self.is_null(field_name)? {
+            return Ok(Value::Null);
+        }
         match self.record_page.layout.schema.get_field_type(field_name) {
             Type::I32 => Ok(Value::I32(self.get_i32(field_name)?)),
             Type::String => Ok(Value::String(self.get_string(field_name)?)),
@@ -157,6 +160,7 @@ impl ScanControl for TableScan {
 
     fn set_value(&mut self, field_name: &str, value: &Value) -> Result<(), TransactionError> {
         match value {
+            Value::Null => self.set_null(field_name),
             Value::I32(i) => self.set_i32(field_name, *i),
             Value::String(s) => self.set_string(field_name, s),
         }

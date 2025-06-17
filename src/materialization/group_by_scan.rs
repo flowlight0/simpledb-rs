@@ -99,7 +99,7 @@ impl ScanControl for GroupByScan {
         } else {
             for aggregation_fn in &self.aggregation_functions {
                 if aggregation_fn.get_field_name() == field_name {
-                    return Ok(aggregation_fn.get_value().unwrap());
+                    return Ok(aggregation_fn.get_value().unwrap_or(Value::Null));
                 }
             }
             panic!("Field {} not found", field_name);

@@ -7,6 +7,7 @@ use crate::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Expression {
+    NullConstant,
     I32Constant(i32),
     StringConstant(String),
     Field(String),
@@ -15,6 +16,7 @@ pub enum Expression {
 impl Expression {
     pub fn evaluate(&self, scan: &mut Scan) -> Result<Value, TransactionError> {
         match self {
+            Expression::NullConstant => Ok(Value::Null),
             Expression::I32Constant(value) => Ok(Value::I32(*value)),
             Expression::StringConstant(value) => Ok(Value::String(value.clone())),
             Expression::Field(field_name) => {
@@ -36,6 +38,7 @@ impl Expression {
 
     pub fn try_get_constant(&self) -> Option<Value> {
         match self {
+            Expression::NullConstant => Some(Value::Null),
             Expression::I32Constant(value) => Some(Value::I32(*value)),
             Expression::StringConstant(value) => Some(Value::String(value.clone())),
             _ => None,
