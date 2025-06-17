@@ -1,7 +1,7 @@
 use std::io::{stdout, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
-use rustyline::{DefaultEditor, error::ReadlineError};
+use rustyline::{error::ReadlineError, DefaultEditor};
 
 use simpledb_rs::{
     driver::{
@@ -10,6 +10,31 @@ use simpledb_rs::{
     },
     record::field::Type,
 };
+
+trait ClientEditor {
+    fn readline(&mut self, prompt: &str) -> Result<String, ReadlineError>;
+    fn load_history<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> rustyline::Result<()>;
+    fn save_history<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> rustyline::Result<()>;
+    fn add_history_entry<S: AsRef<str> + Into<String>>(&mut self, line: S) -> rustyline::Result<bool>;
+}
+
+impl ClientEditor for DefaultEditor {
+    fn readline(&mut self, prompt: &str) -> Result<String, ReadlineError> {
+        Self::readline(self, prompt)
+    }
+
+    fn load_history<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> rustyline::Result<()> {
+        Self::load_history(self, path)
+    }
+
+    fn save_history<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> rustyline::Result<()> {
+        Self::save_history(self, path)
+    }
+
+    fn add_history_entry<S: AsRef<str> + Into<String>>(&mut self, line: S) -> rustyline::Result<bool> {
+        Self::add_history_entry(self, line)
+    }
+}
 
 fn do_query<W: Write>(
     statement: &mut Statement,
@@ -76,9 +101,9 @@ fn do_update<W: Write>(
     Ok(())
 }
 
-pub fn run_client<W: Write>(
+pub fn run_client<W: Write, E: ClientEditor>(
     driver: Driver,
-    editor: &mut DefaultEditor,
+    editor: &mut E,
     writer: &mut W,
 ) -> Result<(), anyhow::Error> {
     let history_path = PathBuf::from(".simpledb_history");
@@ -135,41 +160,73 @@ fn main() -> Result<(), anyhow::Error> {
 
 #[cfg(test)]
 mod tests {
+    use super::{run_client, ClientEditor, ReadlineError};
     use std::fs;
-    use std::io::Write;
-    use std::process::{Command, Stdio};
+    use std::path::Path;
+    use simpledb_rs::driver::{Driver, embedded::EmbeddedDriver};
+
+    struct ScriptedEditor {
+        lines: Vec<String>,
+        pos: usize,
+        history: Vec<String>,
+    }
+
+    impl ScriptedEditor {
+        fn new<I: Into<String>>(lines: Vec<I>) -> Self {
+            Self { lines: lines.into_iter().map(Into::into).collect(), pos: 0, history: Vec::new() }
+        }
+    }
+
+    impl ClientEditor for ScriptedEditor {
+        fn readline(&mut self, _prompt: &str) -> Result<String, ReadlineError> {
+            if self.pos >= self.lines.len() {
+                Err(ReadlineError::Eof)
+            } else {
+                let line = self.lines[self.pos].clone();
+                self.pos += 1;
+                Ok(line)
+            }
+        }
+
+        fn load_history<P: AsRef<Path> + ?Sized>(&mut self, _path: &P) -> rustyline::Result<()> {
+            Ok(())
+        }
+
+        fn save_history<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> rustyline::Result<()> {
+            std::fs::write(path, self.history.join("\n"))?;
+            Ok(())
+        }
+
+        fn add_history_entry<S: AsRef<str> + Into<String>>(&mut self, line: S) -> rustyline::Result<bool> {
+            self.history.push(line.as_ref().to_string());
+            Ok(true)
+        }
+    }
 
     #[test]
     fn test_run_client_select() -> Result<(), anyhow::Error> {
         let work_dir = tempfile::tempdir()?;
         let db_url = format!("jdbc:simpledb:{}", work_dir.path().join("db").to_string_lossy());
-        let script = format!(
-            "{db_url}\ncreate table T(A I32)\ninsert into T(A) values (1)\nselect A from T\nselect A from T\nexit\n",
-        );
-        let crate_root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        let status = Command::new(env!("CARGO"))
-            .current_dir(&crate_root)
-            .args(["build", "--quiet", "--bin", "client"])
-            .status()
-            .expect("build client");
-        assert!(status.success());
-        let exe_path = crate_root.join("target").join("debug").join("client");
-        let mut child = Command::new(exe_path)
-            .current_dir(work_dir.path())
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::null())
-            .spawn()
-            .expect("spawn client");
-        child
-            .stdin
-            .as_mut()
-            .unwrap()
-            .write_all(script.as_bytes())?;
-        let output = child.wait_with_output()?;
-        assert!(output.status.success());
+        let commands = vec![
+            db_url,
+            "create table T(A I32)".to_string(),
+            "insert into T(A) values (1)".to_string(),
+            "select A from T".to_string(),
+            "select A from T".to_string(),
+            "exit".to_string(),
+        ];
+        let mut editor = ScriptedEditor::new(commands);
+        let current = std::env::current_dir()?;
+        std::env::set_current_dir(work_dir.path())?;
+        let mut output = Vec::new();
+        run_client(
+            Driver::Embedded(EmbeddedDriver::new()),
+            &mut editor,
+            &mut output,
+        )?;
+        std::env::set_current_dir(current)?;
 
-        let output_str = String::from_utf8(output.stdout).unwrap();
+        let output_str = String::from_utf8(output).unwrap();
         let expected = "0 records processed\n1 records processed\n           A\n------------\n           1\n           A\n------------\n           1\n";
         assert_eq!(output_str, expected);
 
