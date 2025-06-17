@@ -17,7 +17,10 @@ trait ClientEditor {
     fn readline(&mut self, prompt: &str) -> Result<String, ReadlineError>;
     fn load_history<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> rustyline::Result<()>;
     fn save_history<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> rustyline::Result<()>;
-    fn add_history_entry<S: AsRef<str> + Into<String>>(&mut self, line: S) -> rustyline::Result<bool>;
+    fn add_history_entry<S: AsRef<str> + Into<String>>(
+        &mut self,
+        line: S,
+    ) -> rustyline::Result<bool>;
 }
 
 impl ClientEditor for DefaultEditor {
@@ -33,7 +36,10 @@ impl ClientEditor for DefaultEditor {
         Self::save_history(self, path)
     }
 
-    fn add_history_entry<S: AsRef<str> + Into<String>>(&mut self, line: S) -> rustyline::Result<bool> {
+    fn add_history_entry<S: AsRef<str> + Into<String>>(
+        &mut self,
+        line: S,
+    ) -> rustyline::Result<bool> {
         Self::add_history_entry(self, line)
     }
 }
@@ -165,9 +171,9 @@ fn main() -> Result<(), anyhow::Error> {
 #[cfg(test)]
 mod tests {
     use super::{run_client, ClientEditor, ReadlineError};
+    use simpledb_rs::driver::{embedded::EmbeddedDriver, Driver};
     use std::fs;
     use std::path::Path;
-    use simpledb_rs::driver::{Driver, embedded::EmbeddedDriver};
 
     struct ScriptedEditor {
         lines: Vec<String>,
@@ -177,7 +183,11 @@ mod tests {
 
     impl ScriptedEditor {
         fn new<I: Into<String>>(lines: Vec<I>) -> Self {
-            Self { lines: lines.into_iter().map(Into::into).collect(), pos: 0, history: Vec::new() }
+            Self {
+                lines: lines.into_iter().map(Into::into).collect(),
+                pos: 0,
+                history: Vec::new(),
+            }
         }
     }
 
@@ -201,7 +211,10 @@ mod tests {
             Ok(())
         }
 
-        fn add_history_entry<S: AsRef<str> + Into<String>>(&mut self, line: S) -> rustyline::Result<bool> {
+        fn add_history_entry<S: AsRef<str> + Into<String>>(
+            &mut self,
+            line: S,
+        ) -> rustyline::Result<bool> {
             self.history.push(line.as_ref().to_string());
             Ok(true)
         }
@@ -210,7 +223,10 @@ mod tests {
     #[test]
     fn test_run_client_select() -> Result<(), anyhow::Error> {
         let work_dir = tempfile::tempdir()?;
-        let db_url = format!("jdbc:simpledb:{}", work_dir.path().join("db").to_string_lossy());
+        let db_url = format!(
+            "jdbc:simpledb:{}",
+            work_dir.path().join("db").to_string_lossy()
+        );
         let commands = vec![
             db_url,
             "create table T(A I32)".to_string(),

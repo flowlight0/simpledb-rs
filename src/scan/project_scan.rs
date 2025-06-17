@@ -131,7 +131,10 @@ mod tests {
             table_scan.set_i32("C", i + 1)?;
         }
 
-        let mut scan = Scan::ProjectScan(ProjectScan::new(Scan::from(table_scan), vec!["A".to_string(), "C".to_string()]));
+        let mut scan = Scan::ProjectScan(ProjectScan::new(
+            Scan::from(table_scan),
+            vec!["A".to_string(), "C".to_string()],
+        ));
         scan.after_last()?;
         for i in (0..10).rev() {
             assert!(scan.previous()?);

@@ -14,7 +14,7 @@ use crate::{
 use super::{RecordPointer, ScanControl};
 
 pub struct TableScan {
-    tx: Arc<Mutex<Transaction>>, 
+    tx: Arc<Mutex<Transaction>>,
     file_name: String,
     record_page: RecordPage,
     current_slot: Slot,
@@ -69,7 +69,6 @@ impl TableScan {
         self.record_page
             .is_null(self.current_slot.index(), field_name)
     }
-
 }
 
 impl ScanControl for TableScan {

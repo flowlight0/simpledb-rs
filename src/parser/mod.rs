@@ -2,7 +2,6 @@ pub mod grammar;
 pub mod predicate;
 pub mod statement;
 
-
 #[cfg(test)]
 mod tests {
     use crate::{
