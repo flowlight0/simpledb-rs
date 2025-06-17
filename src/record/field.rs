@@ -13,6 +13,7 @@ pub enum Type {
 
 #[derive(Clone, Debug, PartialEq, Eq, Ord)]
 pub enum Value {
+    Null,
     I32(i32),
     String(String),
 }
@@ -20,6 +21,7 @@ pub enum Value {
 impl PartialOrd for Value {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         match (self, other) {
+            (Value::Null, Value::Null) => Some(Ordering::Equal),
             (Value::I32(a), Value::I32(b)) => a.partial_cmp(b),
             (Value::String(a), Value::String(b)) => a.partial_cmp(b),
             _ => panic!(

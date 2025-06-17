@@ -35,6 +35,11 @@ mod tests {
                 ),
             ])
         );
+
+        assert_eq!(
+            grammar::TermParser::new().parse("NULL = NULL").unwrap(),
+            Term::Equality(Expression::NullConstant, Expression::NullConstant)
+        );
     }
 
     #[test]

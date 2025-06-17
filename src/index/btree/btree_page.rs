@@ -243,6 +243,7 @@ impl BTreePage {
         value: &Value,
     ) -> Result<(), TransactionError> {
         match value {
+            Value::Null => panic!("BTree index does not support null values"),
             Value::I32(i) => self.set_i32(slot, field_name, *i),
             Value::String(s) => self.set_string(slot, field_name, s),
         }

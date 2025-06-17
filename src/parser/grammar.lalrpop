@@ -22,6 +22,7 @@ match {
     r"(?i)ON" => ON,
     r"(?i)AS" => AS,
     r"(?i)AND" => AND,
+    r"(?i)NULL" => NULL,
     r"(?i)I32" => I32,
     r"(?i)VARCHAR" => VARCHAR,
 } else {
@@ -81,12 +82,14 @@ pub Term: predicate::Term = {
 }
 
 Expression: predicate::Expression = {
+    NULL => predicate::Expression::NullConstant,
     <i:I32Constant> => predicate::Expression::I32Constant(i),
     <s:StringConstant> => predicate::Expression::StringConstant(s),
     <t:IdToken> => predicate::Expression::Field(t),
 }
 
 Constant: Value = {
+    NULL => Value::Null,
     <i:I32Constant> => Value::I32(i),
     <s:StringConstant> => Value::String(s),
 }

@@ -24,18 +24,25 @@ impl MaxFn {
 impl AggregationFnControl for MaxFn {
     fn process_first(&mut self, scan: &mut Scan) -> Result<(), TransactionError> {
         let value = scan.get_value(&self.field_name)?;
-        self.max_value = Some(value);
+        if value == Value::Null {
+            self.max_value = None;
+        } else {
+            self.max_value = Some(value);
+        }
         Ok(())
     }
 
     fn process_next(&mut self, scan: &mut Scan) -> Result<(), TransactionError> {
         let new_value = scan.get_value(&self.field_name)?;
-        if self.max_value.is_some() {
-            if &new_value > self.max_value.as_ref().unwrap() {
-                self.max_value = Some(new_value);
+        if new_value == Value::Null {
+            return Ok(());
+        }
+        if let Some(max) = &mut self.max_value {
+            if new_value > *max {
+                *max = new_value;
             }
         } else {
-            panic!("MaxFn::process_next() called before MaxFn::process_first()");
+            self.max_value = Some(new_value);
         }
         Ok(())
     }
