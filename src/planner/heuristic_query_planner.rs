@@ -131,10 +131,11 @@ impl QueryPlanner for HeuristicQueryPlanner {
         }
 
         // Step 4, Project on the field names and return
-        Ok(Plan::from(ProjectPlan::new(
-            current_plan,
-            query.fields.clone(),
-        )))
+        if let Some(fields) = &query.fields {
+            Ok(Plan::from(ProjectPlan::new(current_plan, fields.clone())))
+        } else {
+            Ok(current_plan)
+        }
     }
 }
 
@@ -193,14 +194,14 @@ mod tests {
                 .execute_update(&update_command, tx.clone())?;
         }
 
-        let query = QueryData {
-            fields: vec!["B".to_string(), "C".to_string()],
-            tables: vec!["table1".to_string(), "table2".to_string()],
-            predicate: Some(Predicate::new(vec![Term::Equality(
+        let query = QueryData::new(
+            vec!["B".to_string(), "C".to_string()],
+            vec!["table1".to_string(), "table2".to_string()],
+            Some(Predicate::new(vec![Term::Equality(
                 Expression::Field("A".to_string()),
                 Expression::Field("C".to_string()),
             )])),
-        };
+        );
 
         let heuristic_planner = HeuristicQueryPlanner::new(db.metadata_manager.clone());
         let mut heuristic_plan = heuristic_planner.create_plan(&query, tx.clone())?;

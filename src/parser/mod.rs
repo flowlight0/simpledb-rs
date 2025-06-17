@@ -158,4 +158,14 @@ mod tests {
             )))
         );
     }
+
+    #[test]
+    fn test_select_all() {
+        assert_eq!(
+            grammar::StatementParser::new()
+                .parse("SELECT * FROM mytable")
+                .unwrap(),
+            Statement::Query(QueryData::new_all(vec!["mytable".to_string()], None))
+        );
+    }
 }

@@ -10,7 +10,7 @@ pub enum Statement {
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct QueryData {
-    pub fields: Vec<String>,
+    pub fields: Option<Vec<String>>, // None means all fields
     pub tables: Vec<String>,
     pub predicate: Option<Predicate>,
 }
@@ -18,7 +18,15 @@ pub struct QueryData {
 impl QueryData {
     pub fn new(fields: Vec<String>, tables: Vec<String>, predicate: Option<Predicate>) -> Self {
         QueryData {
-            fields,
+            fields: Some(fields),
+            tables,
+            predicate,
+        }
+    }
+
+    pub fn new_all(tables: Vec<String>, predicate: Option<Predicate>) -> Self {
+        QueryData {
+            fields: None,
             tables,
             predicate,
         }
