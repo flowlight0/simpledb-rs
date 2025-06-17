@@ -4,8 +4,20 @@ use crate::{errors::TransactionError, file::BlockId, tx::transaction::Transactio
 
 use super::layout::Layout;
 
-const EMPTY: i32 = 0;
-const FULL: i32 = 1;
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum VacancyFlag {
+    Empty,
+    Full,
+}
+
+impl VacancyFlag {
+    fn to_bit(&self) -> i32 {
+        match self {
+            VacancyFlag::Empty => 0,
+            VacancyFlag::Full => 1,
+        }
+    }
+}
 
 // RecordPage is a struct that represents a page in a record file. It is used to read and write records to the page.
 // It contains a reference to a transaction, a block id, and a layout.
@@ -147,8 +159,12 @@ impl RecordPage {
     }
 
     pub fn set_null(&mut self, slot: usize, field_name: &str) -> Result<(), TransactionError> {
-        let bit = self.layout.bit_location(field_name);
-        let mut flags = self.tx.lock().unwrap().get_i32(&self.block, self.offset(slot))?;
+        let bit = self.layout.null_bit_location(field_name);
+        let mut flags = self
+            .tx
+            .lock()
+            .unwrap()
+            .get_i32(&self.block, self.offset(slot))?;
         flags |= 1 << bit;
         self.tx
             .lock()
@@ -158,19 +174,23 @@ impl RecordPage {
     }
 
     pub fn is_null(&mut self, slot: usize, field_name: &str) -> Result<bool, TransactionError> {
-        let bit = self.layout.bit_location(field_name);
-        let flags = self.tx.lock().unwrap().get_i32(&self.block, self.offset(slot))?;
+        let bit = self.layout.null_bit_location(field_name);
+        let flags = self
+            .tx
+            .lock()
+            .unwrap()
+            .get_i32(&self.block, self.offset(slot))?;
         Ok((flags & (1 << bit)) != 0)
     }
 
     pub fn delete(&mut self, slot: usize) -> Result<(), TransactionError> {
-        self.set_flag(slot, EMPTY)
+        self.set_vacancy_flag(slot, VacancyFlag::Empty)
     }
 
     pub fn insert_after(&mut self, slot: Slot) -> Result<Slot, TransactionError> {
-        let result = self.search_after(slot, EMPTY);
+        let result = self.search_after(slot, VacancyFlag::Empty);
         if let Ok(Slot::Index(index)) = result {
-            self.set_flag(index, FULL)?;
+            self.set_vacancy_flag(index, VacancyFlag::Full)?;
             Ok(Slot::Index(index))
         } else {
             result
@@ -178,18 +198,22 @@ impl RecordPage {
     }
 
     pub fn next_after(&mut self, slot: Slot) -> Result<Slot, TransactionError> {
-        self.search_after(slot, FULL)
+        self.search_after(slot, VacancyFlag::Full)
     }
 
     pub fn prev_before(&mut self, slot: Slot) -> Result<Slot, TransactionError> {
-        self.search_before(slot, FULL)
+        self.search_before(slot, VacancyFlag::Full)
     }
 
     pub fn after_last(&self) -> Slot {
         Slot::End
     }
 
-    fn search_after(&mut self, slot: Slot, status_bit: i32) -> Result<Slot, TransactionError> {
+    fn search_after(
+        &mut self,
+        slot: Slot,
+        vacancy_flag: VacancyFlag,
+    ) -> Result<Slot, TransactionError> {
         if slot == Slot::End {
             return Ok(Slot::End);
         }
@@ -206,7 +230,7 @@ impl RecordPage {
                 .lock()
                 .unwrap()
                 .get_i32(&self.block, self.offset(next_index))?;
-            if (slot_flags & 1) == status_bit {
+            if (slot_flags & 1) == vacancy_flag.to_bit() {
                 return Ok(Slot::Index(next_index));
             }
             next_index += 1;
@@ -214,7 +238,11 @@ impl RecordPage {
         Ok(Slot::End)
     }
 
-    fn search_before(&mut self, slot: Slot, status_bit: i32) -> Result<Slot, TransactionError> {
+    fn search_before(
+        &mut self,
+        slot: Slot,
+        vacancy_flag: VacancyFlag,
+    ) -> Result<Slot, TransactionError> {
         if slot == Slot::Start {
             return Ok(Slot::Start);
         }
@@ -241,7 +269,7 @@ impl RecordPage {
                 .lock()
                 .unwrap()
                 .get_i32(&self.block, self.offset(prev_index))?;
-            if (slot_flags & 1) == status_bit {
+            if (slot_flags & 1) == vacancy_flag.to_bit() {
                 return Ok(Slot::Index(prev_index));
             }
             if prev_index == 0 {
@@ -257,10 +285,12 @@ impl RecordPage {
 
         while self.is_valid_slot(slot) {
             // while self.offset(slot + 1) <= self.tx.get_block_size() {
-            self.tx
-                .lock()
-                .unwrap()
-                .set_i32(&self.block, self.offset(slot), EMPTY, false)?;
+            self.tx.lock().unwrap().set_i32(
+                &self.block,
+                self.offset(slot),
+                VacancyFlag::Empty.to_bit(),
+                false,
+            )?;
 
             let schema = self.layout.schema.clone();
             for field_name in &schema.i32_fields {
@@ -295,17 +325,22 @@ impl RecordPage {
         slot * self.layout.slot_size
     }
 
-    fn set_flag(&mut self, slot: usize, status_bit: i32) -> Result<(), TransactionError> {
+    fn set_vacancy_flag(
+        &mut self,
+        slot: usize,
+        vacancy_flag: VacancyFlag,
+    ) -> Result<(), TransactionError> {
         let mut flags = self
             .tx
             .lock()
             .unwrap()
             .get_i32(&self.block, self.offset(slot))?;
-        if status_bit == FULL {
-            flags |= 1;
-        } else {
-            flags &= !1;
+
+        match vacancy_flag {
+            VacancyFlag::Empty => flags &= !1, // Clear the vacancy flag
+            VacancyFlag::Full => flags |= 1,   // Set the vacancy flag
         }
+
         self.tx
             .lock()
             .unwrap()
@@ -314,8 +349,12 @@ impl RecordPage {
     }
 
     fn set_not_null(&mut self, slot: usize, field_name: &str) -> Result<(), TransactionError> {
-        let bit = self.layout.bit_location(field_name);
-        let mut flags = self.tx.lock().unwrap().get_i32(&self.block, self.offset(slot))?;
+        let bit = self.layout.null_bit_location(field_name);
+        let mut flags = self
+            .tx
+            .lock()
+            .unwrap()
+            .get_i32(&self.block, self.offset(slot))?;
         flags &= !(1 << bit);
         self.tx
             .lock()

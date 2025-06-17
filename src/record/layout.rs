@@ -10,11 +10,14 @@ pub struct Layout {
     pub slot_size: usize,
 }
 
+const MAX_NUM_FIELDS: usize = 31;
+
 impl Layout {
     pub fn new(schema: Schema) -> Self {
         assert!(
-            schema.i32_fields.len() + schema.string_fields.len() < 32,
-            "Layout supports at most 31 fields"
+            schema.i32_fields.len() + schema.string_fields.len() <= MAX_NUM_FIELDS,
+            "Layout supports at most {} fields",
+            MAX_NUM_FIELDS
         );
         let mut field_name_to_offsets = HashMap::new();
         let mut field_name_to_bit_locations = HashMap::new();
@@ -69,11 +72,8 @@ impl Layout {
         *self.field_name_to_offsets.get(field_name).unwrap()
     }
 
-    pub fn bit_location(&self, field_name: &str) -> u8 {
-        *self
-            .field_name_to_bit_locations
-            .get(field_name)
-            .unwrap()
+    pub fn null_bit_location(&self, field_name: &str) -> u8 {
+        *self.field_name_to_bit_locations.get(field_name).unwrap()
     }
 
     pub fn has_field(&self, field_name: &str) -> bool {
