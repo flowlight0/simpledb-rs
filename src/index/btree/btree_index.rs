@@ -319,4 +319,54 @@ mod tests {
         tx.lock().unwrap().commit()?;
         Ok(())
     }
+
+    #[test]
+    fn test_b_tree_index_null() -> Result<(), anyhow::Error> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 1024;
+        let num_buffers = 256;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+        let metadata_manager = db.metadata_manager.clone();
+
+        let mut schema = Schema::new();
+        schema.add_i32_field("A");
+        schema.add_string_field("B", 20);
+
+        metadata_manager
+            .lock()
+            .unwrap()
+            .create_table("test_table", &schema, tx.clone())?;
+
+        metadata_manager.lock().unwrap().create_index(
+            "test_index",
+            "test_table",
+            "B",
+            tx.clone(),
+        )?;
+
+        let mut index = metadata_manager
+            .lock()
+            .unwrap()
+            .get_index_info("test_table", tx.clone())?
+            .get("B")
+            .unwrap()
+            .open()?;
+
+        index.insert(&Value::String("1".to_string()), &RecordId(DUMMY_BLOCK_SLOT, 0))?;
+        index.insert(&Value::Null, &RecordId(DUMMY_BLOCK_SLOT, 1))?;
+        index.insert(&Value::String("2".to_string()), &RecordId(DUMMY_BLOCK_SLOT, 2))?;
+
+        index.before_first(&Value::Null)?;
+        assert!(index.next()?);
+        let rid = index.get()?;
+        assert_eq!(rid.0, DUMMY_BLOCK_SLOT);
+        assert_eq!(rid.1, 1);
+        assert!(!index.next()?);
+
+        drop(index);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
 }

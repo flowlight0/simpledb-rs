@@ -189,4 +189,52 @@ mod tests {
 
         Ok(())
     }
+
+    #[test]
+    fn test_sort_scan_with_null() -> Result<(), TransactionError> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 1024;
+        let num_buffers = 100;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+
+        let mut schema = Schema::new();
+        schema.add_i32_field("A");
+
+        let temp_table1 = TempTable::new(tx.clone(), &schema);
+        let temp_table2 = TempTable::new(tx.clone(), &schema);
+
+        {
+            let mut scan = temp_table1.open()?;
+            scan.before_first()?;
+            scan.insert()?;
+            scan.set_i32("A", 1)?;
+            scan.insert()?;
+            scan.set_i32("A", 2)?;
+        }
+
+        {
+            let mut scan = temp_table2.open()?;
+            scan.before_first()?;
+            scan.insert()?;
+            scan.set_value("A", &Value::Null)?;
+        }
+
+        let sort_scan = SortScan::new(
+            vec![temp_table1, temp_table2],
+            Arc::new(RecordComparator::new(&vec!["A".to_owned()])),
+        )?;
+        let mut scan = Scan::from(sort_scan);
+        scan.before_first()?;
+
+        assert!(scan.next()?);
+        assert_eq!(scan.get_i32("A")?, 1);
+        assert!(scan.next()?);
+        assert_eq!(scan.get_i32("A")?, 2);
+        assert!(scan.next()?);
+        assert_eq!(scan.get_value("A")?, Value::Null);
+        assert!(!scan.next()?);
+
+        Ok(())
+    }
 }

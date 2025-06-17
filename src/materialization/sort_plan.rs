@@ -166,7 +166,7 @@ mod tests {
         errors::TransactionError,
         materialization::record_comparator::RecordComparator,
         plan::{table_plan::TablePlan, Plan, PlanControl},
-        record::schema::Schema,
+        record::{field::Value, schema::Schema},
         scan::ScanControl,
     };
 
@@ -211,6 +211,50 @@ mod tests {
             assert_eq!(sort_scan.get_i32("A")?, i - 19);
             assert_eq!(sort_scan.get_string("B")?, format!("B{}", 19 - i));
         }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_sort_plan_with_null() -> Result<(), TransactionError> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 256;
+        let db = SimpleDB::new(temp_dir, block_size, 3)?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+
+        let mut schema = Schema::new();
+        schema.add_i32_field("A");
+
+        let table_name = "test_table_null";
+        db.metadata_manager
+            .lock()
+            .unwrap()
+            .create_table(table_name, &schema, tx.clone())?;
+
+        let mut base_plan = TablePlan::new(tx.clone(), table_name, db.metadata_manager.clone())?;
+        {
+            let mut scan = base_plan.open(tx.clone())?;
+            scan.before_first()?;
+            scan.insert()?;
+            scan.set_i32("A", 2)?;
+            scan.insert()?;
+            scan.set_value("A", &Value::Null)?;
+            scan.insert()?;
+            scan.set_i32("A", 1)?;
+        }
+
+        let comparator = Arc::new(RecordComparator::new(&vec!["A".to_string()]));
+        let mut sort_plan = SortPlan::new(Plan::from(base_plan), tx.clone(), comparator);
+        let mut sort_scan = sort_plan.open(tx.clone())?;
+        sort_scan.before_first()?;
+
+        assert!(sort_scan.next()?);
+        assert_eq!(sort_scan.get_i32("A")?, 1);
+        assert!(sort_scan.next()?);
+        assert_eq!(sort_scan.get_i32("A")?, 2);
+        assert!(sort_scan.next()?);
+        assert_eq!(sort_scan.get_value("A")?, Value::Null);
+        assert!(!sort_scan.next()?);
 
         Ok(())
     }

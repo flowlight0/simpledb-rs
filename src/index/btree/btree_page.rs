@@ -59,18 +59,8 @@ impl BTreePage {
         let mut slot = Slot::Index(0);
         while slot.index() < self.get_num_records()? {
             let value = self.get_data_value(slot.index())?;
-            match (value, &key) {
-                (Value::I32(value), Value::I32(key)) => {
-                    if value >= *key {
-                        return Ok(slot.prev());
-                    }
-                }
-                (Value::String(value), Value::String(key)) => {
-                    if value >= *key {
-                        return Ok(slot.prev());
-                    }
-                }
-                _ => panic!("Incompatible types"),
+            if value >= *key {
+                return Ok(slot.prev());
             }
             slot = slot.next();
         }
@@ -127,10 +117,10 @@ impl BTreePage {
             for field in self.layout.schema.get_fields() {
                 match self.layout.schema.get_field_type(&field) {
                     Type::I32 => {
-                        self.set_i32(slot, &field, 0)?;
+                        self.set_value(slot, &field, &Value::I32(0))?;
                     }
                     Type::String => {
-                        self.set_string(slot, &field, "")?;
+                        self.set_value(slot, &field, &Value::String(String::new()))?;
                     }
                 }
             }
@@ -206,6 +196,9 @@ impl BTreePage {
     }
 
     fn get_value(&self, slot: usize, field_name: &str) -> Result<Value, TransactionError> {
+        if self.is_null(slot, field_name)? {
+            return Ok(Value::Null);
+        }
         match self.layout.schema.get_field_type(field_name) {
             Type::I32 => {
                 let value = self.get_i32(slot, field_name)?;
@@ -236,6 +229,32 @@ impl BTreePage {
             .map(|_| ())
     }
 
+    fn set_null(&self, slot: usize, field_name: &str) -> Result<(), TransactionError> {
+        let bit = self.layout.null_bit_location(field_name);
+        let mut lock = self.tx.lock().unwrap();
+        let pos = self.get_slot_position(slot);
+        let mut flags = lock.get_i32(&self.block, pos)?;
+        flags |= 1 << bit;
+        lock.set_i32(&self.block, pos, flags, true).map(|_| ())
+    }
+
+    fn set_not_null(&self, slot: usize, field_name: &str) -> Result<(), TransactionError> {
+        let bit = self.layout.null_bit_location(field_name);
+        let mut lock = self.tx.lock().unwrap();
+        let pos = self.get_slot_position(slot);
+        let mut flags = lock.get_i32(&self.block, pos)?;
+        flags &= !(1 << bit);
+        lock.set_i32(&self.block, pos, flags, true).map(|_| ())
+    }
+
+    fn is_null(&self, slot: usize, field_name: &str) -> Result<bool, TransactionError> {
+        let bit = self.layout.null_bit_location(field_name);
+        let mut lock = self.tx.lock().unwrap();
+        let pos = self.get_slot_position(slot);
+        let flags = lock.get_i32(&self.block, pos)?;
+        Ok((flags & (1 << bit)) != 0)
+    }
+
     fn set_value(
         &self,
         slot: usize,
@@ -243,9 +262,22 @@ impl BTreePage {
         value: &Value,
     ) -> Result<(), TransactionError> {
         match value {
-            Value::Null => panic!("BTree index does not support null values"),
-            Value::I32(i) => self.set_i32(slot, field_name, *i),
-            Value::String(s) => self.set_string(slot, field_name, s),
+            Value::Null => {
+                self.set_null(slot, field_name)?;
+                match self.layout.schema.get_field_type(field_name) {
+                    Type::I32 => self.set_i32(slot, field_name, 0)?,
+                    Type::String => self.set_string(slot, field_name, "")?,
+                }
+                Ok(())
+            }
+            Value::I32(i) => {
+                self.set_i32(slot, field_name, *i)?;
+                self.set_not_null(slot, field_name)
+            }
+            Value::String(s) => {
+                self.set_string(slot, field_name, s)?;
+                self.set_not_null(slot, field_name)
+            }
         }
     }
 
@@ -265,21 +297,9 @@ impl BTreePage {
     }
 
     fn copy_record(&self, from_slot: usize, to_slot: usize) -> Result<(), TransactionError> {
-        let mut lock = self.tx.lock().unwrap();
         for field in self.layout.schema.get_fields() {
-            let from_field_position = self.get_field_position(from_slot, &field);
-            let to_field_position = self.get_field_position(to_slot, &field);
-
-            match self.layout.schema.get_field_type(&field) {
-                Type::I32 => {
-                    let value = lock.get_i32(&self.block, from_field_position)?;
-                    lock.set_i32(&self.block, to_field_position, value, true)?;
-                }
-                Type::String => {
-                    let value = lock.get_string(&self.block, from_field_position)?;
-                    lock.set_string(&self.block, to_field_position, &value, true)?;
-                }
-            }
+            let value = self.get_value(from_slot, &field)?;
+            self.set_value(to_slot, &field, &value)?;
         }
         Ok(())
     }
