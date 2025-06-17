@@ -25,6 +25,14 @@ impl ScanControl for ProjectScan {
         self.base_scan.before_first()
     }
 
+    fn after_last(&mut self) -> Result<(), TransactionError> {
+        self.base_scan.after_last()
+    }
+
+    fn previous(&mut self) -> Result<bool, TransactionError> {
+        self.base_scan.previous()
+    }
+
     fn next(&mut self) -> Result<bool, TransactionError> {
         self.base_scan.next()
     }
@@ -99,6 +107,39 @@ mod tests {
             assert_eq!(project_scan.get_i32("C")?, i + 2);
         }
         drop(project_scan);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_project_scan_previous() -> Result<(), TransactionError> {
+        let mut schema = Schema::new();
+        schema.add_i32_field("A");
+        schema.add_i32_field("C");
+        let layout = Arc::new(Layout::new(schema));
+
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 256;
+        let db = SimpleDB::new(temp_dir, block_size, 3)?;
+
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+        let mut table_scan = TableScan::new(tx.clone(), "testtable2", layout.clone())?;
+        table_scan.before_first()?;
+        for i in 0..10 {
+            table_scan.insert()?;
+            table_scan.set_i32("A", i)?;
+            table_scan.set_i32("C", i + 1)?;
+        }
+
+        let mut scan = Scan::ProjectScan(ProjectScan::new(Scan::from(table_scan), vec!["A".to_string(), "C".to_string()]));
+        scan.after_last()?;
+        for i in (0..10).rev() {
+            assert!(scan.previous()?);
+            assert_eq!(scan.get_i32("A")?, i);
+            assert_eq!(scan.get_i32("C")?, i + 1);
+        }
+        assert!(!scan.previous()?);
+        drop(scan);
         tx.lock().unwrap().commit()?;
         Ok(())
     }

@@ -60,7 +60,17 @@ impl TableScan {
         self.record_page.block.block_slot
     }
 
-    pub fn after_last(&mut self) -> Result<(), TransactionError> {
+}
+
+impl ScanControl for TableScan {
+    fn before_first(&mut self) -> Result<(), TransactionError> {
+        let block = BlockId::get_first_block(&self.file_name);
+        self.record_page.reset_block(block)?;
+        self.current_slot = Slot::Start;
+        Ok(())
+    }
+
+    fn after_last(&mut self) -> Result<(), TransactionError> {
         let num_blocks = self.tx.lock().unwrap().get_num_blocks(&self.file_name)?;
         let block = BlockId::new(&self.file_name, num_blocks - 1);
         self.record_page.reset_block(block)?;
@@ -68,7 +78,7 @@ impl TableScan {
         Ok(())
     }
 
-    pub fn previous(&mut self) -> Result<bool, TransactionError> {
+    fn previous(&mut self) -> Result<bool, TransactionError> {
         loop {
             self.current_slot = self.record_page.prev_before(self.current_slot)?;
             match self.current_slot {
@@ -84,15 +94,6 @@ impl TableScan {
                 Slot::End => unreachable!(),
             }
         }
-    }
-}
-
-impl ScanControl for TableScan {
-    fn before_first(&mut self) -> Result<(), TransactionError> {
-        let block = BlockId::get_first_block(&self.file_name);
-        self.record_page.reset_block(block)?;
-        self.current_slot = Slot::Start;
-        Ok(())
     }
 
     fn next(&mut self) -> Result<bool, TransactionError> {
