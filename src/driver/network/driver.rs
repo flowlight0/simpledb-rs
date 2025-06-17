@@ -117,15 +117,12 @@ impl DriverControl for NetworkDriver {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::driver::{ConnectionControl, MetadataControl, ResultSetControl, StatementControl};
     use crate::proto::simpledb::{
         connection_service_server::ConnectionServiceServer,
-        driver_service_server::DriverServiceServer,
-        metadata_service_server::MetadataServiceServer,
+        driver_service_server::DriverServiceServer, metadata_service_server::MetadataServiceServer,
         result_set_service_server::ResultSetServiceServer,
         statement_service_server::StatementServiceServer,
-    };
-    use crate::driver::{
-        ConnectionControl, MetadataControl, ResultSetControl, StatementControl,
     };
     use std::thread;
     use std::time::Duration;

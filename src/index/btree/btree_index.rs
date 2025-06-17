@@ -354,9 +354,15 @@ mod tests {
             .unwrap()
             .open()?;
 
-        index.insert(&Value::String("1".to_string()), &RecordId(DUMMY_BLOCK_SLOT, 0))?;
+        index.insert(
+            &Value::String("1".to_string()),
+            &RecordId(DUMMY_BLOCK_SLOT, 0),
+        )?;
         index.insert(&Value::Null, &RecordId(DUMMY_BLOCK_SLOT, 1))?;
-        index.insert(&Value::String("2".to_string()), &RecordId(DUMMY_BLOCK_SLOT, 2))?;
+        index.insert(
+            &Value::String("2".to_string()),
+            &RecordId(DUMMY_BLOCK_SLOT, 2),
+        )?;
 
         index.before_first(&Value::Null)?;
         assert!(index.next()?);

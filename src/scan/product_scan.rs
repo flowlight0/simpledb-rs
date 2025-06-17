@@ -181,8 +181,8 @@ mod tests {
 
         let mut scan = ProductScan::new(Scan::from(scan1), Scan::from(scan2))?;
         scan.after_last()?;
-        let mut expected = vec![(2,1), (2,0), (1,1), (1,0), (0,1), (0,0)];
-        for (a,d) in expected.drain(..) {
+        let mut expected = vec![(2, 1), (2, 0), (1, 1), (1, 0), (0, 1), (0, 0)];
+        for (a, d) in expected.drain(..) {
             assert!(scan.previous()?);
             assert_eq!(scan.get_i32("A")?, a);
             assert_eq!(scan.get_i32("D")?, d);

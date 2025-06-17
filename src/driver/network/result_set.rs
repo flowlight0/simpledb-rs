@@ -9,12 +9,12 @@ use crate::driver::{Metadata, ResultSetControl};
 use crate::proto::simpledb::result_set_service_client::ResultSetServiceClient;
 use crate::proto::simpledb::result_set_service_server::ResultSetService;
 use crate::proto::simpledb::{
+    ResultSetAbsoluteRequest, ResultSetAbsoluteResponse, ResultSetAfterLastRequest,
+    ResultSetAfterLastResponse, ResultSetBeforeFirstRequest, ResultSetBeforeFirstResponse,
     ResultSetCloseRequest, ResultSetCloseResponse, ResultSetGetI32Request, ResultSetGetI32Response,
     ResultSetGetMetadataRequest, ResultSetGetMetadataResponse, ResultSetGetStringRequest,
     ResultSetGetStringResponse, ResultSetNextRequest, ResultSetNextResponse,
-    ResultSetPreviousRequest, ResultSetPreviousResponse, ResultSetBeforeFirstRequest,
-    ResultSetBeforeFirstResponse, ResultSetAfterLastRequest, ResultSetAfterLastResponse,
-    ResultSetAbsoluteRequest, ResultSetAbsoluteResponse,
+    ResultSetPreviousRequest, ResultSetPreviousResponse,
 };
 
 use super::connection::NetworkConnection;
@@ -252,14 +252,18 @@ impl ResultSetControl for NetworkResultSet {
 
     fn before_first(&mut self) -> Result<(), anyhow::Error> {
         let mut client = ResultSetServiceClient::new(self.connection.get_channel());
-        let request = Request::new(ResultSetBeforeFirstRequest { id: self.result_set_id });
+        let request = Request::new(ResultSetBeforeFirstRequest {
+            id: self.result_set_id,
+        });
         self.run_time.block_on(client.before_first(request))?;
         Ok(())
     }
 
     fn after_last(&mut self) -> Result<(), anyhow::Error> {
         let mut client = ResultSetServiceClient::new(self.connection.get_channel());
-        let request = Request::new(ResultSetAfterLastRequest { id: self.result_set_id });
+        let request = Request::new(ResultSetAfterLastRequest {
+            id: self.result_set_id,
+        });
         self.run_time.block_on(client.after_last(request))?;
         Ok(())
     }
