@@ -1,6 +1,8 @@
 use std::io::{stdout, Write};
 use std::path::{Path, PathBuf};
 
+use colored::Colorize;
+
 use rustyline::{error::ReadlineError, DefaultEditor};
 
 use simpledb_rs::{
@@ -55,13 +57,12 @@ fn do_query<W: Write>(
         }
 
         total_width += width;
-        write!(writer, "{:>width$}", column_name, width = width)?;
+        let header = format!("{:>width$}", column_name, width = width);
+        write!(writer, "{}", header.bold().cyan())?;
     }
     writeln!(writer)?;
-    for _ in 0..total_width {
-        write!(writer, "-")?;
-    }
-    writeln!(writer)?;
+    let separator = "-".repeat(total_width);
+    writeln!(writer, "{}", separator.bright_blue())?;
 
     // print records
     while result_set.next()? {
@@ -77,11 +78,13 @@ fn do_query<W: Write>(
             match column_type {
                 Type::I32 => {
                     let val = result_set.get_i32(&column_name)?;
-                    write!(writer, "{:>width$}", val, width = width)?;
+                    let v = format!("{:>width$}", val, width = width);
+                    write!(writer, "{}", v.yellow())?;
                 }
                 Type::String => {
                     let val = result_set.get_string(&column_name)?;
-                    write!(writer, "{:>width$}", val, width = width)?;
+                    let v = format!("{:>width$}", val, width = width);
+                    write!(writer, "{}", v.green())?;
                 }
             }
         }
@@ -97,7 +100,8 @@ fn do_update<W: Write>(
     writer: &mut W,
 ) -> Result<(), anyhow::Error> {
     let num_records = statement.execute_update(command)?;
-    writeln!(writer, "{} records processed", num_records)?;
+    let msg = format!("{} records processed", num_records);
+    writeln!(writer, "{}", msg.magenta())?;
     Ok(())
 }
 
@@ -226,8 +230,19 @@ mod tests {
         )?;
         std::env::set_current_dir(current)?;
 
+        use colored::Colorize;
         let output_str = String::from_utf8(output).unwrap();
-        let expected = "0 records processed\n1 records processed\n           A\n------------\n           1\n           A\n------------\n           1\n";
+        let expected = format!(
+            "{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n",
+            "0 records processed".magenta(),
+            "1 records processed".magenta(),
+            format!("{:>12}", "A").bold().cyan(),
+            "-".repeat(12).bright_blue(),
+            format!("{:>12}", 1).yellow(),
+            format!("{:>12}", "A").bold().cyan(),
+            "-".repeat(12).bright_blue(),
+            format!("{:>12}", 1).yellow(),
+        );
         assert_eq!(output_str, expected);
 
         let history_file = work_dir.path().join(".simpledb_history");
