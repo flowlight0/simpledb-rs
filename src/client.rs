@@ -105,7 +105,7 @@ fn do_update<W: Write>(
     Ok(())
 }
 
-pub fn run_client<W: Write, E: ClientEditor>(
+fn run_client<W: Write, E: ClientEditor>(
     driver: Driver,
     editor: &mut E,
     writer: &mut W,
