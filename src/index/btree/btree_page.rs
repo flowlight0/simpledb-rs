@@ -15,6 +15,21 @@ use crate::{
     tx::transaction::Transaction,
 };
 
+/// A single B-tree page residing in the buffer pool.
+///
+/// Each page starts with an 8 byte header:
+/// - `flag` (4 bytes) stores either the directory level or the overflow pointer
+///   depending on the page type.
+/// - `num_records` (4 bytes) records how many slots are currently occupied.
+///
+/// After the header records are laid out sequentially.  The position of the
+/// first record is stored in `RECORD_OFFSET` and every slot occupies
+/// `layout.slot_size` bytes.  Within a slot the first four bytes store null and
+/// vacancy bits followed by the field values defined by the `Layout`.
+///
+/// The layout enables the page to hold either directory entries or leaf records
+/// depending on where it is used in the B-tree.
+
 pub(crate) struct BTreePage {
     pub(crate) tx: Arc<Mutex<Transaction>>,
     pub(crate) block: BlockId,
