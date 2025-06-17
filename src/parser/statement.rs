@@ -10,7 +10,7 @@ pub enum Statement {
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct QueryData {
-    pub fields: Option<Vec<String>>,
+    pub fields: Option<Vec<String>>, // None means all fields
     pub tables: Vec<String>,
     pub predicate: Option<Predicate>,
 }
