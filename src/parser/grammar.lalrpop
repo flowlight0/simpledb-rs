@@ -28,6 +28,7 @@ match {
 } else {
     "(" => LPAREN,
     ")" => RPAREN,
+    "*" => STAR,
     "," => COMMA,
     "=" => EQ,
 } else {
@@ -47,6 +48,8 @@ pub Statement: statement::Statement = {
 pub Query: statement::QueryData = {
     SELECT <fs:Comma<IdToken>> FROM <ts:Comma<IdToken>> WHERE <p:Predicate> => statement::QueryData::new(fs, ts, Some(p)),
     SELECT <fs:Comma<IdToken>> FROM <ts:Comma<IdToken>> => statement::QueryData::new(fs, ts, None),
+    SELECT STAR FROM <ts:Comma<IdToken>> WHERE <p:Predicate> => statement::QueryData::new_all(ts, Some(p)),
+    SELECT STAR FROM <ts:Comma<IdToken>> => statement::QueryData::new_all(ts, None),
 }
 
 pub UpdateCommand: statement::UpdateCommand = {
