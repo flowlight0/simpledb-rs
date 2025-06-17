@@ -60,6 +60,16 @@ impl TableScan {
         self.record_page.block.block_slot
     }
 
+    pub fn set_null(&mut self, field_name: &str) -> Result<(), TransactionError> {
+        self.record_page
+            .set_null(self.current_slot.index(), field_name)
+    }
+
+    pub fn is_null(&mut self, field_name: &str) -> Result<bool, TransactionError> {
+        self.record_page
+            .is_null(self.current_slot.index(), field_name)
+    }
+
 }
 
 impl ScanControl for TableScan {
@@ -271,6 +281,33 @@ mod tests {
             assert_eq!(table_scan.get_i32("A")?, expected);
         }
         assert!(!table_scan.previous()?);
+        drop(table_scan);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_table_scan_null_handling() -> Result<(), TransactionError> {
+        let mut schema = Schema::new();
+        schema.add_i32_field("A");
+        let layout = Arc::new(Layout::new(schema));
+
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 256;
+        let db = SimpleDB::new(temp_dir, block_size, 3)?;
+
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+        let mut table_scan = TableScan::new(tx.clone(), "testnull", layout.clone())?;
+        table_scan.before_first()?;
+        table_scan.insert()?;
+
+        assert!(!table_scan.is_null("A")?);
+        table_scan.set_null("A")?;
+        assert!(table_scan.is_null("A")?);
+        table_scan.set_i32("A", 42)?;
+        assert!(!table_scan.is_null("A")?);
+        assert_eq!(table_scan.get_i32("A")?, 42);
+
         drop(table_scan);
         tx.lock().unwrap().commit()?;
         Ok(())
