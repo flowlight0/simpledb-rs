@@ -44,12 +44,6 @@ impl ScanControl for GroupByScan {
         Ok(())
     }
 
-    fn after_last(&mut self) -> Result<(), TransactionError> {
-        self.scan.after_last()?;
-        self.more_group = self.scan.previous()?;
-        Ok(())
-    }
-
     fn next(&mut self) -> Result<bool, TransactionError> {
         if !self.more_group {
             return Ok(false);
@@ -81,43 +75,6 @@ impl ScanControl for GroupByScan {
                 aggregation_fn.process_next(&mut self.scan)?;
             }
         }
-        self.more_group = false;
-        Ok(true)
-    }
-
-    fn previous(&mut self) -> Result<bool, TransactionError> {
-        if !self.more_group {
-            return Ok(false);
-        }
-
-        for aggregation_fn in &mut self.aggregation_functions {
-            aggregation_fn.process_first(&mut self.scan)?;
-        }
-
-        self.group_values = HashMap::new();
-        for field_name in &self.group_fields {
-            let value = self.scan.get_value(field_name)?;
-            self.group_values.insert(field_name.to_string(), value);
-        }
-
-        while self.scan.previous()? {
-            self.more_group = true;
-
-            let mut new_group_values = HashMap::new();
-            for field_name in &self.group_fields {
-                let value = self.scan.get_value(field_name)?;
-                new_group_values.insert(field_name.to_string(), value);
-            }
-
-            if new_group_values != self.group_values {
-                return Ok(true);
-            }
-
-            for aggregation_fn in &mut self.aggregation_functions {
-                aggregation_fn.process_next(&mut self.scan)?;
-            }
-        }
-
         self.more_group = false;
         Ok(true)
     }

@@ -78,15 +78,6 @@ impl ScanControl for SortScan {
         Ok(())
     }
 
-    fn after_last(&mut self) -> Result<(), TransactionError> {
-        self.current_scan_index = None;
-        for i in 0..self.scans.len() {
-            self.scans[i].borrow_mut().after_last()?;
-            self.has_nexts[i] = self.scans[i].borrow_mut().previous()?;
-        }
-        Ok(())
-    }
-
     fn next(&mut self) -> Result<bool, TransactionError> {
         if let Some(index) = self.current_scan_index {
             self.has_nexts[index] = self.scans[index].borrow_mut().next()?;
@@ -109,31 +100,6 @@ impl ScanControl for SortScan {
             self.current_scan_index = Some(0);
         } else {
             // only 1 has next
-            self.current_scan_index = Some(1);
-        }
-        Ok(true)
-    }
-
-    fn previous(&mut self) -> Result<bool, TransactionError> {
-        if let Some(index) = self.current_scan_index {
-            self.has_nexts[index] = self.scans[index].borrow_mut().previous()?;
-        }
-
-        if self.has_nexts.iter().all(|&x| !x) {
-            return Ok(false);
-        } else if self.has_nexts.iter().all(|&x| x) {
-            let cmp = self.comparator.compare(
-                &mut *self.scans[0].borrow_mut(),
-                &mut *self.scans[1].borrow_mut(),
-            );
-            if cmp == Ordering::Less {
-                self.current_scan_index = Some(1);
-            } else {
-                self.current_scan_index = Some(0);
-            }
-        } else if self.has_nexts[0] {
-            self.current_scan_index = Some(0);
-        } else {
             self.current_scan_index = Some(1);
         }
         Ok(true)

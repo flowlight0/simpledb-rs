@@ -10,8 +10,6 @@ pub struct IndexJoinScan {
     join_field: String,
     rhs: TableScan,
     is_empty: bool,
-    results: Vec<(RecordPointer, RecordPointer)>,
-    current_index: Option<usize>,
 }
 
 impl IndexJoinScan {
@@ -27,10 +25,7 @@ impl IndexJoinScan {
             join_field,
             rhs,
             is_empty: false,
-            results: vec![],
-            current_index: None,
         };
-        scan.load_results()?;
         scan.before_first()?;
         Ok(scan)
     }
@@ -39,28 +34,17 @@ impl IndexJoinScan {
         let search_key = self.lhs.get_value(&self.join_field)?;
         self.rhs_index.before_first(&search_key)
     }
+}
 
-    fn reset_scans(&mut self) -> Result<(), TransactionError> {
+impl ScanControl for IndexJoinScan {
+    fn before_first(&mut self) -> Result<(), TransactionError> {
         self.lhs.before_first()?;
         self.is_empty = !self.lhs.next()?;
         self.reset_index()?;
         Ok(())
     }
 
-    fn load_results(&mut self) -> Result<(), TransactionError> {
-        self.results.clear();
-        self.reset_scans()?;
-        while self.next_internal()? {
-            self.results.push((
-                self.lhs.get_record_pointer(),
-                self.rhs.get_record_pointer(),
-            ));
-        }
-        self.reset_scans()?;
-        Ok(())
-    }
-
-    fn next_internal(&mut self) -> Result<bool, TransactionError> {
+    fn next(&mut self) -> Result<bool, TransactionError> {
         if self.is_empty {
             return Ok(false);
         }
@@ -75,54 +59,6 @@ impl IndexJoinScan {
             }
             self.reset_index()?;
         }
-    }
-}
-
-impl ScanControl for IndexJoinScan {
-    fn before_first(&mut self) -> Result<(), TransactionError> {
-        self.reset_scans()?;
-        self.current_index = None;
-        Ok(())
-    }
-
-    fn next(&mut self) -> Result<bool, TransactionError> {
-        let next_index = match self.current_index {
-            None => 0,
-            Some(i) => i + 1,
-        };
-        if next_index >= self.results.len() {
-            self.current_index = Some(self.results.len());
-            return Ok(false);
-        }
-        let (lhs_rp, rhs_rp) = self.results[next_index];
-        self.lhs.move_to_record_pointer(&lhs_rp)?;
-        self.rhs.move_to_record_pointer(&rhs_rp)?;
-        self.current_index = Some(next_index);
-        Ok(true)
-    }
-
-    fn after_last(&mut self) -> Result<(), TransactionError> {
-        self.current_index = Some(self.results.len());
-        Ok(())
-    }
-
-    fn previous(&mut self) -> Result<bool, TransactionError> {
-        let prev_index = match self.current_index {
-            None => return Ok(false),
-            Some(0) => return Ok(false),
-            Some(i) if i > self.results.len() => {
-                if self.results.is_empty() {
-                    return Ok(false);
-                }
-                self.results.len() - 1
-            }
-            Some(i) => i - 1,
-        };
-        let (lhs_rp, rhs_rp) = self.results[prev_index];
-        self.lhs.move_to_record_pointer(&lhs_rp)?;
-        self.rhs.move_to_record_pointer(&rhs_rp)?;
-        self.current_index = Some(prev_index);
-        Ok(true)
     }
 
     fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {

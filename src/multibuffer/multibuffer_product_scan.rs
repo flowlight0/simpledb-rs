@@ -83,63 +83,11 @@ impl ScanControl for MultiBufferProductScan {
         Ok(())
     }
 
-    fn after_last(&mut self) -> Result<(), TransactionError> {
-        if self.file_num_blocks == 0 {
-            return Ok(());
-        }
-        let remainder = self.file_num_blocks % self.chunk_size;
-        let start = if remainder == 0 {
-            self.file_num_blocks - self.chunk_size
-        } else {
-            self.file_num_blocks - remainder
-        };
-        self.next_block_slot = self.file_num_blocks;
-
-        let rhs_scan = ChunkScan::new(
-            self.tx.clone(),
-            self.layout.clone(),
-            &self.rhs_file_name,
-            start,
-            self.file_num_blocks,
-        )?;
-        let product_scan = self.product_scan.take().unwrap();
-        let mut lhs_scan = *product_scan.scan1;
-        lhs_scan.after_last()?;
-        self.product_scan = Some(ProductScan::new(lhs_scan, Scan::from(rhs_scan))?);
-        self.next_block_slot = start;
-        self.product_scan.as_mut().unwrap().after_last()?;
-        Ok(())
-    }
-
     fn next(&mut self) -> Result<bool, TransactionError> {
         while !self.product_scan.as_mut().unwrap().next()? {
             if !self.use_next_chunk()? {
                 return Ok(false);
             }
-        }
-        Ok(true)
-    }
-
-    fn previous(&mut self) -> Result<bool, TransactionError> {
-        while !self.product_scan.as_mut().unwrap().previous()? {
-            if self.next_block_slot == 0 {
-                return Ok(false);
-            }
-            let prev_chunk_end = self.next_block_slot;
-            let prev_chunk_start = prev_chunk_end.saturating_sub(self.chunk_size);
-            let rhs_scan = ChunkScan::new(
-                self.tx.clone(),
-                self.layout.clone(),
-                &self.rhs_file_name,
-                prev_chunk_start,
-                prev_chunk_end,
-            )?;
-            let product_scan = self.product_scan.take().unwrap();
-            let mut lhs_scan = *product_scan.scan1;
-            lhs_scan.after_last()?;
-            self.product_scan = Some(ProductScan::new(lhs_scan, Scan::from(rhs_scan))?);
-            self.next_block_slot = prev_chunk_start;
-            self.product_scan.as_mut().unwrap().after_last()?;
         }
         Ok(true)
     }

@@ -9,8 +9,6 @@ pub struct IndexSelectScan {
     table_scan: TableScan,
     index: Index,
     value: Value,
-    record_pointers: Vec<RecordPointer>,
-    current_index: Option<usize>,
 }
 
 impl IndexSelectScan {
@@ -23,66 +21,24 @@ impl IndexSelectScan {
             table_scan,
             index,
             value,
-            record_pointers: vec![],
-            current_index: None,
         };
-        scan.load_records()?;
         scan.before_first()?;
         Ok(scan)
-    }
-
-    fn load_records(&mut self) -> Result<(), TransactionError> {
-        self.record_pointers.clear();
-        self.index.before_first(&self.value)?;
-        while self.index.next()? {
-            self.record_pointers.push(RecordPointer::from(self.index.get()?));
-        }
-        Ok(())
     }
 }
 
 impl ScanControl for IndexSelectScan {
     fn before_first(&mut self) -> Result<(), TransactionError> {
-        self.current_index = None;
-        Ok(())
+        self.index.before_first(&self.value)
     }
 
     fn next(&mut self) -> Result<bool, TransactionError> {
-        let next_index = match self.current_index {
-            None => 0,
-            Some(i) => i + 1,
-        };
-        if next_index >= self.record_pointers.len() {
-            self.current_index = Some(self.record_pointers.len());
-            return Ok(false);
+        let has_next = self.index.next()?;
+        if has_next {
+            let record_pointer = RecordPointer::from(self.index.get()?);
+            self.table_scan.move_to_record_pointer(&record_pointer)?;
         }
-        self.table_scan
-            .move_to_record_pointer(&self.record_pointers[next_index])?;
-        self.current_index = Some(next_index);
-        Ok(true)
-    }
-
-    fn after_last(&mut self) -> Result<(), TransactionError> {
-        self.current_index = Some(self.record_pointers.len());
-        Ok(())
-    }
-
-    fn previous(&mut self) -> Result<bool, TransactionError> {
-        let prev_index = match self.current_index {
-            None => return Ok(false),
-            Some(0) => return Ok(false),
-            Some(i) if i > self.record_pointers.len() => {
-                if self.record_pointers.is_empty() {
-                    return Ok(false);
-                }
-                self.record_pointers.len() - 1
-            }
-            Some(i) => i - 1,
-        };
-        self.table_scan
-            .move_to_record_pointer(&self.record_pointers[prev_index])?;
-        self.current_index = Some(prev_index);
-        Ok(true)
+        Ok(has_next)
     }
 
     fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
