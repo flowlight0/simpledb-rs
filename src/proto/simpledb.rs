@@ -62,6 +62,16 @@ pub struct ResultSetNextResponse {
     #[prost(bool, tag = "1")]
     pub has_next: bool,
 }
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct ResultSetPreviousRequest {
+    #[prost(uint64, tag = "1")]
+    pub id: u64,
+}
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct ResultSetPreviousResponse {
+    #[prost(bool, tag = "1")]
+    pub has_prev: bool,
+}
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ResultSetGetI32Request {
     #[prost(uint64, tag = "1")]
@@ -100,6 +110,13 @@ pub struct ResultSetBeforeFirstRequest {
 }
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct ResultSetBeforeFirstResponse {}
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct ResultSetAfterLastRequest {
+    #[prost(uint64, tag = "1")]
+    pub id: u64,
+}
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct ResultSetAfterLastResponse {}
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct ResultSetAbsoluteRequest {
     #[prost(uint64, tag = "1")]
@@ -507,6 +524,30 @@ pub mod result_set_service_client {
                 .insert(GrpcMethod::new("simpledb.ResultSetService", "Next"));
             self.inner.unary(req, path, codec).await
         }
+        pub async fn previous(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ResultSetPreviousRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ResultSetPreviousResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/simpledb.ResultSetService/Previous",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("simpledb.ResultSetService", "Previous"));
+            self.inner.unary(req, path, codec).await
+        }
         pub async fn get_i32(
             &mut self,
             request: impl tonic::IntoRequest<super::ResultSetGetI32Request>,
@@ -577,6 +618,30 @@ pub mod result_set_service_client {
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.ResultSetService", "BeforeFirst"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn after_last(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ResultSetAfterLastRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ResultSetAfterLastResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/simpledb.ResultSetService/AfterLast",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("simpledb.ResultSetService", "AfterLast"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn absolute(
@@ -1451,6 +1516,13 @@ pub mod result_set_service_server {
             tonic::Response<super::ResultSetNextResponse>,
             tonic::Status,
         >;
+        async fn previous(
+            &self,
+            request: tonic::Request<super::ResultSetPreviousRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ResultSetPreviousResponse>,
+            tonic::Status,
+        >;
         async fn get_i32(
             &self,
             request: tonic::Request<super::ResultSetGetI32Request>,
@@ -1470,6 +1542,13 @@ pub mod result_set_service_server {
             request: tonic::Request<super::ResultSetBeforeFirstRequest>,
         ) -> std::result::Result<
             tonic::Response<super::ResultSetBeforeFirstResponse>,
+            tonic::Status,
+        >;
+        async fn after_last(
+            &self,
+            request: tonic::Request<super::ResultSetAfterLastRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ResultSetAfterLastResponse>,
             tonic::Status,
         >;
         async fn absolute(
@@ -1653,6 +1732,51 @@ pub mod result_set_service_server {
                     };
                     Box::pin(fut)
                 }
+                "/simpledb.ResultSetService/Previous" => {
+                    #[allow(non_camel_case_types)]
+                    struct PreviousSvc<T: ResultSetService>(pub Arc<T>);
+                    impl<
+                        T: ResultSetService,
+                    > tonic::server::UnaryService<super::ResultSetPreviousRequest>
+                    for PreviousSvc<T> {
+                        type Response = super::ResultSetPreviousResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::ResultSetPreviousRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as ResultSetService>::previous(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = PreviousSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
                 "/simpledb.ResultSetService/GetI32" => {
                     #[allow(non_camel_case_types)]
                     struct GetI32Svc<T: ResultSetService>(pub Arc<T>);
@@ -1773,6 +1897,51 @@ pub mod result_set_service_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let method = BeforeFirstSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/simpledb.ResultSetService/AfterLast" => {
+                    #[allow(non_camel_case_types)]
+                    struct AfterLastSvc<T: ResultSetService>(pub Arc<T>);
+                    impl<
+                        T: ResultSetService,
+                    > tonic::server::UnaryService<super::ResultSetAfterLastRequest>
+                    for AfterLastSvc<T> {
+                        type Response = super::ResultSetAfterLastResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::ResultSetAfterLastRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as ResultSetService>::after_last(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = AfterLastSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

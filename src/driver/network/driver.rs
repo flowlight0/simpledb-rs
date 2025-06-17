@@ -187,6 +187,11 @@ mod tests {
         assert!(result_set.next()?);
         assert_eq!(result_set.get_string("B")?, "a");
         assert!(!result_set.next()?);
+
+        result_set.after_last()?;
+        assert!(result_set.previous()?);
+        assert_eq!(result_set.get_string("B")?, "a");
+        assert!(!result_set.previous()?);
         result_set.close()?;
 
         // Drop the connection instead of explicitly closing to avoid

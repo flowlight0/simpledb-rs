@@ -47,9 +47,11 @@ message MetadataGetColumnTypeResponse {
 service ResultSetService {
     rpc GetMetadata (ResultSetGetMetadataRequest) returns (ResultSetGetMetadataResponse) {}
     rpc Next (ResultSetNextRequest) returns (ResultSetNextResponse) {}
+    rpc Previous (ResultSetPreviousRequest) returns (ResultSetPreviousResponse) {}
     rpc GetI32 (ResultSetGetI32Request) returns (ResultSetGetI32Response) {}
     rpc GetString (ResultSetGetStringRequest) returns (ResultSetGetStringResponse) {}
     rpc BeforeFirst (ResultSetBeforeFirstRequest) returns (ResultSetBeforeFirstResponse) {}
+    rpc AfterLast (ResultSetAfterLastRequest) returns (ResultSetAfterLastResponse) {}
     rpc Absolute (ResultSetAbsoluteRequest) returns (ResultSetAbsoluteResponse) {}
     rpc Close (ResultSetCloseRequest) returns (ResultSetCloseResponse) {}
 }
@@ -68,6 +70,14 @@ message ResultSetNextRequest {
 
 message ResultSetNextResponse {
     bool has_next = 1;
+}
+
+message ResultSetPreviousRequest {
+    uint64 id = 1;
+}
+
+message ResultSetPreviousResponse {
+    bool has_prev = 1;
 }
 
 message ResultSetGetI32Request {
@@ -101,6 +111,14 @@ message ResultSetBeforeFirstRequest {
 }
 
 message ResultSetBeforeFirstResponse {
+
+}
+
+message ResultSetAfterLastRequest {
+    uint64 id = 1;
+}
+
+message ResultSetAfterLastResponse {
 
 }
 

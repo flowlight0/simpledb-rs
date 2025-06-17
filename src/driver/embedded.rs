@@ -78,8 +78,17 @@ impl ResultSetControl for EmbeddedResultSet {
         Ok(self.scan.as_mut().unwrap().next()?)
     }
 
+    fn previous(&mut self) -> Result<bool, anyhow::Error> {
+        Ok(self.scan.as_mut().unwrap().previous()?)
+    }
+
     fn before_first(&mut self) -> Result<(), anyhow::Error> {
         self.scan.as_mut().unwrap().before_first()?;
+        Ok(())
+    }
+
+    fn after_last(&mut self) -> Result<(), anyhow::Error> {
+        self.scan.as_mut().unwrap().after_last()?;
         Ok(())
     }
 
@@ -272,6 +281,13 @@ mod tests {
         assert!(result_set.next()?);
         assert_eq!(result_set.get_string("B")?, "b");
         assert!(!result_set.next()?);
+
+        result_set.after_last()?;
+        assert!(result_set.previous()?);
+        assert_eq!(result_set.get_string("B")?, "b");
+        assert!(result_set.previous()?);
+        assert_eq!(result_set.get_string("B")?, "a");
+        assert!(!result_set.previous()?);
         result_set.before_first()?;
         assert!(result_set.absolute(0)?);
         assert_eq!(result_set.get_string("B")?, "a");

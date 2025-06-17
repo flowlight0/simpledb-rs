@@ -12,8 +12,9 @@ use crate::proto::simpledb::{
     ResultSetCloseRequest, ResultSetCloseResponse, ResultSetGetI32Request, ResultSetGetI32Response,
     ResultSetGetMetadataRequest, ResultSetGetMetadataResponse, ResultSetGetStringRequest,
     ResultSetGetStringResponse, ResultSetNextRequest, ResultSetNextResponse,
-    ResultSetBeforeFirstRequest, ResultSetBeforeFirstResponse, ResultSetAbsoluteRequest,
-    ResultSetAbsoluteResponse,
+    ResultSetPreviousRequest, ResultSetPreviousResponse, ResultSetBeforeFirstRequest,
+    ResultSetBeforeFirstResponse, ResultSetAfterLastRequest, ResultSetAfterLastResponse,
+    ResultSetAbsoluteRequest, ResultSetAbsoluteResponse,
 };
 
 use super::connection::NetworkConnection;
@@ -78,6 +79,20 @@ impl ResultSetService for RemoteResultSet {
         Ok(Response::new(ResultSetNextResponse { has_next }))
     }
 
+    async fn previous(
+        &self,
+        request: Request<ResultSetPreviousRequest>,
+    ) -> Result<Response<ResultSetPreviousResponse>, Status> {
+        let request = request.into_inner();
+        let result_set_id = request.id;
+        let mut lock = self.embedded_result_set_dict.lock().unwrap();
+        let embedded_result_set = lock
+            .get_mut(&result_set_id)
+            .expect(&format!("Unknown result_set_id: {}", result_set_id));
+        let has_prev = embedded_result_set.previous().unwrap();
+        Ok(Response::new(ResultSetPreviousResponse { has_prev }))
+    }
+
     async fn get_i32(
         &self,
         request: Request<ResultSetGetI32Request>,
@@ -120,6 +135,20 @@ impl ResultSetService for RemoteResultSet {
             .expect(&format!("Unknown result_set_id: {}", result_set_id));
         embedded_result_set.before_first().unwrap();
         Ok(Response::new(ResultSetBeforeFirstResponse {}))
+    }
+
+    async fn after_last(
+        &self,
+        request: Request<ResultSetAfterLastRequest>,
+    ) -> Result<Response<ResultSetAfterLastResponse>, Status> {
+        let request = request.into_inner();
+        let result_set_id = request.id;
+        let mut lock = self.embedded_result_set_dict.lock().unwrap();
+        let embedded_result_set = lock
+            .get_mut(&result_set_id)
+            .expect(&format!("Unknown result_set_id: {}", result_set_id));
+        embedded_result_set.after_last().unwrap();
+        Ok(Response::new(ResultSetAfterLastResponse {}))
     }
 
     async fn absolute(
@@ -209,10 +238,29 @@ impl ResultSetControl for NetworkResultSet {
         Ok(response.has_next)
     }
 
+    fn previous(&mut self) -> Result<bool, anyhow::Error> {
+        let mut client = ResultSetServiceClient::new(self.connection.get_channel());
+        let request = Request::new(ResultSetPreviousRequest {
+            id: self.result_set_id,
+        });
+        let response = self
+            .run_time
+            .block_on(client.previous(request))?
+            .into_inner();
+        Ok(response.has_prev)
+    }
+
     fn before_first(&mut self) -> Result<(), anyhow::Error> {
         let mut client = ResultSetServiceClient::new(self.connection.get_channel());
         let request = Request::new(ResultSetBeforeFirstRequest { id: self.result_set_id });
         self.run_time.block_on(client.before_first(request))?;
+        Ok(())
+    }
+
+    fn after_last(&mut self) -> Result<(), anyhow::Error> {
+        let mut client = ResultSetServiceClient::new(self.connection.get_channel());
+        let request = Request::new(ResultSetAfterLastRequest { id: self.result_set_id });
+        self.run_time.block_on(client.after_last(request))?;
         Ok(())
     }
 
