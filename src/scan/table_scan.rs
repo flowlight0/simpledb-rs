@@ -14,6 +14,7 @@ use crate::{
 use super::{RecordPointer, ScanControl};
 
 pub struct TableScan {
+    tx: Arc<Mutex<Transaction>>, 
     file_name: String,
     record_page: RecordPage,
     current_slot: Slot,
@@ -48,6 +49,7 @@ impl TableScan {
         }
 
         Ok(Self {
+            tx,
             file_name,
             record_page,
             current_slot: Slot::Start,
@@ -56,6 +58,32 @@ impl TableScan {
 
     pub fn get_block_slot(&self) -> usize {
         self.record_page.block.block_slot
+    }
+
+    pub fn after_last(&mut self) -> Result<(), TransactionError> {
+        let num_blocks = self.tx.lock().unwrap().get_num_blocks(&self.file_name)?;
+        let block = BlockId::new(&self.file_name, num_blocks - 1);
+        self.record_page.reset_block(block)?;
+        self.current_slot = self.record_page.after_last();
+        Ok(())
+    }
+
+    pub fn previous(&mut self) -> Result<bool, TransactionError> {
+        loop {
+            self.current_slot = self.record_page.prev_before(self.current_slot)?;
+            match self.current_slot {
+                Slot::Index(_) => return Ok(true),
+                Slot::Start => {
+                    if let Some(prev_block) = self.record_page.block.get_previous_block() {
+                        self.record_page.reset_block(prev_block)?;
+                        self.current_slot = self.record_page.after_last();
+                    } else {
+                        return Ok(false);
+                    }
+                }
+                Slot::End => unreachable!(),
+            }
+        }
     }
 }
 
@@ -213,6 +241,35 @@ mod tests {
             assert_eq!(string_value, (i * 2 + 1).to_string());
         }
         assert!(!table_scan.next()?);
+        drop(table_scan);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_table_scan_previous() -> Result<(), TransactionError> {
+        let mut schema = Schema::new();
+        schema.add_i32_field("A");
+        let layout = Arc::new(Layout::new(schema));
+
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 256;
+        let db = SimpleDB::new(temp_dir, block_size, 3)?;
+
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+        let mut table_scan = TableScan::new(tx.clone(), "testtable2", layout.clone())?;
+        table_scan.before_first()?;
+        for i in 0..10 {
+            table_scan.insert()?;
+            table_scan.set_i32("A", i)?;
+        }
+
+        table_scan.after_last()?;
+        for expected in (0..10).rev() {
+            assert!(table_scan.previous()?);
+            assert_eq!(table_scan.get_i32("A")?, expected);
+        }
+        assert!(!table_scan.previous()?);
         drop(table_scan);
         tx.lock().unwrap().commit()?;
         Ok(())
