@@ -51,6 +51,14 @@ pub enum Scan {
 pub trait ScanControl {
     fn before_first(&mut self) -> Result<(), TransactionError>;
     fn next(&mut self) -> Result<bool, TransactionError>;
+    #[allow(unused_variables)]
+    fn after_last(&mut self) -> Result<(), TransactionError> {
+        unimplemented!("Backward scanning is not supported")
+    }
+    #[allow(unused_variables)]
+    fn previous(&mut self) -> Result<bool, TransactionError> {
+        unimplemented!("Backward scanning is not supported")
+    }
     fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError>;
     fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError>;
     fn get_value(&mut self, field_name: &str) -> Result<Value, TransactionError>;

@@ -95,6 +95,14 @@ impl ScanControl for TableScan {
         Ok(())
     }
 
+    fn after_last(&mut self) -> Result<(), TransactionError> {
+        TableScan::after_last(self)
+    }
+
+    fn previous(&mut self) -> Result<bool, TransactionError> {
+        TableScan::previous(self)
+    }
+
     fn next(&mut self) -> Result<bool, TransactionError> {
         loop {
             self.current_slot = self.record_page.next_after(self.current_slot)?;

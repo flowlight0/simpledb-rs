@@ -25,6 +25,24 @@ impl ScanControl for ProductScan {
         self.scan2.before_first()
     }
 
+    fn after_last(&mut self) -> Result<(), TransactionError> {
+        self.scan1.after_last()?;
+        self.scan1.previous()?;
+        self.scan2.after_last()
+    }
+
+    fn previous(&mut self) -> Result<bool, TransactionError> {
+        if self.scan2.previous()? {
+            return Ok(true);
+        }
+        if self.scan1.previous()? {
+            self.scan2.after_last()?;
+            self.scan2.previous()
+        } else {
+            Ok(false)
+        }
+    }
+
     fn next(&mut self) -> Result<bool, TransactionError> {
         if self.scan2.next()? {
             Ok(true)
@@ -126,6 +144,51 @@ mod tests {
         }
         assert!(!product_scan.next()?);
         drop(product_scan);
+        tx1.lock().unwrap().commit()?;
+        tx2.lock().unwrap().commit()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_product_scan_previous() -> Result<(), TransactionError> {
+        let mut schema1 = Schema::new();
+        schema1.add_i32_field("A");
+        let layout1 = Arc::new(Layout::new(schema1));
+
+        let mut schema2 = Schema::new();
+        schema2.add_i32_field("D");
+        let layout2 = Arc::new(Layout::new(schema2));
+
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 256;
+        let db = SimpleDB::new(temp_dir, block_size, 3)?;
+
+        let tx1 = Arc::new(Mutex::new(db.new_transaction()?));
+        let mut scan1 = TableScan::new(tx1.clone(), "t1", layout1.clone())?;
+        scan1.before_first()?;
+        for i in 0..3 {
+            scan1.insert()?;
+            scan1.set_i32("A", i)?;
+        }
+
+        let tx2 = Arc::new(Mutex::new(db.new_transaction()?));
+        let mut scan2 = TableScan::new(tx2.clone(), "t2", layout2.clone())?;
+        scan2.before_first()?;
+        for j in 0..2 {
+            scan2.insert()?;
+            scan2.set_i32("D", j)?;
+        }
+
+        let mut scan = ProductScan::new(Scan::from(scan1), Scan::from(scan2))?;
+        scan.after_last()?;
+        let mut expected = vec![(2,1), (2,0), (1,1), (1,0), (0,1), (0,0)];
+        for (a,d) in expected.drain(..) {
+            assert!(scan.previous()?);
+            assert_eq!(scan.get_i32("A")?, a);
+            assert_eq!(scan.get_i32("D")?, d);
+        }
+        assert!(!scan.previous()?);
+        drop(scan);
         tx1.lock().unwrap().commit()?;
         tx2.lock().unwrap().commit()?;
         Ok(())

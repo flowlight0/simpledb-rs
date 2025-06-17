@@ -35,6 +35,11 @@ impl ScanControl for MergeJoinScan {
         self.s2.before_first()
     }
 
+    fn after_last(&mut self) -> Result<(), TransactionError> {
+        self.s1.after_last()?;
+        self.s2.after_last()
+    }
+
     fn next(&mut self) -> Result<bool, TransactionError> {
         let mut has_next2 = self.s2.next()?;
         if has_next2 && Some(self.s2.get_value(&self.field_name2)?) == self.join_value {
@@ -56,6 +61,38 @@ impl ScanControl for MergeJoinScan {
                 }
                 std::cmp::Ordering::Greater => {
                     has_next2 = self.s2.next()?;
+                }
+                std::cmp::Ordering::Equal => {
+                    self.join_value = Some(value1);
+                    self.s2.save_position();
+                    return Ok(true);
+                }
+            }
+        }
+        Ok(false)
+    }
+
+    fn previous(&mut self) -> Result<bool, TransactionError> {
+        let mut has_prev2 = self.s2.previous()?;
+        if has_prev2 && Some(self.s2.get_value(&self.field_name2)?) == self.join_value {
+            return Ok(true);
+        }
+
+        let mut has_prev1 = self.s1.previous()?;
+        if has_prev1 && Some(self.s1.get_value(&self.field_name1)?) == self.join_value {
+            self.s2.restore_position()?;
+            return Ok(true);
+        }
+
+        while has_prev1 && has_prev2 {
+            let value1 = self.s1.get_value(&self.field_name1)?;
+            let value2 = self.s2.get_value(&self.field_name2)?;
+            match value1.cmp(&value2) {
+                std::cmp::Ordering::Less => {
+                    has_prev2 = self.s2.previous()?;
+                }
+                std::cmp::Ordering::Greater => {
+                    has_prev1 = self.s1.previous()?;
                 }
                 std::cmp::Ordering::Equal => {
                     self.join_value = Some(value1);

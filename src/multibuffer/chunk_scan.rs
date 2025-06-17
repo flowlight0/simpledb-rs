@@ -61,6 +61,12 @@ impl ScanControl for ChunkScan {
         self.move_to_block_slot(self.block_slot_start)
     }
 
+    fn after_last(&mut self) -> Result<(), TransactionError> {
+        self.current_record_page_index = self.buffers.len() - 1;
+        self.current_record_slot = self.buffers[self.current_record_page_index].after_last();
+        Ok(())
+    }
+
     fn next(&mut self) -> Result<bool, TransactionError> {
         loop {
             self.current_record_slot = self.buffers[self.current_record_page_index]
@@ -99,5 +105,24 @@ impl ScanControl for ChunkScan {
 
     fn has_field(&self, field_name: &str) -> bool {
         self.layout.has_field(field_name)
+    }
+
+    fn previous(&mut self) -> Result<bool, TransactionError> {
+        loop {
+            self.current_record_slot = self.buffers[self.current_record_page_index]
+                .prev_before(self.current_record_slot)?;
+            match self.current_record_slot {
+                Slot::Index(_) => return Ok(true),
+                Slot::Start => {
+                    if self.current_record_page_index > 0 {
+                        self.current_record_page_index -= 1;
+                        self.current_record_slot = self.buffers[self.current_record_page_index].after_last();
+                    } else {
+                        return Ok(false);
+                    }
+                }
+                Slot::End => unreachable!(),
+            }
+        }
     }
 }
