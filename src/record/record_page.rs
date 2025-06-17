@@ -4,8 +4,20 @@ use crate::{errors::TransactionError, file::BlockId, tx::transaction::Transactio
 
 use super::layout::Layout;
 
-const EMPTY: i32 = 0;
-const FULL: i32 = 1;
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum VacancyFlag {
+    Empty,
+    Full,
+}
+
+impl VacancyFlag {
+    fn to_bit(&self) -> i32 {
+        match self {
+            VacancyFlag::Empty => 0,
+            VacancyFlag::Full => 1,
+        }
+    }
+}
 
 // RecordPage is a struct that represents a page in a record file. It is used to read and write records to the page.
 // It contains a reference to a transaction, a block id, and a layout.
@@ -113,6 +125,7 @@ impl RecordPage {
             value,
             true,
         )?;
+        self.set_not_null(slot, field_name)?;
         Ok(())
     }
 
@@ -141,17 +154,43 @@ impl RecordPage {
             value,
             true,
         )?;
+        self.set_not_null(slot, field_name)?;
         Ok(())
     }
 
+    pub fn set_null(&mut self, slot: usize, field_name: &str) -> Result<(), TransactionError> {
+        let bit = self.layout.null_bit_location(field_name);
+        let mut flags = self
+            .tx
+            .lock()
+            .unwrap()
+            .get_i32(&self.block, self.offset(slot))?;
+        flags |= 1 << bit;
+        self.tx
+            .lock()
+            .unwrap()
+            .set_i32(&self.block, self.offset(slot), flags, true)?;
+        Ok(())
+    }
+
+    pub fn is_null(&mut self, slot: usize, field_name: &str) -> Result<bool, TransactionError> {
+        let bit = self.layout.null_bit_location(field_name);
+        let flags = self
+            .tx
+            .lock()
+            .unwrap()
+            .get_i32(&self.block, self.offset(slot))?;
+        Ok((flags & (1 << bit)) != 0)
+    }
+
     pub fn delete(&mut self, slot: usize) -> Result<(), TransactionError> {
-        self.set_flag(slot, EMPTY)
+        self.set_vacancy_flag(slot, VacancyFlag::Empty)
     }
 
     pub fn insert_after(&mut self, slot: Slot) -> Result<Slot, TransactionError> {
-        let result = self.search_after(slot, EMPTY);
+        let result = self.search_after(slot, VacancyFlag::Empty);
         if let Ok(Slot::Index(index)) = result {
-            self.set_flag(index, FULL)?;
+            self.set_vacancy_flag(index, VacancyFlag::Full)?;
             Ok(Slot::Index(index))
         } else {
             result
@@ -159,18 +198,22 @@ impl RecordPage {
     }
 
     pub fn next_after(&mut self, slot: Slot) -> Result<Slot, TransactionError> {
-        self.search_after(slot, FULL)
+        self.search_after(slot, VacancyFlag::Full)
     }
 
     pub fn prev_before(&mut self, slot: Slot) -> Result<Slot, TransactionError> {
-        self.search_before(slot, FULL)
+        self.search_before(slot, VacancyFlag::Full)
     }
 
     pub fn after_last(&self) -> Slot {
         Slot::End
     }
 
-    fn search_after(&mut self, slot: Slot, flag: i32) -> Result<Slot, TransactionError> {
+    fn search_after(
+        &mut self,
+        slot: Slot,
+        vacancy_flag: VacancyFlag,
+    ) -> Result<Slot, TransactionError> {
         if slot == Slot::End {
             return Ok(Slot::End);
         }
@@ -182,12 +225,12 @@ impl RecordPage {
         };
 
         while self.is_valid_slot(next_index) {
-            let slot_flag = self
+            let slot_flags = self
                 .tx
                 .lock()
                 .unwrap()
                 .get_i32(&self.block, self.offset(next_index))?;
-            if slot_flag == flag {
+            if (slot_flags & 1) == vacancy_flag.to_bit() {
                 return Ok(Slot::Index(next_index));
             }
             next_index += 1;
@@ -195,7 +238,11 @@ impl RecordPage {
         Ok(Slot::End)
     }
 
-    fn search_before(&mut self, slot: Slot, flag: i32) -> Result<Slot, TransactionError> {
+    fn search_before(
+        &mut self,
+        slot: Slot,
+        vacancy_flag: VacancyFlag,
+    ) -> Result<Slot, TransactionError> {
         if slot == Slot::Start {
             return Ok(Slot::Start);
         }
@@ -217,12 +264,12 @@ impl RecordPage {
         };
 
         loop {
-            let slot_flag = self
+            let slot_flags = self
                 .tx
                 .lock()
                 .unwrap()
                 .get_i32(&self.block, self.offset(prev_index))?;
-            if slot_flag == flag {
+            if (slot_flags & 1) == vacancy_flag.to_bit() {
                 return Ok(Slot::Index(prev_index));
             }
             if prev_index == 0 {
@@ -238,10 +285,12 @@ impl RecordPage {
 
         while self.is_valid_slot(slot) {
             // while self.offset(slot + 1) <= self.tx.get_block_size() {
-            self.tx
-                .lock()
-                .unwrap()
-                .set_i32(&self.block, self.offset(slot), EMPTY, false)?;
+            self.tx.lock().unwrap().set_i32(
+                &self.block,
+                self.offset(slot),
+                VacancyFlag::Empty.to_bit(),
+                false,
+            )?;
 
             let schema = self.layout.schema.clone();
             for field_name in &schema.i32_fields {
@@ -251,6 +300,7 @@ impl RecordPage {
                     0,
                     false,
                 )?;
+                self.set_not_null(slot, field_name)?;
             }
 
             for field_name in &schema.string_fields {
@@ -260,6 +310,7 @@ impl RecordPage {
                     "",
                     false,
                 )?;
+                self.set_not_null(slot, field_name)?;
             }
             slot += 1;
         }
@@ -274,11 +325,41 @@ impl RecordPage {
         slot * self.layout.slot_size
     }
 
-    fn set_flag(&mut self, slot: usize, value: i32) -> Result<(), TransactionError> {
+    fn set_vacancy_flag(
+        &mut self,
+        slot: usize,
+        vacancy_flag: VacancyFlag,
+    ) -> Result<(), TransactionError> {
+        let mut flags = self
+            .tx
+            .lock()
+            .unwrap()
+            .get_i32(&self.block, self.offset(slot))?;
+
+        match vacancy_flag {
+            VacancyFlag::Empty => flags &= !1, // Clear the vacancy flag
+            VacancyFlag::Full => flags |= 1,   // Set the vacancy flag
+        }
+
         self.tx
             .lock()
             .unwrap()
-            .set_i32(&self.block, self.offset(slot), value, true)?;
+            .set_i32(&self.block, self.offset(slot), flags, true)?;
+        Ok(())
+    }
+
+    fn set_not_null(&mut self, slot: usize, field_name: &str) -> Result<(), TransactionError> {
+        let bit = self.layout.null_bit_location(field_name);
+        let mut flags = self
+            .tx
+            .lock()
+            .unwrap()
+            .get_i32(&self.block, self.offset(slot))?;
+        flags &= !(1 << bit);
+        self.tx
+            .lock()
+            .unwrap()
+            .set_i32(&self.block, self.offset(slot), flags, true)?;
         Ok(())
     }
 }
@@ -376,6 +457,32 @@ mod tests {
             assert_eq!(v, expected);
         }
         assert_eq!(record_page.prev_before(slot)?, Slot::Start);
+        drop(record_page);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_record_page_null_handling() -> Result<(), TransactionError> {
+        let mut schema = Schema::new();
+        schema.add_i32_field("A");
+        let layout = Arc::new(Layout::new(schema));
+
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 1024;
+        let db = SimpleDB::new(temp_dir, block_size, 3)?;
+
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+        let block = db.file_manager.lock().unwrap().append_block("testfile3")?;
+        let mut record_page = RecordPage::new(tx.clone(), block.clone(), layout.clone());
+        record_page.format()?;
+
+        let slot = record_page.insert_after(Slot::Start)?;
+        assert!(!record_page.is_null(slot.index(), "A")?);
+        record_page.set_null(slot.index(), "A")?;
+        assert!(record_page.is_null(slot.index(), "A")?);
+        record_page.set_i32(slot.index(), "A", 10)?;
+        assert!(!record_page.is_null(slot.index(), "A")?);
         drop(record_page);
         tx.lock().unwrap().commit()?;
         Ok(())
