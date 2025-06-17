@@ -15,6 +15,7 @@ pub struct RecordPage {
     tx: Arc<Mutex<Transaction>>,
     pub block: BlockId,
     pub layout: Arc<Layout>,
+    num_slots: usize,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -54,13 +55,22 @@ impl Slot {
 impl RecordPage {
     pub fn new(tx: Arc<Mutex<Transaction>>, block: BlockId, layout: Arc<Layout>) -> Self {
         tx.lock().unwrap().pin(&block).unwrap();
-        RecordPage { tx, block, layout }
+        let block_size = tx.lock().unwrap().get_block_size();
+        let num_slots = block_size / layout.slot_size;
+        RecordPage {
+            tx,
+            block,
+            layout,
+            num_slots,
+        }
     }
 
     pub fn reset_block(&mut self, block: BlockId) -> Result<(), TransactionError> {
         self.tx.lock().unwrap().unpin(&self.block);
         self.tx.lock().unwrap().pin(&block)?;
         self.block = block;
+        let block_size = self.tx.lock().unwrap().get_block_size();
+        self.num_slots = block_size / self.layout.slot_size;
         Ok(())
     }
 
@@ -152,6 +162,14 @@ impl RecordPage {
         self.search_after(slot, FULL)
     }
 
+    pub fn prev_before(&mut self, slot: Slot) -> Result<Slot, TransactionError> {
+        self.search_before(slot, FULL)
+    }
+
+    pub fn after_last(&self) -> Slot {
+        Slot::End
+    }
+
     fn search_after(&mut self, slot: Slot, flag: i32) -> Result<Slot, TransactionError> {
         if slot == Slot::End {
             return Ok(Slot::End);
@@ -175,6 +193,44 @@ impl RecordPage {
             next_index += 1;
         }
         Ok(Slot::End)
+    }
+
+    fn search_before(&mut self, slot: Slot, flag: i32) -> Result<Slot, TransactionError> {
+        if slot == Slot::Start {
+            return Ok(Slot::Start);
+        }
+
+        let mut prev_index = match slot {
+            Slot::Index(index) => {
+                if index == 0 {
+                    return Ok(Slot::Start);
+                }
+                index - 1
+            }
+            Slot::Start => unreachable!(),
+            Slot::End => {
+                if self.num_slots == 0 {
+                    return Ok(Slot::Start);
+                }
+                self.num_slots - 1
+            }
+        };
+
+        loop {
+            let slot_flag = self
+                .tx
+                .lock()
+                .unwrap()
+                .get_i32(&self.block, self.offset(prev_index))?;
+            if slot_flag == flag {
+                return Ok(Slot::Index(prev_index));
+            }
+            if prev_index == 0 {
+                break;
+            }
+            prev_index -= 1;
+        }
+        Ok(Slot::Start)
     }
 
     pub fn format(&mut self) -> Result<(), TransactionError> {
@@ -211,7 +267,7 @@ impl RecordPage {
     }
 
     fn is_valid_slot(&self, slot: usize) -> bool {
-        self.offset(slot + 1) <= self.tx.lock().unwrap().get_block_size()
+        slot < self.num_slots
     }
 
     fn offset(&self, slot: usize) -> usize {
@@ -287,6 +343,39 @@ mod tests {
             assert_eq!(string_value, (i * 2 + 1).to_string());
         }
         assert_eq!(record_page.next_after(slot)?, Slot::End);
+        drop(record_page);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_record_page_previous() -> Result<(), TransactionError> {
+        let mut schema = Schema::new();
+        schema.add_i32_field("A");
+        let layout = Arc::new(Layout::new(schema));
+
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 1024;
+        let db = SimpleDB::new(temp_dir, block_size, 3)?;
+
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+        let block = db.file_manager.lock().unwrap().append_block("testfile2")?;
+        let mut record_page = RecordPage::new(tx.clone(), block.clone(), layout.clone());
+        record_page.format()?;
+
+        let mut slot = Slot::Start;
+        for i in 0..5 {
+            slot = record_page.insert_after(slot)?;
+            record_page.set_i32(slot.index(), "A", i)?;
+        }
+
+        slot = record_page.after_last();
+        for expected in (0..5).rev() {
+            slot = record_page.prev_before(slot)?;
+            let v = record_page.get_i32(slot.index(), "A")?;
+            assert_eq!(v, expected);
+        }
+        assert_eq!(record_page.prev_before(slot)?, Slot::Start);
         drop(record_page);
         tx.lock().unwrap().commit()?;
         Ok(())
