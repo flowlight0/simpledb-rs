@@ -106,21 +106,21 @@ impl ResultSetControl for EmbeddedResultSet {
     }
 
     fn get_i32(&mut self, column_name: &str) -> Result<Option<i32>, anyhow::Error> {
-        let value = self.scan.as_mut().unwrap().get_value(column_name)?;
-        match value {
-            Value::I32(v) => Ok(Some(v)),
-            Value::Null => Ok(None),
-            _ => Err(anyhow::anyhow!("Expected i32 value")),
-        }
+        self.scan
+            .as_mut()
+            .unwrap()
+            .get_i32(column_name)
+            .map_err(|e| anyhow::anyhow!("Error getting i32 from column '{}': {}", column_name, e))
     }
 
     fn get_string(&mut self, column_name: &str) -> Result<Option<String>, anyhow::Error> {
-        let value = self.scan.as_mut().unwrap().get_value(column_name)?;
-        match value {
-            Value::String(v) => Ok(Some(v)),
-            Value::Null => Ok(None),
-            _ => Err(anyhow::anyhow!("Expected string value")),
-        }
+        self.scan
+            .as_mut()
+            .unwrap()
+            .get_string(column_name)
+            .map_err(|e| {
+                anyhow::anyhow!("Error getting string from column '{}': {}", column_name, e)
+            })
     }
 
     fn close(&mut self) -> Result<(), anyhow::Error> {
