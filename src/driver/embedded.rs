@@ -9,10 +9,7 @@ use crate::{
     errors::ExecutionError,
     plan::{Plan, PlanControl},
     planner::Planner,
-    record::{
-        field::{Type, Value},
-        schema::Schema,
-    },
+    record::{field::Type, schema::Schema},
     scan::{Scan, ScanControl},
     tx::transaction::Transaction,
 };
@@ -319,7 +316,7 @@ mod tests {
         let db_url = format!("jdbc:simpledb:{}", temp_dir.to_string_lossy());
 
         let driver = EmbeddedDriver::new();
-        let (_db_name, mut connection) = driver.connect(&db_url)?;
+        let (_db_name, connection) = driver.connect(&db_url)?;
 
         let mut statement = connection.create_statement()?;
         statement.execute_update("create table test (A I32, B VARCHAR(20))")?;
