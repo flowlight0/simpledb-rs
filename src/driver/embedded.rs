@@ -22,7 +22,7 @@ use super::{
     ResultSetControl, Statement, StatementControl,
 };
 
-const MAX_VARCHAR_DISPLAY_SIZE: usize = 40;
+const MAX_VARCHAR_DISPLAY_SIZE: usize = 30;
 
 pub struct EmbeddedMetadata {
     schema: Schema,
