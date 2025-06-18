@@ -205,10 +205,10 @@ pub mod metadata_service_client {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value,
+        clippy::let_unit_value
     )]
-    use tonic::codegen::*;
     use tonic::codegen::http::Uri;
+    use tonic::codegen::*;
     #[derive(Debug, Clone)]
     pub struct MetadataServiceClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -252,9 +252,8 @@ pub mod metadata_service_client {
                     <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
+            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+                Into<StdError> + std::marker::Send + std::marker::Sync,
         {
             MetadataServiceClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -296,42 +295,30 @@ pub mod metadata_service_client {
             tonic::Response<super::MetadataGetColumnCountResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.MetadataService/GetColumnCount",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/simpledb.MetadataService/GetColumnCount");
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("simpledb.MetadataService", "GetColumnCount"));
+            req.extensions_mut().insert(GrpcMethod::new(
+                "simpledb.MetadataService",
+                "GetColumnCount",
+            ));
             self.inner.unary(req, path, codec).await
         }
         pub async fn get_column_name(
             &mut self,
             request: impl tonic::IntoRequest<super::MetadataGetColumnNameRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::MetadataGetColumnNameResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::MetadataGetColumnNameResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.MetadataService/GetColumnName",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/simpledb.MetadataService/GetColumnName");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.MetadataService", "GetColumnName"));
@@ -344,44 +331,31 @@ pub mod metadata_service_client {
             tonic::Response<super::MetadataGetColumnDisplaySizeResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/simpledb.MetadataService/GetColumnDisplaySize",
             );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("simpledb.MetadataService", "GetColumnDisplaySize"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "simpledb.MetadataService",
+                "GetColumnDisplaySize",
+            ));
             self.inner.unary(req, path, codec).await
         }
         pub async fn get_column_type(
             &mut self,
             request: impl tonic::IntoRequest<super::MetadataGetColumnTypeRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::MetadataGetColumnTypeResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::MetadataGetColumnTypeResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.MetadataService/GetColumnType",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/simpledb.MetadataService/GetColumnType");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.MetadataService", "GetColumnType"));
@@ -396,10 +370,10 @@ pub mod result_set_service_client {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value,
+        clippy::let_unit_value
     )]
-    use tonic::codegen::*;
     use tonic::codegen::http::Uri;
+    use tonic::codegen::*;
     #[derive(Debug, Clone)]
     pub struct ResultSetServiceClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -443,9 +417,8 @@ pub mod result_set_service_client {
                     <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
+            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+                Into<StdError> + std::marker::Send + std::marker::Sync,
         {
             ResultSetServiceClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -483,22 +456,14 @@ pub mod result_set_service_client {
         pub async fn get_metadata(
             &mut self,
             request: impl tonic::IntoRequest<super::ResultSetGetMetadataRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetGetMetadataResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::ResultSetGetMetadataResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.ResultSetService/GetMetadata",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/simpledb.ResultSetService/GetMetadata");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.ResultSetService", "GetMetadata"));
@@ -507,22 +472,13 @@ pub mod result_set_service_client {
         pub async fn next(
             &mut self,
             request: impl tonic::IntoRequest<super::ResultSetNextRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetNextResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::ResultSetNextResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.ResultSetService/Next",
-            );
+            let path = http::uri::PathAndQuery::from_static("/simpledb.ResultSetService/Next");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.ResultSetService", "Next"));
@@ -531,22 +487,13 @@ pub mod result_set_service_client {
         pub async fn previous(
             &mut self,
             request: impl tonic::IntoRequest<super::ResultSetPreviousRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetPreviousResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::ResultSetPreviousResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.ResultSetService/Previous",
-            );
+            let path = http::uri::PathAndQuery::from_static("/simpledb.ResultSetService/Previous");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.ResultSetService", "Previous"));
@@ -555,22 +502,13 @@ pub mod result_set_service_client {
         pub async fn get_i32(
             &mut self,
             request: impl tonic::IntoRequest<super::ResultSetGetI32Request>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetGetI32Response>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::ResultSetGetI32Response>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.ResultSetService/GetI32",
-            );
+            let path = http::uri::PathAndQuery::from_static("/simpledb.ResultSetService/GetI32");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.ResultSetService", "GetI32"));
@@ -579,22 +517,13 @@ pub mod result_set_service_client {
         pub async fn get_string(
             &mut self,
             request: impl tonic::IntoRequest<super::ResultSetGetStringRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetGetStringResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::ResultSetGetStringResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.ResultSetService/GetString",
-            );
+            let path = http::uri::PathAndQuery::from_static("/simpledb.ResultSetService/GetString");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.ResultSetService", "GetString"));
@@ -603,22 +532,14 @@ pub mod result_set_service_client {
         pub async fn before_first(
             &mut self,
             request: impl tonic::IntoRequest<super::ResultSetBeforeFirstRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetBeforeFirstResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::ResultSetBeforeFirstResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.ResultSetService/BeforeFirst",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/simpledb.ResultSetService/BeforeFirst");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.ResultSetService", "BeforeFirst"));
@@ -627,22 +548,13 @@ pub mod result_set_service_client {
         pub async fn after_last(
             &mut self,
             request: impl tonic::IntoRequest<super::ResultSetAfterLastRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetAfterLastResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::ResultSetAfterLastResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.ResultSetService/AfterLast",
-            );
+            let path = http::uri::PathAndQuery::from_static("/simpledb.ResultSetService/AfterLast");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.ResultSetService", "AfterLast"));
@@ -651,22 +563,13 @@ pub mod result_set_service_client {
         pub async fn absolute(
             &mut self,
             request: impl tonic::IntoRequest<super::ResultSetAbsoluteRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetAbsoluteResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::ResultSetAbsoluteResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.ResultSetService/Absolute",
-            );
+            let path = http::uri::PathAndQuery::from_static("/simpledb.ResultSetService/Absolute");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.ResultSetService", "Absolute"));
@@ -675,22 +578,13 @@ pub mod result_set_service_client {
         pub async fn close(
             &mut self,
             request: impl tonic::IntoRequest<super::ResultSetCloseRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetCloseResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::ResultSetCloseResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.ResultSetService/Close",
-            );
+            let path = http::uri::PathAndQuery::from_static("/simpledb.ResultSetService/Close");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.ResultSetService", "Close"));
@@ -705,10 +599,10 @@ pub mod statement_service_client {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value,
+        clippy::let_unit_value
     )]
-    use tonic::codegen::*;
     use tonic::codegen::http::Uri;
+    use tonic::codegen::*;
     #[derive(Debug, Clone)]
     pub struct StatementServiceClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -752,9 +646,8 @@ pub mod statement_service_client {
                     <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
+            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+                Into<StdError> + std::marker::Send + std::marker::Sync,
         {
             StatementServiceClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -792,22 +685,14 @@ pub mod statement_service_client {
         pub async fn execute_query(
             &mut self,
             request: impl tonic::IntoRequest<super::StatementExecuteQueryRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::StatementExecuteQueryResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::StatementExecuteQueryResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.StatementService/ExecuteQuery",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/simpledb.StatementService/ExecuteQuery");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.StatementService", "ExecuteQuery"));
@@ -820,21 +705,17 @@ pub mod statement_service_client {
             tonic::Response<super::StatementExecuteUpdateResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.StatementService/ExecuteUpdate",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/simpledb.StatementService/ExecuteUpdate");
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("simpledb.StatementService", "ExecuteUpdate"));
+            req.extensions_mut().insert(GrpcMethod::new(
+                "simpledb.StatementService",
+                "ExecuteUpdate",
+            ));
             self.inner.unary(req, path, codec).await
         }
     }
@@ -846,10 +727,10 @@ pub mod connection_service_client {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value,
+        clippy::let_unit_value
     )]
-    use tonic::codegen::*;
     use tonic::codegen::http::Uri;
+    use tonic::codegen::*;
     #[derive(Debug, Clone)]
     pub struct ConnectionServiceClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -893,9 +774,8 @@ pub mod connection_service_client {
                     <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
+            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+                Into<StdError> + std::marker::Send + std::marker::Sync,
         {
             ConnectionServiceClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -937,44 +817,29 @@ pub mod connection_service_client {
             tonic::Response<super::ConnectionCreateStatementResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.ConnectionService/CreateStatement",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/simpledb.ConnectionService/CreateStatement");
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("simpledb.ConnectionService", "CreateStatement"),
-                );
+            req.extensions_mut().insert(GrpcMethod::new(
+                "simpledb.ConnectionService",
+                "CreateStatement",
+            ));
             self.inner.unary(req, path, codec).await
         }
         pub async fn close(
             &mut self,
             request: impl tonic::IntoRequest<super::ConnectionCloseRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ConnectionCloseResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::ConnectionCloseResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.ConnectionService/Close",
-            );
+            let path = http::uri::PathAndQuery::from_static("/simpledb.ConnectionService/Close");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.ConnectionService", "Close"));
@@ -983,22 +848,13 @@ pub mod connection_service_client {
         pub async fn commit(
             &mut self,
             request: impl tonic::IntoRequest<super::ConnectionCommitRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ConnectionCommitResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::ConnectionCommitResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.ConnectionService/Commit",
-            );
+            let path = http::uri::PathAndQuery::from_static("/simpledb.ConnectionService/Commit");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.ConnectionService", "Commit"));
@@ -1007,22 +863,13 @@ pub mod connection_service_client {
         pub async fn rollback(
             &mut self,
             request: impl tonic::IntoRequest<super::ConnectionRollbackRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ConnectionRollbackResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::ConnectionRollbackResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.ConnectionService/Rollback",
-            );
+            let path = http::uri::PathAndQuery::from_static("/simpledb.ConnectionService/Rollback");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("simpledb.ConnectionService", "Rollback"));
@@ -1037,10 +884,10 @@ pub mod driver_service_client {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value,
+        clippy::let_unit_value
     )]
-    use tonic::codegen::*;
     use tonic::codegen::http::Uri;
+    use tonic::codegen::*;
     #[derive(Debug, Clone)]
     pub struct DriverServiceClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -1084,9 +931,8 @@ pub mod driver_service_client {
                     <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
+            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+                Into<StdError> + std::marker::Send + std::marker::Sync,
         {
             DriverServiceClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -1128,21 +974,17 @@ pub mod driver_service_client {
             tonic::Response<super::DriverCreateConnectionResponse>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/simpledb.DriverService/CreateConnection",
-            );
+            let path =
+                http::uri::PathAndQuery::from_static("/simpledb.DriverService/CreateConnection");
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("simpledb.DriverService", "CreateConnection"));
+            req.extensions_mut().insert(GrpcMethod::new(
+                "simpledb.DriverService",
+                "CreateConnection",
+            ));
             self.inner.unary(req, path, codec).await
         }
     }
@@ -1154,7 +996,7 @@ pub mod metadata_service_server {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value,
+        clippy::let_unit_value
     )]
     use tonic::codegen::*;
     /// Generated trait containing gRPC methods that should be implemented for use with MetadataServiceServer.
@@ -1170,10 +1012,7 @@ pub mod metadata_service_server {
         async fn get_column_name(
             &self,
             request: tonic::Request<super::MetadataGetColumnNameRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::MetadataGetColumnNameResponse>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<super::MetadataGetColumnNameResponse>, tonic::Status>;
         async fn get_column_display_size(
             &self,
             request: tonic::Request<super::MetadataGetColumnDisplaySizeRequest>,
@@ -1184,10 +1023,7 @@ pub mod metadata_service_server {
         async fn get_column_type(
             &self,
             request: tonic::Request<super::MetadataGetColumnTypeRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::MetadataGetColumnTypeResponse>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<super::MetadataGetColumnTypeResponse>, tonic::Status>;
     }
     #[derive(Debug)]
     pub struct MetadataServiceServer<T> {
@@ -1210,10 +1046,7 @@ pub mod metadata_service_server {
                 max_encoding_message_size: None,
             }
         }
-        pub fn with_interceptor<F>(
-            inner: T,
-            interceptor: F,
-        ) -> InterceptedService<Self, F>
+        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
         where
             F: tonic::service::Interceptor,
         {
@@ -1268,23 +1101,19 @@ pub mod metadata_service_server {
                 "/simpledb.MetadataService/GetColumnCount" => {
                     #[allow(non_camel_case_types)]
                     struct GetColumnCountSvc<T: MetadataService>(pub Arc<T>);
-                    impl<
-                        T: MetadataService,
-                    > tonic::server::UnaryService<super::MetadataGetColumnCountRequest>
-                    for GetColumnCountSvc<T> {
+                    impl<T: MetadataService>
+                        tonic::server::UnaryService<super::MetadataGetColumnCountRequest>
+                        for GetColumnCountSvc<T>
+                    {
                         type Response = super::MetadataGetColumnCountResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::MetadataGetColumnCountRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as MetadataService>::get_column_count(&inner, request)
-                                    .await
+                                <T as MetadataService>::get_column_count(&inner, request).await
                             };
                             Box::pin(fut)
                         }
@@ -1314,23 +1143,19 @@ pub mod metadata_service_server {
                 "/simpledb.MetadataService/GetColumnName" => {
                     #[allow(non_camel_case_types)]
                     struct GetColumnNameSvc<T: MetadataService>(pub Arc<T>);
-                    impl<
-                        T: MetadataService,
-                    > tonic::server::UnaryService<super::MetadataGetColumnNameRequest>
-                    for GetColumnNameSvc<T> {
+                    impl<T: MetadataService>
+                        tonic::server::UnaryService<super::MetadataGetColumnNameRequest>
+                        for GetColumnNameSvc<T>
+                    {
                         type Response = super::MetadataGetColumnNameResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::MetadataGetColumnNameRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as MetadataService>::get_column_name(&inner, request)
-                                    .await
+                                <T as MetadataService>::get_column_name(&inner, request).await
                             };
                             Box::pin(fut)
                         }
@@ -1360,28 +1185,19 @@ pub mod metadata_service_server {
                 "/simpledb.MetadataService/GetColumnDisplaySize" => {
                     #[allow(non_camel_case_types)]
                     struct GetColumnDisplaySizeSvc<T: MetadataService>(pub Arc<T>);
-                    impl<
-                        T: MetadataService,
-                    > tonic::server::UnaryService<
-                        super::MetadataGetColumnDisplaySizeRequest,
-                    > for GetColumnDisplaySizeSvc<T> {
+                    impl<T: MetadataService>
+                        tonic::server::UnaryService<super::MetadataGetColumnDisplaySizeRequest>
+                        for GetColumnDisplaySizeSvc<T>
+                    {
                         type Response = super::MetadataGetColumnDisplaySizeResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
-                            request: tonic::Request<
-                                super::MetadataGetColumnDisplaySizeRequest,
-                            >,
+                            request: tonic::Request<super::MetadataGetColumnDisplaySizeRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as MetadataService>::get_column_display_size(
-                                        &inner,
-                                        request,
-                                    )
+                                <T as MetadataService>::get_column_display_size(&inner, request)
                                     .await
                             };
                             Box::pin(fut)
@@ -1412,23 +1228,19 @@ pub mod metadata_service_server {
                 "/simpledb.MetadataService/GetColumnType" => {
                     #[allow(non_camel_case_types)]
                     struct GetColumnTypeSvc<T: MetadataService>(pub Arc<T>);
-                    impl<
-                        T: MetadataService,
-                    > tonic::server::UnaryService<super::MetadataGetColumnTypeRequest>
-                    for GetColumnTypeSvc<T> {
+                    impl<T: MetadataService>
+                        tonic::server::UnaryService<super::MetadataGetColumnTypeRequest>
+                        for GetColumnTypeSvc<T>
+                    {
                         type Response = super::MetadataGetColumnTypeResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::MetadataGetColumnTypeRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as MetadataService>::get_column_type(&inner, request)
-                                    .await
+                                <T as MetadataService>::get_column_type(&inner, request).await
                             };
                             Box::pin(fut)
                         }
@@ -1455,23 +1267,19 @@ pub mod metadata_service_server {
                     };
                     Box::pin(fut)
                 }
-                _ => {
-                    Box::pin(async move {
-                        let mut response = http::Response::new(empty_body());
-                        let headers = response.headers_mut();
-                        headers
-                            .insert(
-                                tonic::Status::GRPC_STATUS,
-                                (tonic::Code::Unimplemented as i32).into(),
-                            );
-                        headers
-                            .insert(
-                                http::header::CONTENT_TYPE,
-                                tonic::metadata::GRPC_CONTENT_TYPE,
-                            );
-                        Ok(response)
-                    })
-                }
+                _ => Box::pin(async move {
+                    let mut response = http::Response::new(empty_body());
+                    let headers = response.headers_mut();
+                    headers.insert(
+                        tonic::Status::GRPC_STATUS,
+                        (tonic::Code::Unimplemented as i32).into(),
+                    );
+                    headers.insert(
+                        http::header::CONTENT_TYPE,
+                        tonic::metadata::GRPC_CONTENT_TYPE,
+                    );
+                    Ok(response)
+                }),
             }
         }
     }
@@ -1500,7 +1308,7 @@ pub mod result_set_service_server {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value,
+        clippy::let_unit_value
     )]
     use tonic::codegen::*;
     /// Generated trait containing gRPC methods that should be implemented for use with ResultSetServiceServer.
@@ -1509,66 +1317,39 @@ pub mod result_set_service_server {
         async fn get_metadata(
             &self,
             request: tonic::Request<super::ResultSetGetMetadataRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetGetMetadataResponse>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<super::ResultSetGetMetadataResponse>, tonic::Status>;
         async fn next(
             &self,
             request: tonic::Request<super::ResultSetNextRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetNextResponse>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<super::ResultSetNextResponse>, tonic::Status>;
         async fn previous(
             &self,
             request: tonic::Request<super::ResultSetPreviousRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetPreviousResponse>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<super::ResultSetPreviousResponse>, tonic::Status>;
         async fn get_i32(
             &self,
             request: tonic::Request<super::ResultSetGetI32Request>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetGetI32Response>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<super::ResultSetGetI32Response>, tonic::Status>;
         async fn get_string(
             &self,
             request: tonic::Request<super::ResultSetGetStringRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetGetStringResponse>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<super::ResultSetGetStringResponse>, tonic::Status>;
         async fn before_first(
             &self,
             request: tonic::Request<super::ResultSetBeforeFirstRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetBeforeFirstResponse>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<super::ResultSetBeforeFirstResponse>, tonic::Status>;
         async fn after_last(
             &self,
             request: tonic::Request<super::ResultSetAfterLastRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetAfterLastResponse>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<super::ResultSetAfterLastResponse>, tonic::Status>;
         async fn absolute(
             &self,
             request: tonic::Request<super::ResultSetAbsoluteRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetAbsoluteResponse>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<super::ResultSetAbsoluteResponse>, tonic::Status>;
         async fn close(
             &self,
             request: tonic::Request<super::ResultSetCloseRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ResultSetCloseResponse>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<super::ResultSetCloseResponse>, tonic::Status>;
     }
     #[derive(Debug)]
     pub struct ResultSetServiceServer<T> {
@@ -1591,10 +1372,7 @@ pub mod result_set_service_server {
                 max_encoding_message_size: None,
             }
         }
-        pub fn with_interceptor<F>(
-            inner: T,
-            interceptor: F,
-        ) -> InterceptedService<Self, F>
+        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
         where
             F: tonic::service::Interceptor,
         {
@@ -1649,15 +1427,12 @@ pub mod result_set_service_server {
                 "/simpledb.ResultSetService/GetMetadata" => {
                     #[allow(non_camel_case_types)]
                     struct GetMetadataSvc<T: ResultSetService>(pub Arc<T>);
-                    impl<
-                        T: ResultSetService,
-                    > tonic::server::UnaryService<super::ResultSetGetMetadataRequest>
-                    for GetMetadataSvc<T> {
+                    impl<T: ResultSetService>
+                        tonic::server::UnaryService<super::ResultSetGetMetadataRequest>
+                        for GetMetadataSvc<T>
+                    {
                         type Response = super::ResultSetGetMetadataResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::ResultSetGetMetadataRequest>,
@@ -1694,23 +1469,18 @@ pub mod result_set_service_server {
                 "/simpledb.ResultSetService/Next" => {
                     #[allow(non_camel_case_types)]
                     struct NextSvc<T: ResultSetService>(pub Arc<T>);
-                    impl<
-                        T: ResultSetService,
-                    > tonic::server::UnaryService<super::ResultSetNextRequest>
-                    for NextSvc<T> {
+                    impl<T: ResultSetService>
+                        tonic::server::UnaryService<super::ResultSetNextRequest> for NextSvc<T>
+                    {
                         type Response = super::ResultSetNextResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::ResultSetNextRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as ResultSetService>::next(&inner, request).await
-                            };
+                            let fut =
+                                async move { <T as ResultSetService>::next(&inner, request).await };
                             Box::pin(fut)
                         }
                     }
@@ -1739,15 +1509,12 @@ pub mod result_set_service_server {
                 "/simpledb.ResultSetService/Previous" => {
                     #[allow(non_camel_case_types)]
                     struct PreviousSvc<T: ResultSetService>(pub Arc<T>);
-                    impl<
-                        T: ResultSetService,
-                    > tonic::server::UnaryService<super::ResultSetPreviousRequest>
-                    for PreviousSvc<T> {
+                    impl<T: ResultSetService>
+                        tonic::server::UnaryService<super::ResultSetPreviousRequest>
+                        for PreviousSvc<T>
+                    {
                         type Response = super::ResultSetPreviousResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::ResultSetPreviousRequest>,
@@ -1784,15 +1551,12 @@ pub mod result_set_service_server {
                 "/simpledb.ResultSetService/GetI32" => {
                     #[allow(non_camel_case_types)]
                     struct GetI32Svc<T: ResultSetService>(pub Arc<T>);
-                    impl<
-                        T: ResultSetService,
-                    > tonic::server::UnaryService<super::ResultSetGetI32Request>
-                    for GetI32Svc<T> {
+                    impl<T: ResultSetService>
+                        tonic::server::UnaryService<super::ResultSetGetI32Request>
+                        for GetI32Svc<T>
+                    {
                         type Response = super::ResultSetGetI32Response;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::ResultSetGetI32Request>,
@@ -1829,15 +1593,12 @@ pub mod result_set_service_server {
                 "/simpledb.ResultSetService/GetString" => {
                     #[allow(non_camel_case_types)]
                     struct GetStringSvc<T: ResultSetService>(pub Arc<T>);
-                    impl<
-                        T: ResultSetService,
-                    > tonic::server::UnaryService<super::ResultSetGetStringRequest>
-                    for GetStringSvc<T> {
+                    impl<T: ResultSetService>
+                        tonic::server::UnaryService<super::ResultSetGetStringRequest>
+                        for GetStringSvc<T>
+                    {
                         type Response = super::ResultSetGetStringResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::ResultSetGetStringRequest>,
@@ -1874,15 +1635,12 @@ pub mod result_set_service_server {
                 "/simpledb.ResultSetService/BeforeFirst" => {
                     #[allow(non_camel_case_types)]
                     struct BeforeFirstSvc<T: ResultSetService>(pub Arc<T>);
-                    impl<
-                        T: ResultSetService,
-                    > tonic::server::UnaryService<super::ResultSetBeforeFirstRequest>
-                    for BeforeFirstSvc<T> {
+                    impl<T: ResultSetService>
+                        tonic::server::UnaryService<super::ResultSetBeforeFirstRequest>
+                        for BeforeFirstSvc<T>
+                    {
                         type Response = super::ResultSetBeforeFirstResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::ResultSetBeforeFirstRequest>,
@@ -1919,15 +1677,12 @@ pub mod result_set_service_server {
                 "/simpledb.ResultSetService/AfterLast" => {
                     #[allow(non_camel_case_types)]
                     struct AfterLastSvc<T: ResultSetService>(pub Arc<T>);
-                    impl<
-                        T: ResultSetService,
-                    > tonic::server::UnaryService<super::ResultSetAfterLastRequest>
-                    for AfterLastSvc<T> {
+                    impl<T: ResultSetService>
+                        tonic::server::UnaryService<super::ResultSetAfterLastRequest>
+                        for AfterLastSvc<T>
+                    {
                         type Response = super::ResultSetAfterLastResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::ResultSetAfterLastRequest>,
@@ -1964,15 +1719,12 @@ pub mod result_set_service_server {
                 "/simpledb.ResultSetService/Absolute" => {
                     #[allow(non_camel_case_types)]
                     struct AbsoluteSvc<T: ResultSetService>(pub Arc<T>);
-                    impl<
-                        T: ResultSetService,
-                    > tonic::server::UnaryService<super::ResultSetAbsoluteRequest>
-                    for AbsoluteSvc<T> {
+                    impl<T: ResultSetService>
+                        tonic::server::UnaryService<super::ResultSetAbsoluteRequest>
+                        for AbsoluteSvc<T>
+                    {
                         type Response = super::ResultSetAbsoluteResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::ResultSetAbsoluteRequest>,
@@ -2009,15 +1761,11 @@ pub mod result_set_service_server {
                 "/simpledb.ResultSetService/Close" => {
                     #[allow(non_camel_case_types)]
                     struct CloseSvc<T: ResultSetService>(pub Arc<T>);
-                    impl<
-                        T: ResultSetService,
-                    > tonic::server::UnaryService<super::ResultSetCloseRequest>
-                    for CloseSvc<T> {
+                    impl<T: ResultSetService>
+                        tonic::server::UnaryService<super::ResultSetCloseRequest> for CloseSvc<T>
+                    {
                         type Response = super::ResultSetCloseResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::ResultSetCloseRequest>,
@@ -2051,23 +1799,19 @@ pub mod result_set_service_server {
                     };
                     Box::pin(fut)
                 }
-                _ => {
-                    Box::pin(async move {
-                        let mut response = http::Response::new(empty_body());
-                        let headers = response.headers_mut();
-                        headers
-                            .insert(
-                                tonic::Status::GRPC_STATUS,
-                                (tonic::Code::Unimplemented as i32).into(),
-                            );
-                        headers
-                            .insert(
-                                http::header::CONTENT_TYPE,
-                                tonic::metadata::GRPC_CONTENT_TYPE,
-                            );
-                        Ok(response)
-                    })
-                }
+                _ => Box::pin(async move {
+                    let mut response = http::Response::new(empty_body());
+                    let headers = response.headers_mut();
+                    headers.insert(
+                        tonic::Status::GRPC_STATUS,
+                        (tonic::Code::Unimplemented as i32).into(),
+                    );
+                    headers.insert(
+                        http::header::CONTENT_TYPE,
+                        tonic::metadata::GRPC_CONTENT_TYPE,
+                    );
+                    Ok(response)
+                }),
             }
         }
     }
@@ -2096,7 +1840,7 @@ pub mod statement_service_server {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value,
+        clippy::let_unit_value
     )]
     use tonic::codegen::*;
     /// Generated trait containing gRPC methods that should be implemented for use with StatementServiceServer.
@@ -2105,10 +1849,7 @@ pub mod statement_service_server {
         async fn execute_query(
             &self,
             request: tonic::Request<super::StatementExecuteQueryRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::StatementExecuteQueryResponse>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<super::StatementExecuteQueryResponse>, tonic::Status>;
         async fn execute_update(
             &self,
             request: tonic::Request<super::StatementExecuteUpdateRequest>,
@@ -2138,10 +1879,7 @@ pub mod statement_service_server {
                 max_encoding_message_size: None,
             }
         }
-        pub fn with_interceptor<F>(
-            inner: T,
-            interceptor: F,
-        ) -> InterceptedService<Self, F>
+        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
         where
             F: tonic::service::Interceptor,
         {
@@ -2196,23 +1934,19 @@ pub mod statement_service_server {
                 "/simpledb.StatementService/ExecuteQuery" => {
                     #[allow(non_camel_case_types)]
                     struct ExecuteQuerySvc<T: StatementService>(pub Arc<T>);
-                    impl<
-                        T: StatementService,
-                    > tonic::server::UnaryService<super::StatementExecuteQueryRequest>
-                    for ExecuteQuerySvc<T> {
+                    impl<T: StatementService>
+                        tonic::server::UnaryService<super::StatementExecuteQueryRequest>
+                        for ExecuteQuerySvc<T>
+                    {
                         type Response = super::StatementExecuteQueryResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::StatementExecuteQueryRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as StatementService>::execute_query(&inner, request)
-                                    .await
+                                <T as StatementService>::execute_query(&inner, request).await
                             };
                             Box::pin(fut)
                         }
@@ -2242,23 +1976,19 @@ pub mod statement_service_server {
                 "/simpledb.StatementService/ExecuteUpdate" => {
                     #[allow(non_camel_case_types)]
                     struct ExecuteUpdateSvc<T: StatementService>(pub Arc<T>);
-                    impl<
-                        T: StatementService,
-                    > tonic::server::UnaryService<super::StatementExecuteUpdateRequest>
-                    for ExecuteUpdateSvc<T> {
+                    impl<T: StatementService>
+                        tonic::server::UnaryService<super::StatementExecuteUpdateRequest>
+                        for ExecuteUpdateSvc<T>
+                    {
                         type Response = super::StatementExecuteUpdateResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::StatementExecuteUpdateRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as StatementService>::execute_update(&inner, request)
-                                    .await
+                                <T as StatementService>::execute_update(&inner, request).await
                             };
                             Box::pin(fut)
                         }
@@ -2285,23 +2015,19 @@ pub mod statement_service_server {
                     };
                     Box::pin(fut)
                 }
-                _ => {
-                    Box::pin(async move {
-                        let mut response = http::Response::new(empty_body());
-                        let headers = response.headers_mut();
-                        headers
-                            .insert(
-                                tonic::Status::GRPC_STATUS,
-                                (tonic::Code::Unimplemented as i32).into(),
-                            );
-                        headers
-                            .insert(
-                                http::header::CONTENT_TYPE,
-                                tonic::metadata::GRPC_CONTENT_TYPE,
-                            );
-                        Ok(response)
-                    })
-                }
+                _ => Box::pin(async move {
+                    let mut response = http::Response::new(empty_body());
+                    let headers = response.headers_mut();
+                    headers.insert(
+                        tonic::Status::GRPC_STATUS,
+                        (tonic::Code::Unimplemented as i32).into(),
+                    );
+                    headers.insert(
+                        http::header::CONTENT_TYPE,
+                        tonic::metadata::GRPC_CONTENT_TYPE,
+                    );
+                    Ok(response)
+                }),
             }
         }
     }
@@ -2330,7 +2056,7 @@ pub mod connection_service_server {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value,
+        clippy::let_unit_value
     )]
     use tonic::codegen::*;
     /// Generated trait containing gRPC methods that should be implemented for use with ConnectionServiceServer.
@@ -2346,24 +2072,15 @@ pub mod connection_service_server {
         async fn close(
             &self,
             request: tonic::Request<super::ConnectionCloseRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ConnectionCloseResponse>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<super::ConnectionCloseResponse>, tonic::Status>;
         async fn commit(
             &self,
             request: tonic::Request<super::ConnectionCommitRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ConnectionCommitResponse>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<super::ConnectionCommitResponse>, tonic::Status>;
         async fn rollback(
             &self,
             request: tonic::Request<super::ConnectionRollbackRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::ConnectionRollbackResponse>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<super::ConnectionRollbackResponse>, tonic::Status>;
     }
     #[derive(Debug)]
     pub struct ConnectionServiceServer<T> {
@@ -2386,10 +2103,7 @@ pub mod connection_service_server {
                 max_encoding_message_size: None,
             }
         }
-        pub fn with_interceptor<F>(
-            inner: T,
-            interceptor: F,
-        ) -> InterceptedService<Self, F>
+        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
         where
             F: tonic::service::Interceptor,
         {
@@ -2444,26 +2158,19 @@ pub mod connection_service_server {
                 "/simpledb.ConnectionService/CreateStatement" => {
                     #[allow(non_camel_case_types)]
                     struct CreateStatementSvc<T: ConnectionService>(pub Arc<T>);
-                    impl<
-                        T: ConnectionService,
-                    > tonic::server::UnaryService<
-                        super::ConnectionCreateStatementRequest,
-                    > for CreateStatementSvc<T> {
+                    impl<T: ConnectionService>
+                        tonic::server::UnaryService<super::ConnectionCreateStatementRequest>
+                        for CreateStatementSvc<T>
+                    {
                         type Response = super::ConnectionCreateStatementResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
-                            request: tonic::Request<
-                                super::ConnectionCreateStatementRequest,
-                            >,
+                            request: tonic::Request<super::ConnectionCreateStatementRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as ConnectionService>::create_statement(&inner, request)
-                                    .await
+                                <T as ConnectionService>::create_statement(&inner, request).await
                             };
                             Box::pin(fut)
                         }
@@ -2493,15 +2200,11 @@ pub mod connection_service_server {
                 "/simpledb.ConnectionService/Close" => {
                     #[allow(non_camel_case_types)]
                     struct CloseSvc<T: ConnectionService>(pub Arc<T>);
-                    impl<
-                        T: ConnectionService,
-                    > tonic::server::UnaryService<super::ConnectionCloseRequest>
-                    for CloseSvc<T> {
+                    impl<T: ConnectionService>
+                        tonic::server::UnaryService<super::ConnectionCloseRequest> for CloseSvc<T>
+                    {
                         type Response = super::ConnectionCloseResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::ConnectionCloseRequest>,
@@ -2538,15 +2241,12 @@ pub mod connection_service_server {
                 "/simpledb.ConnectionService/Commit" => {
                     #[allow(non_camel_case_types)]
                     struct CommitSvc<T: ConnectionService>(pub Arc<T>);
-                    impl<
-                        T: ConnectionService,
-                    > tonic::server::UnaryService<super::ConnectionCommitRequest>
-                    for CommitSvc<T> {
+                    impl<T: ConnectionService>
+                        tonic::server::UnaryService<super::ConnectionCommitRequest>
+                        for CommitSvc<T>
+                    {
                         type Response = super::ConnectionCommitResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::ConnectionCommitRequest>,
@@ -2583,15 +2283,12 @@ pub mod connection_service_server {
                 "/simpledb.ConnectionService/Rollback" => {
                     #[allow(non_camel_case_types)]
                     struct RollbackSvc<T: ConnectionService>(pub Arc<T>);
-                    impl<
-                        T: ConnectionService,
-                    > tonic::server::UnaryService<super::ConnectionRollbackRequest>
-                    for RollbackSvc<T> {
+                    impl<T: ConnectionService>
+                        tonic::server::UnaryService<super::ConnectionRollbackRequest>
+                        for RollbackSvc<T>
+                    {
                         type Response = super::ConnectionRollbackResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::ConnectionRollbackRequest>,
@@ -2625,23 +2322,19 @@ pub mod connection_service_server {
                     };
                     Box::pin(fut)
                 }
-                _ => {
-                    Box::pin(async move {
-                        let mut response = http::Response::new(empty_body());
-                        let headers = response.headers_mut();
-                        headers
-                            .insert(
-                                tonic::Status::GRPC_STATUS,
-                                (tonic::Code::Unimplemented as i32).into(),
-                            );
-                        headers
-                            .insert(
-                                http::header::CONTENT_TYPE,
-                                tonic::metadata::GRPC_CONTENT_TYPE,
-                            );
-                        Ok(response)
-                    })
-                }
+                _ => Box::pin(async move {
+                    let mut response = http::Response::new(empty_body());
+                    let headers = response.headers_mut();
+                    headers.insert(
+                        tonic::Status::GRPC_STATUS,
+                        (tonic::Code::Unimplemented as i32).into(),
+                    );
+                    headers.insert(
+                        http::header::CONTENT_TYPE,
+                        tonic::metadata::GRPC_CONTENT_TYPE,
+                    );
+                    Ok(response)
+                }),
             }
         }
     }
@@ -2670,7 +2363,7 @@ pub mod driver_service_server {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value,
+        clippy::let_unit_value
     )]
     use tonic::codegen::*;
     /// Generated trait containing gRPC methods that should be implemented for use with DriverServiceServer.
@@ -2705,10 +2398,7 @@ pub mod driver_service_server {
                 max_encoding_message_size: None,
             }
         }
-        pub fn with_interceptor<F>(
-            inner: T,
-            interceptor: F,
-        ) -> InterceptedService<Self, F>
+        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
         where
             F: tonic::service::Interceptor,
         {
@@ -2763,23 +2453,19 @@ pub mod driver_service_server {
                 "/simpledb.DriverService/CreateConnection" => {
                     #[allow(non_camel_case_types)]
                     struct CreateConnectionSvc<T: DriverService>(pub Arc<T>);
-                    impl<
-                        T: DriverService,
-                    > tonic::server::UnaryService<super::DriverCreateConnectionRequest>
-                    for CreateConnectionSvc<T> {
+                    impl<T: DriverService>
+                        tonic::server::UnaryService<super::DriverCreateConnectionRequest>
+                        for CreateConnectionSvc<T>
+                    {
                         type Response = super::DriverCreateConnectionResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::DriverCreateConnectionRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as DriverService>::create_connection(&inner, request)
-                                    .await
+                                <T as DriverService>::create_connection(&inner, request).await
                             };
                             Box::pin(fut)
                         }
@@ -2806,23 +2492,19 @@ pub mod driver_service_server {
                     };
                     Box::pin(fut)
                 }
-                _ => {
-                    Box::pin(async move {
-                        let mut response = http::Response::new(empty_body());
-                        let headers = response.headers_mut();
-                        headers
-                            .insert(
-                                tonic::Status::GRPC_STATUS,
-                                (tonic::Code::Unimplemented as i32).into(),
-                            );
-                        headers
-                            .insert(
-                                http::header::CONTENT_TYPE,
-                                tonic::metadata::GRPC_CONTENT_TYPE,
-                            );
-                        Ok(response)
-                    })
-                }
+                _ => Box::pin(async move {
+                    let mut response = http::Response::new(empty_body());
+                    let headers = response.headers_mut();
+                    headers.insert(
+                        tonic::Status::GRPC_STATUS,
+                        (tonic::Code::Unimplemented as i32).into(),
+                    );
+                    headers.insert(
+                        http::header::CONTENT_TYPE,
+                        tonic::metadata::GRPC_CONTENT_TYPE,
+                    );
+                    Ok(response)
+                }),
             }
         }
     }
