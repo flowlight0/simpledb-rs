@@ -21,6 +21,7 @@ match {
     r"(?i)INDEX" => INDEX,
     r"(?i)ON" => ON,
     r"(?i)AS" => AS,
+    r"(?i)IS" => IS,
     r"(?i)AND" => AND,
     r"(?i)NULL" => NULL,
     r"(?i)I32" => I32,
@@ -81,6 +82,7 @@ pub Predicate: predicate::Predicate = {
 }
 
 pub Term: predicate::Term = {
+    <e:Expression> IS NULL => predicate::Term::IsNull(e),
     <l:Expression> EQ <r:Expression> => predicate::Term::Equality(l, r),
 }
 

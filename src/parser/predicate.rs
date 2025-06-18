@@ -14,6 +14,10 @@ pub enum Expression {
 }
 
 impl Expression {
+    /// Evaluates the expression against the given [`Scan`].
+    ///
+    /// The resulting [`Value`] is returned in a `Result` since accessing a
+    /// field may fail if the underlying scan encounters an error.
     pub fn evaluate(&self, scan: &mut Scan) -> Result<Value, TransactionError> {
         match self {
             Expression::NullConstant => Ok(Value::Null),
@@ -45,6 +49,10 @@ impl Expression {
         }
     }
 
+    /// Returns `true` if the expression can be applied to the given schema.
+    ///
+    /// Field references must exist in the schema while constant expressions are
+    /// always applicable.
     fn is_applied_to(&self, schema: &Schema) -> bool {
         match self {
             Expression::Field(field_name) => schema.has_field(field_name),
@@ -56,9 +64,14 @@ impl Expression {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
     Equality(Expression, Expression),
+    IsNull(Expression),
 }
 
 impl Term {
+    /// Evaluates the term for the current row of the given [`Scan`].
+    ///
+    /// Returns `Ok(true)` if the term is satisfied, `Ok(false)` otherwise. Any
+    /// I/O errors produced while reading values from the scan are forwarded.
     pub fn is_satisfied(&self, scan: &mut Scan) -> Result<bool, TransactionError> {
         match self {
             Term::Equality(lhs, rhs) => {
@@ -66,9 +79,18 @@ impl Term {
                 let rhs = rhs.evaluate(scan)?;
                 Ok(lhs == rhs)
             }
+            Term::IsNull(expr) => {
+                let value = expr.evaluate(scan)?;
+                Ok(value == Value::Null)
+            }
         }
     }
 
+    /// Estimates the reduction factor of the term for query planning.
+    ///
+    /// The reduction factor is based on the distinct value counts provided by
+    /// the [`Plan`] and follows the same heuristics as the Java version from
+    /// the "SimpleDB" textbook.
     pub fn get_reduction_factor(&self, plan: &Plan) -> usize {
         match self {
             Term::Equality(lhs, rhs) => {
@@ -96,9 +118,19 @@ impl Term {
                     return 100;
                 }
             }
+            Term::IsNull(expr) => {
+                if let Some(field) = expr.try_get_field() {
+                    return plan.num_distinct_values(field);
+                }
+                if let Some(value) = expr.try_get_constant() {
+                    return if value == Value::Null { 1 } else { 100 };
+                }
+                100
+            }
         }
     }
 
+    /// If this term equates the given field with a constant, return that constant.
     fn equates_with_constant(&self, field_name: &str) -> Option<Value> {
         match self {
             Term::Equality(lhs, rhs) => {
@@ -117,10 +149,19 @@ impl Term {
                     }
                 }
             }
+            Term::IsNull(expr) => {
+                if let Some(field) = expr.try_get_field() {
+                    if field == field_name {
+                        return Some(Value::Null);
+                    }
+                }
+            }
         }
         return None;
     }
 
+    /// If this term equates the given field with another field, return the other
+    /// field name.
     fn equates_with_field(&self, field_name: &str) -> Option<String> {
         match self {
             Term::Equality(lhs, rhs) => {
@@ -139,14 +180,17 @@ impl Term {
                     }
                 }
             }
+            Term::IsNull(_) => {}
         }
         return None;
     }
 
-    // Returns true if the fields in the term are all in the schema.
+    /// Returns `true` if all fields referenced by the term are present in the
+    /// provided schema.
     fn is_applied_to(&self, schema: &Schema) -> bool {
         match self {
             Term::Equality(lhs, rhs) => lhs.is_applied_to(schema) && rhs.is_applied_to(schema),
+            Term::IsNull(expr) => expr.is_applied_to(schema),
         }
     }
 }
@@ -157,10 +201,12 @@ pub struct Predicate {
 }
 
 impl Predicate {
+    /// Creates a new predicate composed of the given terms.
     pub fn new(terms: Vec<Term>) -> Self {
         Predicate { terms }
     }
 
+    /// Checks whether all terms are satisfied for the current record of the scan.
     pub fn is_satisfied(&self, scan: &mut Scan) -> Result<bool, TransactionError> {
         for term in &self.terms {
             if !term.is_satisfied(scan)? {
@@ -170,6 +216,10 @@ impl Predicate {
         Ok(true)
     }
 
+    /// Computes the combined reduction factor of all terms.
+    ///
+    /// This is the product of the individual reduction factors and is used by
+    /// the planner to estimate result sizes.
     pub fn get_reduction_factor(&self, plan: &Plan) -> usize {
         let mut factor = 1;
         for term in &self.terms {
@@ -178,6 +228,10 @@ impl Predicate {
         factor
     }
 
+    /// Returns a predicate containing only the terms that can be applied to the
+    /// provided schema.
+    ///
+    /// If no such terms exist, `None` is returned.
     pub(crate) fn select_sub_predicates(&self, schema: &Schema) -> Option<Predicate> {
         let mut terms = Vec::new();
         for term in &self.terms {
@@ -193,6 +247,10 @@ impl Predicate {
         }
     }
 
+    /// Extracts the join predicate that references fields from both schemas.
+    ///
+    /// Terms that reference only one of the schemas are ignored. If none remain
+    /// after filtering, `None` is returned.
     pub(crate) fn join_sub_predicates(
         &self,
         schema1: &Schema,
@@ -218,6 +276,7 @@ impl Predicate {
         }
     }
 
+    /// Searches for a term equating `field_name` with a constant value.
     pub(crate) fn equates_with_constant(&self, field_name: &str) -> Option<Value> {
         for term in &self.terms {
             let t = term.equates_with_constant(field_name);
@@ -228,6 +287,7 @@ impl Predicate {
         None
     }
 
+    /// Searches for a term equating `field_name` with another field.
     pub(crate) fn equates_with_field(&self, field_name: &str) -> Option<String> {
         for term in &self.terms {
             let t = term.equates_with_field(field_name);

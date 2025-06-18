@@ -39,6 +39,11 @@ mod tests {
             grammar::TermParser::new().parse("NULL = NULL").unwrap(),
             Term::Equality(Expression::NullConstant, Expression::NullConstant)
         );
+
+        assert_eq!(
+            grammar::TermParser::new().parse("f IS NULL").unwrap(),
+            Term::IsNull(Expression::Field("f".to_string()))
+        );
     }
 
     #[test]

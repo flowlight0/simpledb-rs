@@ -91,6 +91,7 @@ mod tests {
     use super::*;
     use crate::db::SimpleDB;
     use crate::parser::predicate::{Expression, Term};
+    use crate::record::field::Value;
     use crate::record::layout::Layout;
     use crate::record::schema::Schema;
     use crate::scan::table_scan::TableScan;
@@ -192,6 +193,39 @@ mod tests {
             assert_eq!(scan.get_i32("A")?, 1);
         }
         assert!(!scan.previous()?);
+        drop(scan);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_select_scan_is_null() -> Result<(), TransactionError> {
+        let mut schema = Schema::new();
+        schema.add_i32_field("A");
+        let layout = Arc::new(Layout::new(schema));
+
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 256;
+        let db = SimpleDB::new(temp_dir, block_size, 3)?;
+
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+        let mut table_scan = TableScan::new(tx.clone(), "t", layout.clone())?;
+        table_scan.before_first()?;
+        table_scan.insert()?;
+        table_scan.set_i32("A", 1)?;
+        table_scan.insert()?;
+        table_scan.set_null("A")?;
+        table_scan.insert()?;
+        table_scan.set_i32("A", 3)?;
+
+        let mut scan = SelectScan::new(
+            Scan::from(table_scan),
+            Predicate::new(vec![Term::IsNull(Expression::Field("A".to_string()))]),
+        );
+        scan.before_first()?;
+        assert!(scan.next()?);
+        assert!(scan.get_value("A")? == Value::Null);
+        assert!(!scan.next()?);
         drop(scan);
         tx.lock().unwrap().commit()?;
         Ok(())
