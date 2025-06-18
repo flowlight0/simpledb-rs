@@ -140,6 +140,90 @@ fn do_query<W: Write>(
     Ok(())
 }
 
+fn do_show_tables<W: Write>(statement: &mut Statement, writer: &mut W) -> Result<(), anyhow::Error> {
+    // Get all table names from tblcat
+    let mut result_set = statement.execute_query("select tblname from tblcat")?;
+    let mut table_names = Vec::new();
+    while result_set.next()? {
+        if let Some(name) = result_set.get_string("tblname")? {
+            table_names.push(name);
+        }
+    }
+    result_set.close()?;
+
+    let mut rows = Vec::new();
+    for table_name in table_names {
+        let query = format!("select fldname, type, length from fldcat where tblname = '{}'", table_name);
+        let mut rs = statement.execute_query(&query)?;
+        let mut parts = Vec::new();
+        while rs.next()? {
+            let fname = rs.get_string("fldname")?.unwrap_or_default();
+            let tcode = rs.get_i32("type")?.unwrap_or(0);
+            let length = rs.get_i32("length")?.unwrap_or(0);
+            let type_str = match tcode {
+                0 => "I32".to_string(),
+                1 => format!("VARCHAR({})", length),
+                _ => format!("{}", tcode),
+            };
+            parts.push(format!("{} {}", fname, type_str));
+        }
+        rs.close()?;
+        rows.push((table_name, parts.join(", ")));
+    }
+
+    let name_header = "name".to_string();
+    let schema_header = "schema".to_string();
+    let mut name_width = name_header.len();
+    let mut schema_width = schema_header.len();
+    for (name, schema) in &rows {
+        name_width = std::cmp::max(name_width, name.len());
+        schema_width = std::cmp::max(schema_width, schema.len());
+    }
+    let total_width = name_width + 1 + schema_width;
+
+    let header_name = format!("{:>width$}", name_header, width = name_width);
+    let header_schema = format!("{:>width$}", schema_header, width = schema_width);
+    write!(writer, "{}", header_name.bold().cyan())?;
+    write!(writer, " {}", header_schema.bold().cyan())?;
+    writeln!(writer)?;
+    writeln!(writer, "{}", "-".repeat(total_width).bright_blue())?;
+
+    for (name, schema) in rows {
+        let name_cells = {
+            let chars: Vec<char> = name.chars().collect();
+            let mut segs = Vec::new();
+            for chunk in chars.chunks(name_width) {
+                let part: String = chunk.iter().collect();
+                segs.push(format!("{:>width$}", part, width = name_width));
+            }
+            if segs.is_empty() {
+                segs.push(" ".repeat(name_width));
+            }
+            segs
+        };
+        let schema_cells = {
+            let chars: Vec<char> = schema.chars().collect();
+            let mut segs = Vec::new();
+            for chunk in chars.chunks(schema_width) {
+                let part: String = chunk.iter().collect();
+                segs.push(format!("{:>width$}", part, width = schema_width));
+            }
+            if segs.is_empty() {
+                segs.push(" ".repeat(schema_width));
+            }
+            segs
+        };
+        let max_lines = std::cmp::max(name_cells.len(), schema_cells.len());
+        for i in 0..max_lines {
+            let name_seg = name_cells.get(i).cloned().unwrap_or_else(|| " ".repeat(name_width));
+            let schema_seg = schema_cells.get(i).cloned().unwrap_or_else(|| " ".repeat(schema_width));
+            write!(writer, "{} {}", name_seg.green(), schema_seg.green())?;
+            writeln!(writer)?;
+        }
+    }
+    Ok(())
+}
+
 fn do_update<W: Write>(
     statement: &mut Statement,
     command: &str,
@@ -191,7 +275,10 @@ fn run_client<W: Write, E: ClientEditor>(
 
         let _ = editor.add_history_entry(command.as_str());
 
-        let result = if trimmed.to_ascii_uppercase().starts_with("SELECT") {
+        let upper = trimmed.to_ascii_uppercase();
+        let result = if upper == "SHOW TABLES" {
+            do_show_tables(&mut statement, writer)
+        } else if upper.starts_with("SELECT") {
             do_query(&mut statement, trimmed, writer)
         } else {
             do_update(&mut statement, trimmed, writer)
@@ -359,6 +446,110 @@ mod tests {
         let history_file = work_dir.path().join(".simpledb_history");
         let history_content = fs::read_to_string(history_file)?;
         assert!(!history_content.contains("\n\n"));
+        Ok(())
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_run_client_show_tables() -> Result<(), anyhow::Error> {
+        let work_dir = tempfile::tempdir()?;
+        let db_url = format!(
+            "jdbc:simpledb:{}",
+            work_dir.path().join("db").to_string_lossy()
+        );
+        let commands = vec![
+            db_url,
+            "create table T1(A I32, B VARCHAR(10))".to_string(),
+            "create table T2(C I32)".to_string(),
+            "show tables".to_string(),
+            "exit".to_string(),
+        ];
+        let mut editor = ScriptedEditor::new(commands);
+        let current = std::env::current_dir()?;
+        std::env::set_current_dir(work_dir.path())?;
+        let mut output = Vec::new();
+        run_client(
+            Driver::Embedded(EmbeddedDriver::new()),
+            &mut editor,
+            &mut output,
+        )?;
+        std::env::set_current_dir(current)?;
+
+        use colored::Colorize;
+        let output_str = String::from_utf8(output).unwrap();
+        // Build expected output using same formatting as do_show_tables
+        let mut rows = vec![
+            ("tblcat", "slotsize I32, tblname VARCHAR(50)"),
+            (
+                "fldcat",
+                "type I32, length I32, offset I32, tblname VARCHAR(50), fldname VARCHAR(50)",
+            ),
+            (
+                "idxcat",
+                "index_name VARCHAR(255), table_name VARCHAR(255), field_name VARCHAR(255)",
+            ),
+            ("T1", "A I32, B VARCHAR(10)"),
+            ("T2", "C I32"),
+        ];
+        let name_header = "name";
+        let schema_header = "schema";
+        let mut name_width = name_header.len();
+        let mut schema_width = schema_header.len();
+        for (n, s) in &rows {
+            name_width = std::cmp::max(name_width, n.len());
+            schema_width = std::cmp::max(schema_width, s.len());
+        }
+        let total_width = name_width + 1 + schema_width;
+
+        let mut expected = String::new();
+        expected.push_str(&format!("{}\n", "0 records processed".magenta()));
+        expected.push_str(&format!("{}\n", "0 records processed".magenta()));
+        expected.push_str(&format!(
+            "{} {}\n",
+            format!("{:>width$}", name_header, width = name_width).bold().cyan(),
+            format!("{:>width$}", schema_header, width = schema_width).bold().cyan()
+        ));
+        expected.push_str(&format!("{}\n", "-".repeat(total_width).bright_blue()));
+        for (name, schema) in rows.drain(..) {
+            let name_cells = {
+                let chars: Vec<char> = name.chars().collect();
+                let mut segs = Vec::new();
+                for chunk in chars.chunks(name_width) {
+                    let part: String = chunk.iter().collect();
+                    segs.push(format!("{:>width$}", part, width = name_width));
+                }
+                if segs.is_empty() {
+                    segs.push(" ".repeat(name_width));
+                }
+                segs
+            };
+            let schema_cells = {
+                let chars: Vec<char> = schema.chars().collect();
+                let mut segs = Vec::new();
+                for chunk in chars.chunks(schema_width) {
+                    let part: String = chunk.iter().collect();
+                    segs.push(format!("{:>width$}", part, width = schema_width));
+                }
+                if segs.is_empty() {
+                    segs.push(" ".repeat(schema_width));
+                }
+                segs
+            };
+            let max_lines = std::cmp::max(name_cells.len(), schema_cells.len());
+            for i in 0..max_lines {
+                let n = name_cells
+                    .get(i)
+                    .cloned()
+                    .unwrap_or_else(|| " ".repeat(name_width));
+                let s = schema_cells
+                    .get(i)
+                    .cloned()
+                    .unwrap_or_else(|| " ".repeat(schema_width));
+                expected.push_str(&format!("{} {}\n", n.green(), s.green()));
+            }
+        }
+
+        assert_eq!(output_str, expected);
         Ok(())
     }
 }
