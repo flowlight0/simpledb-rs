@@ -95,10 +95,4 @@ impl Schema {
         fields.extend(self.string_fields.clone());
         fields
     }
-
-    pub fn get_string_field_max_length(&self, field_name: &str) -> Option<usize> {
-        self.string_field_to_index
-            .get(field_name)
-            .map(|idx| self.string_max_lengths[*idx])
-    }
 }
