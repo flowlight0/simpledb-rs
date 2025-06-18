@@ -22,6 +22,8 @@ use super::{
     ResultSetControl, Statement, StatementControl,
 };
 
+const MAX_VARCHAR_DISPLAY_SIZE: usize = 30;
+
 pub struct EmbeddedMetadata {
     schema: Schema,
 }
@@ -39,7 +41,7 @@ impl MetadataControl for EmbeddedMetadata {
         let name = self.get_column_name(index)?;
         let size = match self.schema.get_field_spec(&name) {
             Spec::I32 => 12,
-            Spec::VarChar(max_length) => max_length,
+            Spec::VarChar(max_len) => std::cmp::min(max_len, MAX_VARCHAR_DISPLAY_SIZE),
         };
         Ok(max(size, name.len()))
     }
