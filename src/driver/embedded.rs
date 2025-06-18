@@ -9,7 +9,10 @@ use crate::{
     errors::ExecutionError,
     plan::{Plan, PlanControl},
     planner::Planner,
-    record::{field::Type, schema::Schema},
+    record::{
+        field::{Spec, Type},
+        schema::Schema,
+    },
     scan::{Scan, ScanControl},
     tx::transaction::Transaction,
 };
@@ -34,9 +37,9 @@ impl MetadataControl for EmbeddedMetadata {
 
     fn get_column_display_size(&self, index: usize) -> Result<usize, anyhow::Error> {
         let name = self.get_column_name(index)?;
-        let size = match self.get_column_type(index)? {
-            Type::I32 => 12,
-            Type::String => name.len(),
+        let size = match self.schema.get_field_spec(&name) {
+            Spec::I32 => 12,
+            Spec::VarChar(max_length) => max_length,
         };
         Ok(max(size, name.len()))
     }
