@@ -67,7 +67,7 @@ impl ScanControl for MergeJoinScan {
         Ok(false)
     }
 
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
+    fn get_i32(&mut self, field_name: &str) -> Result<Option<i32>, TransactionError> {
         if self.s1.has_field(field_name) {
             self.s1.get_i32(field_name)
         } else {
@@ -75,7 +75,7 @@ impl ScanControl for MergeJoinScan {
         }
     }
 
-    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError> {
+    fn get_string(&mut self, field_name: &str) -> Result<Option<String>, TransactionError> {
         if self.s1.has_field(field_name) {
             self.s1.get_string(field_name)
         } else {

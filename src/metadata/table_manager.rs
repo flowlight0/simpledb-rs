@@ -119,17 +119,17 @@ impl TableManager {
         let mut schema = Schema::new();
         let mut fcat = TableScan::new(tx, "fldcat", self.fcat_layout.clone())?;
         while fcat.next()? {
-            if fcat.get_string("tblname")? != table_name {
+            if fcat.get_string("tblname")? != Some(table_name.to_string()) {
                 continue;
             }
-            let field_name = fcat.get_string("fldname")?;
+            let field_name = fcat.get_string("fldname")?.unwrap();
             let type_code = fcat.get_i32("type")?;
             let length = fcat.get_i32("length")?;
             // let offset = fcat.get_i32("offset")?;
             match type_code {
-                0 => schema.add_i32_field(&field_name),
-                1 => schema.add_string_field(&field_name, length as usize),
-                _ => panic!("Unknown type code: {}", type_code),
+                Some(0) => schema.add_i32_field(&field_name),
+                Some(1) => schema.add_string_field(&field_name, length.unwrap() as usize),
+                _ => panic!("Unknown type code: {:?}", type_code),
             }
         }
         if schema.i32_fields.is_empty() && schema.string_fields.is_empty() {

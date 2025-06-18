@@ -83,13 +83,21 @@ fn do_query<W: Write>(
 
             match column_type {
                 Type::I32 => {
-                    let val = result_set.get_i32(&column_name)?;
-                    let v = format!("{:>width$}", val, width = width);
+                    let val_opt = result_set.get_i32(&column_name)?;
+                    let val_display = match val_opt {
+                        Some(v) => v.to_string(),
+                        None => "NULL".to_string(),
+                    };
+                    let v = format!("{:>width$}", val_display, width = width);
                     write!(writer, "{}", v.yellow())?;
                 }
                 Type::String => {
-                    let val = result_set.get_string(&column_name)?;
-                    let v = format!("{:>width$}", val, width = width);
+                    let val_opt = result_set.get_string(&column_name)?;
+                    let val_display = match val_opt {
+                        Some(v) => v,
+                        None => "NULL".to_string(),
+                    };
+                    let v = format!("{:>width$}", val_display, width = width);
                     write!(writer, "{}", v.green())?;
                 }
             }

@@ -215,8 +215,8 @@ mod tests {
             scan.before_first()?;
             for i in 5..10 {
                 assert!(scan.next()?);
-                assert_eq!(scan.get_string("B")?, i.to_string());
-                assert_eq!(scan.get_i32("C")?, i);
+                assert_eq!(scan.get_string("B")?, Some(i.to_string()));
+                assert_eq!(scan.get_i32("C")?, Some(i));
             }
         }
 

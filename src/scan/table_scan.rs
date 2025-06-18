@@ -123,14 +123,24 @@ impl ScanControl for TableScan {
         }
     }
 
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
-        self.record_page
-            .get_i32(self.current_slot.index(), field_name)
+    fn get_i32(&mut self, field_name: &str) -> Result<Option<i32>, TransactionError> {
+        if self.is_null(field_name)? {
+            return Ok(None);
+        }
+        Ok(Some(
+            self.record_page
+                .get_i32(self.current_slot.index(), field_name)?,
+        ))
     }
 
-    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError> {
-        self.record_page
-            .get_string(self.current_slot.index(), field_name)
+    fn get_string(&mut self, field_name: &str) -> Result<Option<String>, TransactionError> {
+        if self.is_null(field_name)? {
+            return Ok(None);
+        }
+        Ok(Some(
+            self.record_page
+                .get_string(self.current_slot.index(), field_name)?,
+        ))
     }
 
     fn get_value(&mut self, field_name: &str) -> Result<Value, TransactionError> {
@@ -138,8 +148,14 @@ impl ScanControl for TableScan {
             return Ok(Value::Null);
         }
         match self.record_page.layout.schema.get_field_type(field_name) {
-            Type::I32 => Ok(Value::I32(self.get_i32(field_name)?)),
-            Type::String => Ok(Value::String(self.get_string(field_name)?)),
+            Type::I32 => Ok(Value::I32(
+                self.record_page
+                    .get_i32(self.current_slot.index(), field_name)?,
+            )),
+            Type::String => Ok(Value::String(
+                self.record_page
+                    .get_string(self.current_slot.index(), field_name)?,
+            )),
         }
     }
 
@@ -228,15 +244,15 @@ mod tests {
             table_scan.set_i32("A", i)?;
             table_scan.set_string("B", &i.to_string())?;
 
-            assert_eq!(table_scan.get_i32("A")?, i);
-            assert_eq!(table_scan.get_string("B")?, i.to_string());
+            assert_eq!(table_scan.get_i32("A")?, Some(i));
+            assert_eq!(table_scan.get_string("B")?, Some(i.to_string()));
         }
 
         let mut num_scanned_records = 0;
         let mut num_deleted_records = 0;
         table_scan.before_first()?;
         while table_scan.next()? {
-            let value = table_scan.get_i32("A")?;
+            let value = table_scan.get_i32("A")?.unwrap();
             num_scanned_records += 1;
             if value % 2 == 0 {
                 table_scan.delete()?;
@@ -249,9 +265,9 @@ mod tests {
         table_scan.before_first()?;
         for i in 0..25 {
             assert!(table_scan.next()?);
-            let i32_value = table_scan.get_i32("A")?;
+            let i32_value = table_scan.get_i32("A")?.unwrap();
             assert_eq!(i32_value, i * 2 + 1);
-            let string_value = table_scan.get_string("B")?;
+            let string_value = table_scan.get_string("B")?.unwrap();
             assert_eq!(string_value, (i * 2 + 1).to_string());
         }
         assert!(!table_scan.next()?);
@@ -281,7 +297,7 @@ mod tests {
         table_scan.after_last()?;
         for expected in (0..10).rev() {
             assert!(table_scan.previous()?);
-            assert_eq!(table_scan.get_i32("A")?, expected);
+            assert_eq!(table_scan.get_i32("A")?, Some(expected));
         }
         assert!(!table_scan.previous()?);
         drop(table_scan);
@@ -309,7 +325,7 @@ mod tests {
         assert!(table_scan.is_null("A")?);
         table_scan.set_i32("A", 42)?;
         assert!(!table_scan.is_null("A")?);
-        assert_eq!(table_scan.get_i32("A")?, 42);
+        assert_eq!(table_scan.get_i32("A")?, Some(42));
 
         drop(table_scan);
         tx.lock().unwrap().commit()?;

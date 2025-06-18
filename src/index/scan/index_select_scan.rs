@@ -41,11 +41,11 @@ impl ScanControl for IndexSelectScan {
         Ok(has_next)
     }
 
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
+    fn get_i32(&mut self, field_name: &str) -> Result<Option<i32>, TransactionError> {
         self.table_scan.get_i32(field_name)
     }
 
-    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError> {
+    fn get_string(&mut self, field_name: &str) -> Result<Option<String>, TransactionError> {
         self.table_scan.get_string(field_name)
     }
 
@@ -134,7 +134,7 @@ mod tests {
 
         let mut actual_values = vec![];
         while select_scan.next()? {
-            actual_values.push(select_scan.get_i32("A")?);
+            actual_values.push(select_scan.get_i32("A")?.unwrap());
         }
         actual_values.sort();
 

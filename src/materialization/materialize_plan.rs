@@ -119,8 +119,8 @@ mod tests {
             let mut count = 0;
             materialized_scan.before_first()?;
             while materialized_scan.next()? {
-                assert_eq!(materialized_scan.get_i32("A")?, count);
-                assert_eq!(materialized_scan.get_string("B")?, count.to_string());
+                assert_eq!(materialized_scan.get_i32("A")?, Some(count));
+                assert_eq!(materialized_scan.get_string("B")?, Some(count.to_string()));
                 count += 1;
             }
             assert_eq!(count, 20);

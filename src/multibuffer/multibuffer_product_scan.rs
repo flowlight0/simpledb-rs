@@ -92,11 +92,11 @@ impl ScanControl for MultiBufferProductScan {
         Ok(true)
     }
 
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
+    fn get_i32(&mut self, field_name: &str) -> Result<Option<i32>, TransactionError> {
         self.product_scan.as_mut().unwrap().get_i32(field_name)
     }
 
-    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError> {
+    fn get_string(&mut self, field_name: &str) -> Result<Option<String>, TransactionError> {
         self.product_scan.as_mut().unwrap().get_string(field_name)
     }
 

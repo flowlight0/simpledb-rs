@@ -104,8 +104,12 @@ impl ResultSetService for RemoteResultSet {
         let embedded_result_set = lock
             .get_mut(&result_set_id)
             .expect(&format!("Unknown result_set_id: {}", result_set_id));
-        let value = embedded_result_set.get_i32(&column_name).unwrap();
-        Ok(Response::new(ResultSetGetI32Response { value }))
+        let value_opt = embedded_result_set.get_i32(&column_name).unwrap();
+        let (value, was_null) = match value_opt {
+            Some(v) => (v, false),
+            None => (0, true),
+        };
+        Ok(Response::new(ResultSetGetI32Response { value, was_null }))
     }
 
     async fn get_string(
@@ -119,8 +123,15 @@ impl ResultSetService for RemoteResultSet {
         let embedded_result_set = lock
             .get_mut(&result_set_id)
             .expect(&format!("Unknown result_set_id: {}", result_set_id));
-        let value = embedded_result_set.get_string(&column_name).unwrap();
-        Ok(Response::new(ResultSetGetStringResponse { value }))
+        let value_opt = embedded_result_set.get_string(&column_name).unwrap();
+        let (value, was_null) = match value_opt {
+            Some(v) => (v, false),
+            None => (String::new(), true),
+        };
+        Ok(Response::new(ResultSetGetStringResponse {
+            value,
+            was_null,
+        }))
     }
 
     async fn before_first(
@@ -281,7 +292,7 @@ impl ResultSetControl for NetworkResultSet {
         Ok(response.has_row)
     }
 
-    fn get_i32(&mut self, column_name: &str) -> Result<i32, anyhow::Error> {
+    fn get_i32(&mut self, column_name: &str) -> Result<Option<i32>, anyhow::Error> {
         let mut client = ResultSetServiceClient::new(self.connection.get_channel());
         let request = Request::new(ResultSetGetI32Request {
             id: self.result_set_id,
@@ -292,10 +303,14 @@ impl ResultSetControl for NetworkResultSet {
             .block_on(client.get_i32(request))
             .unwrap()
             .into_inner();
-        Ok(response.value)
+        if response.was_null {
+            Ok(None)
+        } else {
+            Ok(Some(response.value))
+        }
     }
 
-    fn get_string(&mut self, column_name: &str) -> Result<String, anyhow::Error> {
+    fn get_string(&mut self, column_name: &str) -> Result<Option<String>, anyhow::Error> {
         let mut client = ResultSetServiceClient::new(self.connection.get_channel());
         let request = Request::new(ResultSetGetStringRequest {
             id: self.result_set_id,
@@ -306,7 +321,11 @@ impl ResultSetControl for NetworkResultSet {
             .block_on(client.get_string(request))
             .unwrap()
             .into_inner();
-        Ok(response.value)
+        if response.was_null {
+            Ok(None)
+        } else {
+            Ok(Some(response.value))
+        }
     }
 
     fn close(&mut self) -> Result<(), anyhow::Error> {

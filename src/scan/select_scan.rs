@@ -43,11 +43,11 @@ impl ScanControl for SelectScan {
         Ok(false)
     }
 
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
+    fn get_i32(&mut self, field_name: &str) -> Result<Option<i32>, TransactionError> {
         self.base_scan.get_i32(field_name)
     }
 
-    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError> {
+    fn get_string(&mut self, field_name: &str) -> Result<Option<String>, TransactionError> {
         self.base_scan.get_string(field_name)
     }
 
@@ -136,9 +136,9 @@ mod tests {
         for i in 0..50 {
             if i % 3 == 1 && i % 4 == 2 {
                 assert!(select_scan.next()?);
-                assert_eq!(select_scan.get_i32("A")?, 1);
-                assert_eq!(select_scan.get_string("B")?, "2");
-                assert_eq!(select_scan.get_i32("C")?, i);
+                assert_eq!(select_scan.get_i32("A")?, Some(1));
+                assert_eq!(select_scan.get_string("B")?, Some("2".to_string()));
+                assert_eq!(select_scan.get_i32("C")?, Some(i));
                 select_scan.set_i32("C", i * 2)?;
             }
         }
@@ -151,9 +151,9 @@ mod tests {
         for i in 0..50 {
             table_scan.next()?;
             if i % 3 == 1 && i % 4 == 2 {
-                assert_eq!(table_scan.get_i32("C")?, i * 2);
+                assert_eq!(table_scan.get_i32("C")?, Some(i * 2));
             } else {
-                assert_eq!(table_scan.get_i32("C")?, i);
+                assert_eq!(table_scan.get_i32("C")?, Some(i));
             }
         }
         drop(table_scan);
@@ -190,7 +190,7 @@ mod tests {
         let expected: Vec<usize> = (0..10).rev().filter(|i| i % 3 == 1).collect();
         for _ in expected {
             assert!(scan.previous()?);
-            assert_eq!(scan.get_i32("A")?, 1);
+            assert_eq!(scan.get_i32("A")?, Some(1));
         }
         assert!(!scan.previous()?);
         drop(scan);

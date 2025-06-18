@@ -37,12 +37,12 @@ impl ScanControl for ProjectScan {
         self.base_scan.next()
     }
 
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
+    fn get_i32(&mut self, field_name: &str) -> Result<Option<i32>, TransactionError> {
         assert!(self.fields.contains(&field_name.to_string()));
         self.base_scan.get_i32(field_name)
     }
 
-    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError> {
+    fn get_string(&mut self, field_name: &str) -> Result<Option<String>, TransactionError> {
         assert!(self.fields.contains(&field_name.to_string()));
         self.base_scan.get_string(field_name)
     }
@@ -103,8 +103,8 @@ mod tests {
             assert!(project_scan.has_field("A"));
             assert!(!project_scan.has_field("B"));
             assert!(project_scan.has_field("C"));
-            assert_eq!(project_scan.get_i32("A")?, i);
-            assert_eq!(project_scan.get_i32("C")?, i + 2);
+            assert_eq!(project_scan.get_i32("A")?, Some(i));
+            assert_eq!(project_scan.get_i32("C")?, Some(i + 2));
         }
         drop(project_scan);
         tx.lock().unwrap().commit()?;
@@ -138,8 +138,8 @@ mod tests {
         scan.after_last()?;
         for i in (0..10).rev() {
             assert!(scan.previous()?);
-            assert_eq!(scan.get_i32("A")?, i);
-            assert_eq!(scan.get_i32("C")?, i + 1);
+            assert_eq!(scan.get_i32("A")?, Some(i));
+            assert_eq!(scan.get_i32("C")?, Some(i + 1));
         }
         assert!(!scan.previous()?);
         drop(scan);

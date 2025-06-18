@@ -61,7 +61,7 @@ impl ScanControl for IndexJoinScan {
         }
     }
 
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
+    fn get_i32(&mut self, field_name: &str) -> Result<Option<i32>, TransactionError> {
         if self.rhs.has_field(field_name) {
             self.rhs.get_i32(field_name)
         } else {
@@ -69,7 +69,7 @@ impl ScanControl for IndexJoinScan {
         }
     }
 
-    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError> {
+    fn get_string(&mut self, field_name: &str) -> Result<Option<String>, TransactionError> {
         if self.rhs.has_field(field_name) {
             self.rhs.get_string(field_name)
         } else {
@@ -190,7 +190,10 @@ mod tests {
             .collect();
         let mut actual_values = vec![];
         while index_join_scan.next()? {
-            actual_values.push((index_join_scan.get_i32("A")?, index_join_scan.get_i32("C")?));
+            actual_values.push((
+                index_join_scan.get_i32("A")?.unwrap(),
+                index_join_scan.get_i32("C")?.unwrap(),
+            ));
         }
         actual_values.sort();
         assert_eq!(expected_values, actual_values);
