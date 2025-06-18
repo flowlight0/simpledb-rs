@@ -10,7 +10,18 @@ The main goal of this repoistory is my own learning. The code from Chapter 3 to 
 
 ## Completed excercises
 
-I'll add the list of completed exercises here.
+The following issues correspond to finished exercises from the book:
+
+- [Exercise 3.15] #33: Add diagnostic routines to FileManager
+- [Exercise 6.10] #66: Add previous and after_last methods to TableScan and RecordPage
+- [Exercise 6.13] #74: Revise the record manager to handle null field values
+- [Exercise 8.11] #77: Handle null in the query processor
+- [Exercise 8.13] #69: Implement previous and after_last for more scans
+- [Exercise 9.15] #79: Introduce "*" character in the select clause
+- [Exercise 9.18] #83: More null handling in query processing
+- [Exercise 11.4] #63: Implement methods 'beforeFirst' and 'absolute(int n)' for ResultSet
+- [Exercise 11.5] #72: Modify ResultSet to support previous and after_last
+- [Exercise 11.6] #85: Implement wasNull method for ResultSet
 
 ## Interactive Client
 
