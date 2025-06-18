@@ -53,16 +53,23 @@ fn do_query<W: Write>(
     let metadata = result_set.get_metadata()?;
     let num_columns = metadata.get_column_count()?;
     let mut total_width = 0;
+    let mut widths = Vec::with_capacity(num_columns);
+    let mut names = Vec::with_capacity(num_columns);
+    let mut types_vec = Vec::with_capacity(num_columns);
 
     // print header
     for i in 0..num_columns {
         let column_name = metadata.get_column_name(i)?;
-        let mut width = metadata.get_column_display_size(i)?;
+        let column_type = metadata.get_column_type(i)?;
+        let width = metadata.get_column_display_size(i)?;
         if i > 0 {
-            width += 1;
+            total_width += 1;
         }
-
         total_width += width;
+        widths.push(width);
+        names.push(column_name.clone());
+        types_vec.push(column_type);
+
         let header = format!("{:>width$}", column_name, width = width);
         write!(writer, "{}", header.bold().cyan())?;
     }
@@ -72,37 +79,62 @@ fn do_query<W: Write>(
 
     // print records
     while result_set.next()? {
-        for i in 0..num_columns {
-            let column_name = metadata.get_column_name(i)?;
-            let column_type = metadata.get_column_type(i)?;
-            let width = metadata.get_column_display_size(i)?;
-            // String fmt = "%" + md.getColumnDisplaySize(i);
-            if i > 0 {
-                write!(writer, " ")?;
-            }
+        let mut rows: Vec<Vec<String>> = Vec::with_capacity(num_columns);
+        let mut max_lines = 1usize;
 
-            match column_type {
+        for i in 0..num_columns {
+            let width = widths[i];
+            let column_type = &types_vec[i];
+            let name = &names[i];
+            let cells = match column_type {
                 Type::I32 => {
-                    let val_opt = result_set.get_i32(&column_name)?;
+                    let val_opt = result_set.get_i32(name)?;
                     let val_display = match val_opt {
                         Some(v) => v.to_string(),
                         None => "NULL".to_string(),
                     };
-                    let v = format!("{:>width$}", val_display, width = width);
-                    write!(writer, "{}", v.yellow())?;
+                    vec![format!("{:>width$}", val_display, width = width)]
                 }
                 Type::String => {
-                    let val_opt = result_set.get_string(&column_name)?;
+                    let val_opt = result_set.get_string(name)?;
                     let val_display = match val_opt {
                         Some(v) => v,
                         None => "NULL".to_string(),
                     };
-                    let v = format!("{:>width$}", val_display, width = width);
-                    write!(writer, "{}", v.green())?;
+                    let chars: Vec<char> = val_display.chars().collect();
+                    let mut segs = Vec::new();
+                    for chunk in chars.chunks(width) {
+                        let part: String = chunk.iter().collect();
+                        segs.push(format!("{:>width$}", part, width = width));
+                    }
+                    if segs.is_empty() {
+                        segs.push(" ".repeat(width));
+                    }
+                    max_lines = std::cmp::max(max_lines, segs.len());
+                    segs
+                }
+            };
+            rows.push(cells);
+        }
+
+        for line_idx in 0..max_lines {
+            for i in 0..num_columns {
+                if i > 0 {
+                    write!(writer, " ")?;
+                }
+                let width = widths[i];
+                let seg = rows[i]
+                    .get(line_idx)
+                    .cloned()
+                    .unwrap_or_else(|| " ".repeat(width));
+                let column_type = &types_vec[i];
+                match column_type {
+                    Type::I32 => write!(writer, "{}", seg.yellow())?,
+                    Type::String => write!(writer, "{}", seg.green())?,
                 }
             }
+            writeln!(writer)?;
         }
-        writeln!(writer)?;
     }
     result_set.close()?;
     Ok(())
