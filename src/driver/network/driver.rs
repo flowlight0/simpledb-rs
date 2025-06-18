@@ -175,6 +175,7 @@ mod tests {
         statement.execute_update("create table test (A I32, B VARCHAR(20))")?;
         statement.execute_update("insert into test (A, B) values (1, 'a')")?;
         statement.execute_update("insert into test (A, B) values (2, NULL)")?;
+        statement.execute_update("insert into test (A, B) values (3, 'b')")?;
 
         let mut result_set = statement.execute_query("select B from test")?;
         let metadata = result_set.get_metadata()?;
@@ -185,7 +186,18 @@ mod tests {
         assert_eq!(result_set.get_string("B")?, Some("a".to_string()));
         assert!(result_set.next()?);
         assert_eq!(result_set.get_string("B")?, None);
+        assert!(result_set.next()?);
+        assert_eq!(result_set.get_string("B")?, Some("b".to_string()));
         assert!(!result_set.next()?);
+
+        result_set.after_last()?;
+        assert!(result_set.previous()?);
+        assert_eq!(result_set.get_string("B")?, Some("b".to_string()));
+        assert!(result_set.previous()?);
+        assert_eq!(result_set.get_string("B")?, None);
+        assert!(result_set.previous()?);
+        assert_eq!(result_set.get_string("B")?, Some("a".to_string()));
+        assert!(!result_set.previous()?);
         result_set.close()?;
 
         // Drop the connection instead of explicitly closing to avoid

@@ -128,7 +128,10 @@ impl ResultSetService for RemoteResultSet {
             Some(v) => (v, false),
             None => (String::new(), true),
         };
-        Ok(Response::new(ResultSetGetStringResponse { value, was_null }))
+        Ok(Response::new(ResultSetGetStringResponse {
+            value,
+            was_null,
+        }))
     }
 
     async fn before_first(
