@@ -132,11 +132,11 @@ mod tests {
             for j in 0..table2_size {
                 assert!(product_scan.next()?);
                 actual_values.push((
-                    product_scan.get_i32("A")?,
-                    product_scan.get_string("B")?,
-                    product_scan.get_i32("C")?,
-                    product_scan.get_i32("D")?,
-                    product_scan.get_string("E")?,
+                    product_scan.get_i32("A")?.unwrap(),
+                    product_scan.get_string("B")?.unwrap(),
+                    product_scan.get_i32("C")?.unwrap(),
+                    product_scan.get_i32("D")?.unwrap(),
+                    product_scan.get_string("E")?.unwrap(),
                 ));
                 expected_values.push((i, i.to_string(), i + 2, j, j.to_string()))
             }

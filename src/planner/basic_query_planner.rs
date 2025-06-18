@@ -144,8 +144,8 @@ mod tests {
         scan.before_first()?;
         for i in 0..5 {
             assert!(scan.next()?);
-            assert_eq!(scan.get_string("B")?, "3");
-            assert_eq!(scan.get_i32("C")?, i);
+            assert_eq!(scan.get_string("B")?, Some("3".to_string()));
+            assert_eq!(scan.get_i32("C")?, Some(i));
         }
         drop(scan);
         tx.lock().unwrap().commit()?;

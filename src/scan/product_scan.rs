@@ -52,7 +52,7 @@ impl ScanControl for ProductScan {
         }
     }
 
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
+    fn get_i32(&mut self, field_name: &str) -> Result<Option<i32>, TransactionError> {
         if self.scan1.has_field(field_name) {
             self.scan1.get_i32(field_name)
         } else {
@@ -60,7 +60,7 @@ impl ScanControl for ProductScan {
         }
     }
 
-    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError> {
+    fn get_string(&mut self, field_name: &str) -> Result<Option<String>, TransactionError> {
         if self.scan1.has_field(field_name) {
             self.scan1.get_string(field_name)
         } else {
@@ -135,11 +135,11 @@ mod tests {
         for i in 0..10 {
             for j in 0..10 {
                 assert!(product_scan.next()?);
-                assert_eq!(product_scan.get_i32("A")?, i);
-                assert_eq!(product_scan.get_string("B")?, i.to_string());
-                assert_eq!(product_scan.get_i32("C")?, i + 2);
-                assert_eq!(product_scan.get_i32("D")?, j);
-                assert_eq!(product_scan.get_string("E")?, j.to_string());
+                assert_eq!(product_scan.get_i32("A")?, Some(i));
+                assert_eq!(product_scan.get_string("B")?, Some(i.to_string()));
+                assert_eq!(product_scan.get_i32("C")?, Some(i + 2));
+                assert_eq!(product_scan.get_i32("D")?, Some(j));
+                assert_eq!(product_scan.get_string("E")?, Some(j.to_string()));
             }
         }
         assert!(!product_scan.next()?);
@@ -184,8 +184,8 @@ mod tests {
         let mut expected = vec![(2, 1), (2, 0), (1, 1), (1, 0), (0, 1), (0, 0)];
         for (a, d) in expected.drain(..) {
             assert!(scan.previous()?);
-            assert_eq!(scan.get_i32("A")?, a);
-            assert_eq!(scan.get_i32("D")?, d);
+            assert_eq!(scan.get_i32("A")?, Some(a));
+            assert_eq!(scan.get_i32("D")?, Some(d));
         }
         assert!(!scan.previous()?);
         drop(scan);

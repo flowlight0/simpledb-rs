@@ -79,16 +79,18 @@ impl ScanControl for GroupByScan {
         Ok(true)
     }
 
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
+    fn get_i32(&mut self, field_name: &str) -> Result<Option<i32>, TransactionError> {
         match self.get_value(field_name)? {
-            Value::I32(i) => Ok(i),
+            Value::I32(i) => Ok(Some(i)),
+            Value::Null => Ok(None),
             _ => panic!("Field {} is not an integer", field_name),
         }
     }
 
-    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError> {
+    fn get_string(&mut self, field_name: &str) -> Result<Option<String>, TransactionError> {
         match self.get_value(field_name)? {
-            Value::String(s) => Ok(s),
+            Value::String(s) => Ok(Some(s)),
+            Value::Null => Ok(None),
             _ => panic!("Field {} is not a string", field_name),
         }
     }
@@ -169,8 +171,8 @@ mod tests {
         group_by_scan.before_first()?;
         for i in 0..10 {
             assert!(group_by_scan.next()?);
-            assert_eq!(group_by_scan.get_i32("A")?, i);
-            assert_eq!(group_by_scan.get_i32("B")?, i * 5 + 4);
+            assert_eq!(group_by_scan.get_i32("A")?, Some(i));
+            assert_eq!(group_by_scan.get_i32("B")?, Some(i * 5 + 4));
         }
         assert!(!group_by_scan.next()?);
 

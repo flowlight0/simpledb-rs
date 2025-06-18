@@ -80,14 +80,28 @@ impl ScanControl for ChunkScan {
         }
     }
 
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
-        self.buffers[self.current_record_page_index]
-            .get_i32(self.current_record_slot.index(), field_name)
+    fn get_i32(&mut self, field_name: &str) -> Result<Option<i32>, TransactionError> {
+        if self.buffers[self.current_record_page_index]
+            .is_null(self.current_record_slot.index(), field_name)?
+        {
+            return Ok(None);
+        }
+        Ok(Some(
+            self.buffers[self.current_record_page_index]
+                .get_i32(self.current_record_slot.index(), field_name)?,
+        ))
     }
 
-    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError> {
-        self.buffers[self.current_record_page_index]
-            .get_string(self.current_record_slot.index(), field_name)
+    fn get_string(&mut self, field_name: &str) -> Result<Option<String>, TransactionError> {
+        if self.buffers[self.current_record_page_index]
+            .is_null(self.current_record_slot.index(), field_name)?
+        {
+            return Ok(None);
+        }
+        Ok(Some(
+            self.buffers[self.current_record_page_index]
+                .get_string(self.current_record_slot.index(), field_name)?,
+        ))
     }
 
     fn get_value(&mut self, field_name: &str) -> Result<Value, TransactionError> {
@@ -97,8 +111,14 @@ impl ScanControl for ChunkScan {
             return Ok(Value::Null);
         }
         match self.layout.schema.get_field_type(field_name) {
-            Type::I32 => Ok(Value::I32(self.get_i32(field_name)?)),
-            Type::String => Ok(Value::String(self.get_string(field_name)?)),
+            Type::I32 => Ok(Value::I32(
+                self.buffers[self.current_record_page_index]
+                    .get_i32(self.current_record_slot.index(), field_name)?,
+            )),
+            Type::String => Ok(Value::String(
+                self.buffers[self.current_record_page_index]
+                    .get_string(self.current_record_slot.index(), field_name)?,
+            )),
         }
     }
 

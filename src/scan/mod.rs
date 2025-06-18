@@ -59,8 +59,8 @@ pub trait ScanControl {
     fn previous(&mut self) -> Result<bool, TransactionError> {
         unimplemented!("Backward scanning is not supported")
     }
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError>;
-    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError>;
+    fn get_i32(&mut self, field_name: &str) -> Result<Option<i32>, TransactionError>;
+    fn get_string(&mut self, field_name: &str) -> Result<Option<String>, TransactionError>;
     fn get_value(&mut self, field_name: &str) -> Result<Value, TransactionError>;
     fn has_field(&self, field_name: &str) -> bool;
 

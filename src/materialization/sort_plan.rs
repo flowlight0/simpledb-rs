@@ -208,8 +208,8 @@ mod tests {
         sort_scan.before_first()?;
         for i in 0..20 {
             assert!(sort_scan.next()?);
-            assert_eq!(sort_scan.get_i32("A")?, i - 19);
-            assert_eq!(sort_scan.get_string("B")?, format!("B{}", 19 - i));
+            assert_eq!(sort_scan.get_i32("A")?, Some(i - 19));
+            assert_eq!(sort_scan.get_string("B")?, Some(format!("B{}", 19 - i)));
         }
 
         Ok(())
@@ -249,9 +249,9 @@ mod tests {
         sort_scan.before_first()?;
 
         assert!(sort_scan.next()?);
-        assert_eq!(sort_scan.get_i32("A")?, 1);
+        assert_eq!(sort_scan.get_i32("A")?, Some(1));
         assert!(sort_scan.next()?);
-        assert_eq!(sort_scan.get_i32("A")?, 2);
+        assert_eq!(sort_scan.get_i32("A")?, Some(2));
         assert!(sort_scan.next()?);
         assert_eq!(sort_scan.get_value("A")?, Value::Null);
         assert!(!sort_scan.next()?);

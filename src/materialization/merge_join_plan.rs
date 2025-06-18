@@ -163,10 +163,10 @@ mod tests {
 
         let mut actual_values = vec![];
         while merge_join_scan.next()? {
-            let a = merge_join_scan.get_i32("A")?;
-            let b = merge_join_scan.get_string("B")?;
-            let c = merge_join_scan.get_i32("C")?;
-            let d = merge_join_scan.get_string("D")?;
+            let a = merge_join_scan.get_i32("A")?.unwrap();
+            let b = merge_join_scan.get_string("B")?.unwrap();
+            let c = merge_join_scan.get_i32("C")?.unwrap();
+            let d = merge_join_scan.get_string("D")?.unwrap();
             actual_values.push((a, b, c, d));
         }
         actual_values.sort();

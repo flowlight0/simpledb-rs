@@ -105,13 +105,13 @@ impl ScanControl for SortScan {
         Ok(true)
     }
 
-    fn get_i32(&mut self, field_name: &str) -> Result<i32, TransactionError> {
+    fn get_i32(&mut self, field_name: &str) -> Result<Option<i32>, TransactionError> {
         self.scans[self.current_scan_index.unwrap()]
             .borrow_mut()
             .get_i32(field_name)
     }
 
-    fn get_string(&mut self, field_name: &str) -> Result<String, TransactionError> {
+    fn get_string(&mut self, field_name: &str) -> Result<Option<String>, TransactionError> {
         self.scans[self.current_scan_index.unwrap()]
             .borrow_mut()
             .get_string(field_name)
@@ -182,8 +182,8 @@ mod tests {
         scan.before_first()?;
         for i in 0..20 {
             assert_eq!(scan.next()?, true);
-            assert_eq!(scan.get_i32("A")?, i);
-            assert_eq!(scan.get_string("B")?, i.to_string());
+            assert_eq!(scan.get_i32("A")?, Some(i));
+            assert_eq!(scan.get_string("B")?, Some(i.to_string()));
         }
         assert_eq!(scan.next()?, false);
 
@@ -228,9 +228,9 @@ mod tests {
         scan.before_first()?;
 
         assert!(scan.next()?);
-        assert_eq!(scan.get_i32("A")?, 1);
+        assert_eq!(scan.get_i32("A")?, Some(1));
         assert!(scan.next()?);
-        assert_eq!(scan.get_i32("A")?, 2);
+        assert_eq!(scan.get_i32("A")?, Some(2));
         assert!(scan.next()?);
         assert_eq!(scan.get_value("A")?, Value::Null);
         assert!(!scan.next()?);

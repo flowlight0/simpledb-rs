@@ -95,7 +95,7 @@ impl StatManager {
         let mut tcat_scan = TableScan::new(tx.clone(), "tblcat", tcat_layout.clone())?;
         let mut table_names = vec![];
         while tcat_scan.next()? {
-            let table_name = tcat_scan.get_string("tblname")?;
+            let table_name = tcat_scan.get_string("tblname")?.unwrap();
             table_names.push(table_name);
         }
         drop(tcat_scan);

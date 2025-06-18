@@ -156,12 +156,12 @@ impl IndexManager {
         let mut scan = TableScan::new(tx.clone(), INDEX_TABLE_NAME, self.layout.clone())?;
 
         while scan.next()? {
-            if scan.get_string(TABLE_NAME_COLUMN)? != table_name {
+            if scan.get_string(TABLE_NAME_COLUMN)? != Some(table_name.to_string()) {
                 continue;
             }
 
-            let index_name = scan.get_string(INDEX_NAME_COLUMN)?;
-            let field_name = scan.get_string(FIELD_NAME_COLUMN)?;
+            let index_name = scan.get_string(INDEX_NAME_COLUMN)?.unwrap();
+            let field_name = scan.get_string(FIELD_NAME_COLUMN)?.unwrap();
 
             let layout = self
                 .table_manager
