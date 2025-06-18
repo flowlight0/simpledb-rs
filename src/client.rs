@@ -140,7 +140,10 @@ fn do_query<W: Write>(
     Ok(())
 }
 
-fn do_show_tables<W: Write>(statement: &mut Statement, writer: &mut W) -> Result<(), anyhow::Error> {
+fn do_show_tables<W: Write>(
+    statement: &mut Statement,
+    writer: &mut W,
+) -> Result<(), anyhow::Error> {
     // Get all table names from tblcat
     let mut result_set = statement.execute_query("select tblname from tblcat")?;
     let mut table_names = Vec::new();
@@ -153,7 +156,10 @@ fn do_show_tables<W: Write>(statement: &mut Statement, writer: &mut W) -> Result
 
     let mut rows = Vec::new();
     for table_name in table_names {
-        let query = format!("select fldname, type, length from fldcat where tblname = '{}'", table_name);
+        let query = format!(
+            "select fldname, type, length from fldcat where tblname = '{}'",
+            table_name
+        );
         let mut rs = statement.execute_query(&query)?;
         let mut parts = Vec::new();
         while rs.next()? {
@@ -215,8 +221,14 @@ fn do_show_tables<W: Write>(statement: &mut Statement, writer: &mut W) -> Result
         };
         let max_lines = std::cmp::max(name_cells.len(), schema_cells.len());
         for i in 0..max_lines {
-            let name_seg = name_cells.get(i).cloned().unwrap_or_else(|| " ".repeat(name_width));
-            let schema_seg = schema_cells.get(i).cloned().unwrap_or_else(|| " ".repeat(schema_width));
+            let name_seg = name_cells
+                .get(i)
+                .cloned()
+                .unwrap_or_else(|| " ".repeat(name_width));
+            let schema_seg = schema_cells
+                .get(i)
+                .cloned()
+                .unwrap_or_else(|| " ".repeat(schema_width));
             write!(writer, "{} {}", name_seg.green(), schema_seg.green())?;
             writeln!(writer)?;
         }
@@ -506,8 +518,12 @@ mod tests {
         expected.push_str(&format!("{}\n", "0 records processed".magenta()));
         expected.push_str(&format!(
             "{} {}\n",
-            format!("{:>width$}", name_header, width = name_width).bold().cyan(),
-            format!("{:>width$}", schema_header, width = schema_width).bold().cyan()
+            format!("{:>width$}", name_header, width = name_width)
+                .bold()
+                .cyan(),
+            format!("{:>width$}", schema_header, width = schema_width)
+                .bold()
+                .cyan()
         ));
         expected.push_str(&format!("{}\n", "-".repeat(total_width).bright_blue()));
         for (name, schema) in rows.drain(..) {
