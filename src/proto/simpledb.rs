@@ -83,6 +83,8 @@ pub struct ResultSetGetI32Request {
 pub struct ResultSetGetI32Response {
     #[prost(int32, tag = "1")]
     pub value: i32,
+    #[prost(bool, tag = "2")]
+    pub was_null: bool,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ResultSetGetStringRequest {
@@ -95,6 +97,8 @@ pub struct ResultSetGetStringRequest {
 pub struct ResultSetGetStringResponse {
     #[prost(string, tag = "1")]
     pub value: ::prost::alloc::string::String,
+    #[prost(bool, tag = "2")]
+    pub was_null: bool,
 }
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct ResultSetCloseRequest {

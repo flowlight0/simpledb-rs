@@ -9,7 +9,10 @@ use crate::{
     errors::ExecutionError,
     plan::{Plan, PlanControl},
     planner::Planner,
-    record::{field::Type, schema::Schema},
+    record::{
+        field::{Type, Value},
+        schema::Schema,
+    },
     scan::{Scan, ScanControl},
     tx::transaction::Transaction,
 };
@@ -102,12 +105,22 @@ impl ResultSetControl for EmbeddedResultSet {
         Ok(true)
     }
 
-    fn get_i32(&mut self, column_name: &str) -> Result<i32, anyhow::Error> {
-        Ok(self.scan.as_mut().unwrap().get_i32(column_name)?)
+    fn get_i32(&mut self, column_name: &str) -> Result<Option<i32>, anyhow::Error> {
+        let value = self.scan.as_mut().unwrap().get_value(column_name)?;
+        match value {
+            Value::I32(v) => Ok(Some(v)),
+            Value::Null => Ok(None),
+            _ => Err(anyhow::anyhow!("Expected i32 value")),
+        }
     }
 
-    fn get_string(&mut self, column_name: &str) -> Result<String, anyhow::Error> {
-        Ok(self.scan.as_mut().unwrap().get_string(column_name)?)
+    fn get_string(&mut self, column_name: &str) -> Result<Option<String>, anyhow::Error> {
+        let value = self.scan.as_mut().unwrap().get_value(column_name)?;
+        match value {
+            Value::String(v) => Ok(Some(v)),
+            Value::Null => Ok(None),
+            _ => Err(anyhow::anyhow!("Expected string value")),
+        }
     }
 
     fn close(&mut self) -> Result<(), anyhow::Error> {
@@ -277,26 +290,47 @@ mod tests {
         assert_eq!(metadata.get_column_name(0)?, "B");
 
         assert!(result_set.next()?);
-        assert_eq!(result_set.get_string("B")?, "a");
+        assert_eq!(result_set.get_string("B")?, Some("a".to_string()));
         assert!(result_set.next()?);
-        assert_eq!(result_set.get_string("B")?, "b");
+        assert_eq!(result_set.get_string("B")?, Some("b".to_string()));
         assert!(!result_set.next()?);
 
         result_set.after_last()?;
         assert!(result_set.previous()?);
-        assert_eq!(result_set.get_string("B")?, "b");
+        assert_eq!(result_set.get_string("B")?, Some("b".to_string()));
         assert!(result_set.previous()?);
-        assert_eq!(result_set.get_string("B")?, "a");
+        assert_eq!(result_set.get_string("B")?, Some("a".to_string()));
         assert!(!result_set.previous()?);
         result_set.before_first()?;
         assert!(result_set.absolute(0)?);
-        assert_eq!(result_set.get_string("B")?, "a");
+        assert_eq!(result_set.get_string("B")?, Some("a".to_string()));
         assert!(result_set.absolute(1)?);
-        assert_eq!(result_set.get_string("B")?, "b");
+        assert_eq!(result_set.get_string("B")?, Some("b".to_string()));
         assert!(!result_set.absolute(2)?);
         result_set.close()?;
 
         connection.close()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_embedded_driver_null_handling() -> Result<(), anyhow::Error> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("dir_null");
+        let db_url = format!("jdbc:simpledb:{}", temp_dir.to_string_lossy());
+
+        let driver = EmbeddedDriver::new();
+        let (_db_name, mut connection) = driver.connect(&db_url)?;
+
+        let mut statement = connection.create_statement()?;
+        statement.execute_update("create table test (A I32, B VARCHAR(20))")?;
+        statement.execute_update("insert into test (A, B) values (1, 'a')")?;
+        statement.execute_update("insert into test (A, B) values (2, NULL)")?;
+
+        let mut result_set = statement.execute_query("select B from test")?;
+        assert!(result_set.next()?);
+        assert_eq!(result_set.get_string("B")?, Some("a".to_string()));
+        assert!(result_set.next()?);
+        assert_eq!(result_set.get_string("B")?, None);
         Ok(())
     }
 }

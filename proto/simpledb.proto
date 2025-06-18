@@ -87,6 +87,7 @@ message ResultSetGetI32Request {
 
 message ResultSetGetI32Response {
     int32 value = 1;
+    bool was_null = 2;
 }
 
 message ResultSetGetStringRequest {
@@ -96,6 +97,7 @@ message ResultSetGetStringRequest {
 
 message ResultSetGetStringResponse {
     string value = 1;
+    bool was_null = 2;
 }
 
 message ResultSetCloseRequest {
