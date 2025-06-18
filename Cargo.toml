@@ -31,6 +31,9 @@ tonic = "0.12.3"
 rustyline = "16.0.0"
 colored = "3.0.0"
 
+[dev-dependencies]
+serial_test = "2.0.0"
+
 [dependencies.uuid]
 version = "1.11.0"
 features = [
