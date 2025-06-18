@@ -10,7 +10,18 @@ The main goal of this repoistory is my own learning. The code from Chapter 3 to 
 
 ## Completed excercises
 
-I'll add the list of completed exercises here.
+The following GitHub issues correspond to completed exercises:
+
+- #33
+- #66
+- #74
+- #77
+- #69
+- #79
+- #83
+- #63
+- #72
+- #85
 
 ## Interactive Client
 
