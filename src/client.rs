@@ -127,10 +127,13 @@ fn run_client<W: Write, E: ClientEditor>(
     let history_path = PathBuf::from(".simpledb_history");
     let _ = editor.load_history(&history_path);
 
-    let db_url = match editor.readline("Connect> ") {
-        Ok(line) => line,
-        Err(ReadlineError::Interrupted) | Err(ReadlineError::Eof) => return Ok(()),
-        Err(e) => return Err(e.into()),
+    let db_url = loop {
+        match editor.readline("Connect> ") {
+            Ok(line) => break line,
+            Err(ReadlineError::Interrupted) => continue,
+            Err(ReadlineError::Eof) => return Ok(()),
+            Err(e) => return Err(e.into()),
+        }
     };
 
     let (db_name, mut connection) = driver.connect(db_url.trim_end())?;
@@ -140,7 +143,8 @@ fn run_client<W: Write, E: ClientEditor>(
         let prompt = format!("\nSQL ({})> ", db_name);
         let command = match editor.readline(&prompt) {
             Ok(line) => line,
-            Err(ReadlineError::Interrupted) | Err(ReadlineError::Eof) => break,
+            Err(ReadlineError::Interrupted) => continue,
+            Err(ReadlineError::Eof) => break,
             Err(e) => return Err(e.into()),
         };
         if command.starts_with("exit") {
