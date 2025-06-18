@@ -15,9 +15,10 @@ The following issues correspond to finished exercises from the book:
 - [Exercise 3.15](https://github.com/flowlight0/simpledb-rs/issues/33): Add diagnostic routines to FileManager
 - [Exercise 6.10](https://github.com/flowlight0/simpledb-rs/issues/66): Add previous and after_last methods to TableScan and RecordPage
 - [Exercise 6.13](https://github.com/flowlight0/simpledb-rs/issues/74): Revise the record manager to handle null field values
+- [Exercise 7.7](https://github.com/flowlight0/simpledb-rs/issues/75): Implement 'SHOW TABLES' command in the client
 - [Exercise 8.11](https://github.com/flowlight0/simpledb-rs/issues/77): Handle null in the query processor
 - [Exercise 8.13](https://github.com/flowlight0/simpledb-rs/issues/69): Implement previous and after_last for more scans
-- [Exercise 9.15](https://github.com/flowlight0/simpledb-rs/issues/79): Introduce "*" character in the select clause
+- [Exercise 9.15](https://github.com/flowlight0/simpledb-rs/issues/79): Introduce "\*" character in the select clause
 - [Exercise 9.18](https://github.com/flowlight0/simpledb-rs/issues/83): More null handling in query processing
 - [Exercise 11.4](https://github.com/flowlight0/simpledb-rs/issues/63): Implement methods 'beforeFirst' and 'absolute(int n)' for ResultSet
 - [Exercise 11.5](https://github.com/flowlight0/simpledb-rs/issues/72): Modify ResultSet to support previous and after_last
