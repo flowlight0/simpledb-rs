@@ -36,7 +36,10 @@ impl MetadataControl for EmbeddedMetadata {
         let name = self.get_column_name(index)?;
         let size = match self.get_column_type(index)? {
             Type::I32 => 12,
-            Type::String => name.len(),
+            Type::String => self
+                .schema
+                .get_string_field_max_length(&name)
+                .unwrap_or(name.len()),
         };
         Ok(max(size, name.len()))
     }
