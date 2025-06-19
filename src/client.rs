@@ -188,12 +188,13 @@ fn do_show_tables<W: Write>(
         name_width = std::cmp::max(name_width, name.len());
         schema_width = std::cmp::max(schema_width, schema.len());
     }
-    let total_width = name_width + 1 + schema_width;
+    let total_width = name_width + 3 + schema_width;
 
     let header_name = format!("{:>width$}", name_header, width = name_width);
     let header_schema = format!("{:>width$}", schema_header, width = schema_width);
     write!(writer, "{}", header_name.bold().cyan())?;
-    write!(writer, " {}", header_schema.bold().cyan())?;
+    write!(writer, " | ")?;
+    write!(writer, "{}", header_schema.bold().cyan())?;
     writeln!(writer)?;
     writeln!(writer, "{}", "-".repeat(total_width).bright_blue())?;
 
@@ -232,7 +233,7 @@ fn do_show_tables<W: Write>(
                 .get(i)
                 .cloned()
                 .unwrap_or_else(|| " ".repeat(schema_width));
-            write!(writer, "{} {}", name_seg.green(), schema_seg.green())?;
+            write!(writer, "{} | {}", name_seg.green(), schema_seg.green())?;
             writeln!(writer)?;
         }
     }
@@ -556,13 +557,13 @@ mod tests {
             name_width = std::cmp::max(name_width, n.len());
             schema_width = std::cmp::max(schema_width, s.len());
         }
-        let total_width = name_width + 1 + schema_width;
+        let total_width = name_width + 3 + schema_width;
 
         let mut expected = String::new();
         expected.push_str(&format!("{}\n", "0 records processed".magenta()));
         expected.push_str(&format!("{}\n", "0 records processed".magenta()));
         expected.push_str(&format!(
-            "{} {}\n",
+            "{} | {}\n",
             format!("{:>width$}", name_header, width = name_width)
                 .bold()
                 .cyan(),
@@ -606,7 +607,7 @@ mod tests {
                     .get(i)
                     .cloned()
                     .unwrap_or_else(|| " ".repeat(schema_width));
-                expected.push_str(&format!("{} {}\n", n.green(), s.green()));
+                expected.push_str(&format!("{} | {}\n", n.green(), s.green()));
             }
         }
 
