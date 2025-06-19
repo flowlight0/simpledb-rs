@@ -46,15 +46,6 @@ impl Layout {
         }
     }
 
-    pub fn get_type_code(&self, field_name: &str) -> i32 {
-        // TODO: write cleaner code here.
-        if self.schema.i32_field_to_index.contains_key(field_name) {
-            0
-        } else {
-            1
-        }
-    }
-
     pub fn get_length(&self, field_name: &str) -> usize {
         // TODO: write cleaner code here.
         if self.schema.i32_field_to_index.contains_key(field_name) {

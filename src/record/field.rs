@@ -1,5 +1,7 @@
 use std::cmp::Ordering;
 
+use anyhow::{anyhow, Error};
+
 #[derive(Debug, PartialEq, Eq)]
 pub enum Spec {
     I32,
@@ -9,6 +11,37 @@ pub enum Spec {
 pub enum Type {
     I32,
     String,
+}
+
+impl Type {
+    pub fn to_code(self) -> i32 {
+        match self {
+            Type::I32 => 0,
+            Type::String => 1,
+        }
+    }
+
+    pub fn from_code(code: i32) -> Result<Self, Error> {
+        match code {
+            0 => Ok(Type::I32),
+            1 => Ok(Type::String),
+            _ => Err(anyhow!("Unknown type code: {}", code)),
+        }
+    }
+}
+
+impl From<Type> for i32 {
+    fn from(t: Type) -> Self {
+        t.to_code()
+    }
+}
+
+impl TryFrom<i32> for Type {
+    type Error = Error;
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        Type::from_code(value)
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
