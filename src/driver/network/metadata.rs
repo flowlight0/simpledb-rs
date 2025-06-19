@@ -17,6 +17,7 @@ use crate::{
     },
     record::field::Type,
 };
+use anyhow::anyhow;
 
 use super::{connection::NetworkConnection, result_set::RemoteResultSet};
 
@@ -92,11 +93,10 @@ impl MetadataService for RemoteMetadata {
             .expect(&format!("Unknown result_set_id: {}", result_set_id));
 
         let column_type = metadata.get_column_type(index).unwrap();
-        let type_code = match column_type {
-            Type::I32 => 0,
-            Type::String => 1,
-        };
-        Ok(Response::new(MetadataGetColumnTypeResponse { type_code }))
+        let type_code: i32 = column_type.into();
+        Ok(Response::new(MetadataGetColumnTypeResponse {
+            type_code: type_code as u64,
+        }))
     }
 }
 
@@ -164,11 +164,8 @@ impl MetadataControl for NetworkMetadata {
             }))
             .unwrap();
 
-        let type_code = response.into_inner().type_code;
-        match type_code {
-            0 => Ok(Type::I32),
-            1 => Ok(Type::String),
-            _ => panic!("Unknown type code: {}", type_code),
-        }
+        let type_code = response.into_inner().type_code as i32;
+        let field_type = Type::try_from(type_code).map_err(|e| anyhow!("{}", e))?;
+        Ok(field_type)
     }
 }

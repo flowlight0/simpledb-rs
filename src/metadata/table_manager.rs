@@ -2,7 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::{
     errors::TransactionError,
-    record::{layout::Layout, schema::Schema},
+    record::{field::Type, layout::Layout, schema::Schema},
     scan::{table_scan::TableScan, ScanControl},
     tx::transaction::Transaction,
 };
@@ -59,7 +59,8 @@ fn create_table(
             fcat.insert()?;
             fcat.set_string("tblname", table_name)?;
             fcat.set_string("fldname", field_name)?;
-            fcat.set_i32("type", layout.get_type_code(field_name))?;
+            let field_type = layout.schema.get_field_type(field_name);
+            fcat.set_i32("type", field_type.to_code())?;
             fcat.set_i32("length", layout.get_length(field_name) as i32)?;
             fcat.set_i32("offset", layout.get_offset(field_name) as i32)?;
         }
@@ -125,11 +126,13 @@ impl TableManager {
             let field_name = fcat.get_string("fldname")?.unwrap();
             let type_code = fcat.get_i32("type")?;
             let length = fcat.get_i32("length")?;
-            // let offset = fcat.get_i32("offset")?;
-            match type_code {
-                Some(0) => schema.add_i32_field(&field_name),
-                Some(1) => schema.add_string_field(&field_name, length.unwrap() as usize),
-                _ => panic!("Unknown type code: {:?}", type_code),
+            let field_type = match type_code {
+                Some(code) => Type::try_from(code).unwrap(),
+                None => panic!("Missing type code for field {}", field_name),
+            };
+            match field_type {
+                Type::I32 => schema.add_i32_field(&field_name),
+                Type::String => schema.add_string_field(&field_name, length.unwrap() as usize),
             }
         }
         if schema.i32_fields.is_empty() && schema.string_fields.is_empty() {

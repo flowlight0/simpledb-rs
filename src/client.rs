@@ -166,10 +166,10 @@ fn do_show_tables<W: Write>(
             let fname = rs.get_string("fldname")?.unwrap_or_default();
             let tcode = rs.get_i32("type")?.unwrap_or(0);
             let length = rs.get_i32("length")?.unwrap_or(0);
-            let type_str = match tcode {
-                0 => "I32".to_string(),
-                1 => format!("VARCHAR({})", length),
-                _ => format!("{}", tcode),
+            let type_str = match Type::from_code(tcode) {
+                Ok(Type::I32) => "I32".to_string(),
+                Ok(Type::String) => format!("VARCHAR({})", length),
+                Err(_) => format!("{}", tcode),
             };
             parts.push(format!("{} {}", fname, type_str));
         }
