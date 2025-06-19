@@ -108,7 +108,7 @@ fn do_query<W: Write>(
                     let mut segs = Vec::new();
                     for chunk in chars.chunks(width) {
                         let part: String = chunk.iter().collect();
-                        segs.push(format!("{:>width$}", part, width = width));
+                        segs.push(format!("{:<width$}", part, width = width));
                     }
                     if segs.is_empty() {
                         segs.push(" ".repeat(width));
@@ -204,7 +204,7 @@ fn do_show_tables<W: Write>(
             let mut segs = Vec::new();
             for chunk in chars.chunks(name_width) {
                 let part: String = chunk.iter().collect();
-                segs.push(format!("{:>width$}", part, width = name_width));
+                segs.push(format!("{:<width$}", part, width = name_width));
             }
             if segs.is_empty() {
                 segs.push(" ".repeat(name_width));
@@ -216,7 +216,7 @@ fn do_show_tables<W: Write>(
             let mut segs = Vec::new();
             for chunk in chars.chunks(schema_width) {
                 let part: String = chunk.iter().collect();
-                segs.push(format!("{:>width$}", part, width = schema_width));
+                segs.push(format!("{:<width$}", part, width = schema_width));
             }
             if segs.is_empty() {
                 segs.push(" ".repeat(schema_width));
@@ -509,6 +509,47 @@ mod tests {
 
     #[test]
     #[serial_test::serial]
+    fn test_run_client_select_varchar_alignment() -> Result<(), anyhow::Error> {
+        let work_dir = tempfile::tempdir()?;
+        let db_url = format!(
+            "jdbc:simpledb:{}",
+            work_dir.path().join("db").to_string_lossy()
+        );
+        let commands = vec![
+            db_url,
+            "create table T(A VARCHAR(10))".to_string(),
+            "insert into T(A) values ('abc')".to_string(),
+            "select A from T".to_string(),
+            "exit".to_string(),
+        ];
+        let mut editor = ScriptedEditor::new(commands);
+        let current = std::env::current_dir()?;
+        std::env::set_current_dir(work_dir.path())?;
+        let mut output = Vec::new();
+        run_client(
+            Driver::Embedded(EmbeddedDriver::new()),
+            &mut editor,
+            &mut output,
+        )?;
+        std::env::set_current_dir(current)?;
+
+        use colored::Colorize;
+        let output_str = String::from_utf8(output).unwrap();
+        let expected = format!(
+            "{}\n{}\n{}\n{}\n{}\n",
+            "0 records processed".magenta(),
+            "1 records processed".magenta(),
+            format!("{:>10}", "A").bold().cyan(),
+            "-".repeat(10).bright_blue(),
+            format!("{:<10}", "abc").green(),
+        );
+        assert_eq!(output_str, expected);
+
+        Ok(())
+    }
+
+    #[test]
+    #[serial_test::serial]
     fn test_run_client_show_tables() -> Result<(), anyhow::Error> {
         let work_dir = tempfile::tempdir()?;
         let db_url = format!(
@@ -578,7 +619,7 @@ mod tests {
                 let mut segs = Vec::new();
                 for chunk in chars.chunks(name_width) {
                     let part: String = chunk.iter().collect();
-                    segs.push(format!("{:>width$}", part, width = name_width));
+                    segs.push(format!("{:<width$}", part, width = name_width));
                 }
                 if segs.is_empty() {
                     segs.push(" ".repeat(name_width));
@@ -590,7 +631,7 @@ mod tests {
                 let mut segs = Vec::new();
                 for chunk in chars.chunks(schema_width) {
                     let part: String = chunk.iter().collect();
-                    segs.push(format!("{:>width$}", part, width = schema_width));
+                    segs.push(format!("{:<width$}", part, width = schema_width));
                 }
                 if segs.is_empty() {
                     segs.push(" ".repeat(schema_width));
