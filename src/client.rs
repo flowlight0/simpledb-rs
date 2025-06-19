@@ -63,7 +63,7 @@ fn do_query<W: Write>(
         let column_type = metadata.get_column_type(i)?;
         let width = metadata.get_column_display_size(i)?;
         if i > 0 {
-            total_width += 1;
+            total_width += 3;
         }
         total_width += width;
         widths.push(width);
@@ -71,6 +71,9 @@ fn do_query<W: Write>(
         types_vec.push(column_type);
 
         let header = format!("{:>width$}", column_name, width = width);
+        if i > 0 {
+            write!(writer, " | ")?;
+        }
         write!(writer, "{}", header.bold().cyan())?;
     }
     writeln!(writer)?;
@@ -120,7 +123,7 @@ fn do_query<W: Write>(
         for line_idx in 0..max_lines {
             for i in 0..num_columns {
                 if i > 0 {
-                    write!(writer, " ")?;
+                    write!(writer, " | ")?;
                 }
                 let width = widths[i];
                 let seg = rows[i]
@@ -413,6 +416,48 @@ mod tests {
         let history_file = work_dir.path().join(".simpledb_history");
         let history_content = fs::read_to_string(history_file)?;
         assert!(history_content.contains("select A from T"));
+        Ok(())
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_run_client_select_two_columns() -> Result<(), anyhow::Error> {
+        let work_dir = tempfile::tempdir()?;
+        let db_url = format!(
+            "jdbc:simpledb:{}",
+            work_dir.path().join("db").to_string_lossy()
+        );
+        let commands = vec![
+            db_url,
+            "create table T(A I32, B I32)".to_string(),
+            "insert into T(A, B) values (1, 2)".to_string(),
+            "select A, B from T".to_string(),
+            "exit".to_string(),
+        ];
+        let mut editor = ScriptedEditor::new(commands);
+        let current = std::env::current_dir()?;
+        std::env::set_current_dir(work_dir.path())?;
+        let mut output = Vec::new();
+        run_client(
+            Driver::Embedded(EmbeddedDriver::new()),
+            &mut editor,
+            &mut output,
+        )?;
+        std::env::set_current_dir(current)?;
+
+        use colored::Colorize;
+        let output_str = String::from_utf8(output).unwrap();
+        let expected = format!(
+            "{}\n{}\n{} | {}\n{}\n{} | {}\n",
+            "0 records processed".magenta(),
+            "1 records processed".magenta(),
+            format!("{:>12}", "A").bold().cyan(),
+            format!("{:>12}", "B").bold().cyan(),
+            "-".repeat(27).bright_blue(),
+            format!("{:>12}", 1).yellow(),
+            format!("{:>12}", 2).yellow(),
+        );
+        assert_eq!(output_str, expected);
         Ok(())
     }
 
