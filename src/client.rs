@@ -255,17 +255,21 @@ fn run_client<W: Write, E: ClientEditor>(
     driver: Driver,
     editor: &mut E,
     writer: &mut W,
+    db_url: Option<&str>,
 ) -> Result<(), anyhow::Error> {
     let history_path = PathBuf::from(".simpledb_history");
     let _ = editor.load_history(&history_path);
 
-    let db_url = loop {
-        match editor.readline("Connect> ") {
-            Ok(line) => break line,
-            Err(ReadlineError::Interrupted) => continue,
-            Err(ReadlineError::Eof) => return Ok(()),
-            Err(e) => return Err(e.into()),
-        }
+    let db_url = match db_url {
+        Some(url) => url.to_string(),
+        None => loop {
+            match editor.readline("Connect> ") {
+                Ok(line) => break line,
+                Err(ReadlineError::Interrupted) => continue,
+                Err(ReadlineError::Eof) => return Ok(()),
+                Err(e) => return Err(e.into()),
+            }
+        },
     };
 
     let (db_name, mut connection) = driver.connect(db_url.trim_end())?;
@@ -313,10 +317,12 @@ fn run_client<W: Write, E: ClientEditor>(
 
 fn main() -> Result<(), anyhow::Error> {
     let mut editor = DefaultEditor::new()?;
+    let db_url = std::env::args().nth(1);
     run_client(
         Driver::Embedded(EmbeddedDriver::new()),
         &mut editor,
         &mut stdout(),
+        db_url.as_deref(),
     )
 }
 
@@ -381,7 +387,6 @@ mod tests {
             work_dir.path().join("db").to_string_lossy()
         );
         let commands = vec![
-            db_url,
             "create table T(A I32)".to_string(),
             "insert into T(A) values (1)".to_string(),
             "select A from T".to_string(),
@@ -396,6 +401,7 @@ mod tests {
             Driver::Embedded(EmbeddedDriver::new()),
             &mut editor,
             &mut output,
+            Some(&db_url),
         )?;
         std::env::set_current_dir(current)?;
 
@@ -429,7 +435,6 @@ mod tests {
             work_dir.path().join("db").to_string_lossy()
         );
         let commands = vec![
-            db_url,
             "create table T(A I32, B I32)".to_string(),
             "insert into T(A, B) values (1, 2)".to_string(),
             "select A, B from T".to_string(),
@@ -443,6 +448,7 @@ mod tests {
             Driver::Embedded(EmbeddedDriver::new()),
             &mut editor,
             &mut output,
+            Some(&db_url),
         )?;
         std::env::set_current_dir(current)?;
 
@@ -471,7 +477,6 @@ mod tests {
             work_dir.path().join("db").to_string_lossy()
         );
         let commands = vec![
-            db_url,
             "".to_string(),
             "create table T(A I32)".to_string(),
             "insert into T(A) values (1)".to_string(),
@@ -486,6 +491,7 @@ mod tests {
             Driver::Embedded(EmbeddedDriver::new()),
             &mut editor,
             &mut output,
+            Some(&db_url),
         )?;
         std::env::set_current_dir(current)?;
 
@@ -516,7 +522,6 @@ mod tests {
             work_dir.path().join("db").to_string_lossy()
         );
         let commands = vec![
-            db_url,
             "create table T1(A I32, B VARCHAR(10))".to_string(),
             "create table T2(C I32)".to_string(),
             "show tables".to_string(),
@@ -530,6 +535,7 @@ mod tests {
             Driver::Embedded(EmbeddedDriver::new()),
             &mut editor,
             &mut output,
+            Some(&db_url),
         )?;
         std::env::set_current_dir(current)?;
 
