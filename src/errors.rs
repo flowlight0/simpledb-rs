@@ -12,6 +12,9 @@ pub enum TransactionError {
     #[error("TooSmallBlockError: (block_size: {0}, record_size: {1})")]
     TooSmallBlockError(usize, usize),
 
+    #[error("Table {0} already exists")]
+    TableAlreadyExists(String),
+
     #[error("IO error: {0}")]
     IO(#[from] std::io::Error),
 }

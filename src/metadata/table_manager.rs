@@ -101,6 +101,9 @@ impl TableManager {
         schema: &Schema,
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<(), TransactionError> {
+        if self.get_layout(table_name, tx.clone())?.is_some() {
+            return Err(TransactionError::TableAlreadyExists(table_name.to_string()));
+        }
         create_table(
             table_name,
             &schema,
@@ -162,6 +165,23 @@ mod tests {
         table_manager.create_table("testtable", &schema, tx.clone())?;
         let layout = table_manager.get_layout("testtable", tx.clone())?.unwrap();
         assert_eq!(schema, layout.schema);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_create_table_conflict() -> Result<(), TransactionError> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 256;
+        let db = SimpleDB::new(temp_dir, block_size, 3)?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+        let mut schema = Schema::new();
+        schema.add_i32_field("A");
+
+        let table_manager = TableManager::new(true, tx.clone())?;
+        table_manager.create_table("testtable", &schema, tx.clone())?;
+        let err = table_manager.create_table("testtable", &schema, tx.clone());
+        assert!(matches!(err, Err(TransactionError::TableAlreadyExists(_))));
         tx.lock().unwrap().commit()?;
         Ok(())
     }
