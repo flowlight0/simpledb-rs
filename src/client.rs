@@ -63,7 +63,7 @@ fn do_query<W: Write>(
         let column_type = metadata.get_column_type(i)?;
         let width = metadata.get_column_display_size(i)?;
         if i > 0 {
-            total_width += 1;
+            total_width += 3;
         }
         total_width += width;
         widths.push(width);
@@ -71,6 +71,9 @@ fn do_query<W: Write>(
         types_vec.push(column_type);
 
         let header = format!("{:>width$}", column_name, width = width);
+        if i > 0 {
+            write!(writer, " | ")?;
+        }
         write!(writer, "{}", header.bold().cyan())?;
     }
     writeln!(writer)?;
@@ -105,7 +108,7 @@ fn do_query<W: Write>(
                     let mut segs = Vec::new();
                     for chunk in chars.chunks(width) {
                         let part: String = chunk.iter().collect();
-                        segs.push(format!("{:>width$}", part, width = width));
+                        segs.push(format!("{:<width$}", part, width = width));
                     }
                     if segs.is_empty() {
                         segs.push(" ".repeat(width));
@@ -120,7 +123,7 @@ fn do_query<W: Write>(
         for line_idx in 0..max_lines {
             for i in 0..num_columns {
                 if i > 0 {
-                    write!(writer, " ")?;
+                    write!(writer, " | ")?;
                 }
                 let width = widths[i];
                 let seg = rows[i]
@@ -185,12 +188,13 @@ fn do_show_tables<W: Write>(
         name_width = std::cmp::max(name_width, name.len());
         schema_width = std::cmp::max(schema_width, schema.len());
     }
-    let total_width = name_width + 1 + schema_width;
+    let total_width = name_width + 3 + schema_width;
 
     let header_name = format!("{:>width$}", name_header, width = name_width);
     let header_schema = format!("{:>width$}", schema_header, width = schema_width);
     write!(writer, "{}", header_name.bold().cyan())?;
-    write!(writer, " {}", header_schema.bold().cyan())?;
+    write!(writer, " | ")?;
+    write!(writer, "{}", header_schema.bold().cyan())?;
     writeln!(writer)?;
     writeln!(writer, "{}", "-".repeat(total_width).bright_blue())?;
 
@@ -200,7 +204,7 @@ fn do_show_tables<W: Write>(
             let mut segs = Vec::new();
             for chunk in chars.chunks(name_width) {
                 let part: String = chunk.iter().collect();
-                segs.push(format!("{:>width$}", part, width = name_width));
+                segs.push(format!("{:<width$}", part, width = name_width));
             }
             if segs.is_empty() {
                 segs.push(" ".repeat(name_width));
@@ -212,7 +216,7 @@ fn do_show_tables<W: Write>(
             let mut segs = Vec::new();
             for chunk in chars.chunks(schema_width) {
                 let part: String = chunk.iter().collect();
-                segs.push(format!("{:>width$}", part, width = schema_width));
+                segs.push(format!("{:<width$}", part, width = schema_width));
             }
             if segs.is_empty() {
                 segs.push(" ".repeat(schema_width));
@@ -229,7 +233,7 @@ fn do_show_tables<W: Write>(
                 .get(i)
                 .cloned()
                 .unwrap_or_else(|| " ".repeat(schema_width));
-            write!(writer, "{} {}", name_seg.green(), schema_seg.green())?;
+            write!(writer, "{} | {}", name_seg.green(), schema_seg.green())?;
             writeln!(writer)?;
         }
     }
@@ -418,6 +422,48 @@ mod tests {
 
     #[test]
     #[serial_test::serial]
+    fn test_run_client_select_two_columns() -> Result<(), anyhow::Error> {
+        let work_dir = tempfile::tempdir()?;
+        let db_url = format!(
+            "jdbc:simpledb:{}",
+            work_dir.path().join("db").to_string_lossy()
+        );
+        let commands = vec![
+            db_url,
+            "create table T(A I32, B I32)".to_string(),
+            "insert into T(A, B) values (1, 2)".to_string(),
+            "select A, B from T".to_string(),
+            "exit".to_string(),
+        ];
+        let mut editor = ScriptedEditor::new(commands);
+        let current = std::env::current_dir()?;
+        std::env::set_current_dir(work_dir.path())?;
+        let mut output = Vec::new();
+        run_client(
+            Driver::Embedded(EmbeddedDriver::new()),
+            &mut editor,
+            &mut output,
+        )?;
+        std::env::set_current_dir(current)?;
+
+        use colored::Colorize;
+        let output_str = String::from_utf8(output).unwrap();
+        let expected = format!(
+            "{}\n{}\n{} | {}\n{}\n{} | {}\n",
+            "0 records processed".magenta(),
+            "1 records processed".magenta(),
+            format!("{:>12}", "A").bold().cyan(),
+            format!("{:>12}", "B").bold().cyan(),
+            "-".repeat(27).bright_blue(),
+            format!("{:>12}", 1).yellow(),
+            format!("{:>12}", 2).yellow(),
+        );
+        assert_eq!(output_str, expected);
+        Ok(())
+    }
+
+    #[test]
+    #[serial_test::serial]
     fn test_run_client_ignore_empty_input() -> Result<(), anyhow::Error> {
         let work_dir = tempfile::tempdir()?;
         let db_url = format!(
@@ -511,13 +557,13 @@ mod tests {
             name_width = std::cmp::max(name_width, n.len());
             schema_width = std::cmp::max(schema_width, s.len());
         }
-        let total_width = name_width + 1 + schema_width;
+        let total_width = name_width + 3 + schema_width;
 
         let mut expected = String::new();
         expected.push_str(&format!("{}\n", "0 records processed".magenta()));
         expected.push_str(&format!("{}\n", "0 records processed".magenta()));
         expected.push_str(&format!(
-            "{} {}\n",
+            "{} | {}\n",
             format!("{:>width$}", name_header, width = name_width)
                 .bold()
                 .cyan(),
@@ -532,7 +578,7 @@ mod tests {
                 let mut segs = Vec::new();
                 for chunk in chars.chunks(name_width) {
                     let part: String = chunk.iter().collect();
-                    segs.push(format!("{:>width$}", part, width = name_width));
+                    segs.push(format!("{:<width$}", part, width = name_width));
                 }
                 if segs.is_empty() {
                     segs.push(" ".repeat(name_width));
@@ -544,7 +590,7 @@ mod tests {
                 let mut segs = Vec::new();
                 for chunk in chars.chunks(schema_width) {
                     let part: String = chunk.iter().collect();
-                    segs.push(format!("{:>width$}", part, width = schema_width));
+                    segs.push(format!("{:<width$}", part, width = schema_width));
                 }
                 if segs.is_empty() {
                     segs.push(" ".repeat(schema_width));
@@ -561,7 +607,7 @@ mod tests {
                     .get(i)
                     .cloned()
                     .unwrap_or_else(|| " ".repeat(schema_width));
-                expected.push_str(&format!("{} {}\n", n.green(), s.green()));
+                expected.push_str(&format!("{} | {}\n", n.green(), s.green()));
             }
         }
 
