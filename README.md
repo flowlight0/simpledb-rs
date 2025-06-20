@@ -16,6 +16,7 @@ The following issues correspond to finished exercises from the book:
 - [Exercise 6.10](https://github.com/flowlight0/simpledb-rs/issues/66): Add previous and after_last methods to TableScan and RecordPage
 - [Exercise 6.13](https://github.com/flowlight0/simpledb-rs/issues/74): Revise the record manager to handle null field values
 - [Exercise 7.7](https://github.com/flowlight0/simpledb-rs/issues/75): Implement 'SHOW TABLES' command in the client
+- [Exercise 8.8](https://github.com/flowlight0/simpledb-rs/issues/116): expressions handle arithmetic operators on integers
 - [Exercise 8.11](https://github.com/flowlight0/simpledb-rs/issues/77): Handle null in the query processor
 - [Exercise 8.13](https://github.com/flowlight0/simpledb-rs/issues/69): Implement previous and after_last for more scans
 - [Exercise 9.15](https://github.com/flowlight0/simpledb-rs/issues/79): Introduce "\*" character in the select clause
