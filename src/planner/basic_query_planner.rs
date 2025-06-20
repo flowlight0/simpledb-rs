@@ -2,6 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::{
     errors::TransactionError,
+    materialization::{record_comparator::RecordComparator, sort_plan::SortPlan},
     metadata::MetadataManager,
     parser::statement::QueryData,
     plan::{
@@ -64,6 +65,12 @@ impl QueryPlanner for BasicQueryPlanner {
         // Step 4
         if let Some(fields) = &query.fields {
             plan = Plan::from(ProjectPlan::new(plan, fields.clone()));
+        }
+
+        // Step 5
+        if let Some(order_fields) = &query.order_by {
+            let comparator = Arc::new(RecordComparator::new(order_fields));
+            plan = Plan::from(SortPlan::new(plan, tx.clone(), comparator));
         }
 
         Ok(plan)
@@ -201,6 +208,56 @@ mod tests {
             count += 1;
         }
         assert_eq!(count, 5);
+        drop(scan);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_order_by_basic_query_planner() -> Result<(), TransactionError> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 256;
+        let num_buffers = 100;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+        {
+            let mut metadata_manager = db.metadata_manager.lock().unwrap();
+            let mut schema = Schema::new();
+            schema.add_i32_field("A");
+            metadata_manager.create_table("table1", &schema, tx.clone())?;
+        }
+
+        {
+            let layout = {
+                let md = db.metadata_manager.lock().unwrap();
+                md.get_layout("table1", tx.clone())?.unwrap()
+            };
+            let mut table_scan = TableScan::new(tx.clone(), "table1", Arc::new(layout))?;
+            table_scan.before_first()?;
+            for i in (0..5).rev() {
+                table_scan.insert()?;
+                table_scan.set_i32("A", i)?;
+            }
+            drop(table_scan);
+        }
+
+        let query = QueryData::new_all_with_order(
+            vec!["table1".to_string()],
+            None,
+            Some(vec!["A".to_string()]),
+        );
+
+        let planner = BasicQueryPlanner::new(db.metadata_manager.clone());
+        let mut plan = planner.create_plan(&query, tx.clone())?;
+
+        let mut scan = plan.open(tx.clone())?;
+        scan.before_first()?;
+        for i in 0..5 {
+            assert!(scan.next()?);
+            assert_eq!(scan.get_i32("A")?, Some(i));
+        }
+        assert!(!scan.next()?);
         drop(scan);
         tx.lock().unwrap().commit()?;
         Ok(())

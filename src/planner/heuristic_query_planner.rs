@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use crate::errors::TransactionError;
+use crate::materialization::{record_comparator::RecordComparator, sort_plan::SortPlan};
 use crate::metadata::MetadataManager;
 use crate::parser::statement::QueryData;
 use crate::plan::project_plan::ProjectPlan;
@@ -130,12 +131,18 @@ impl QueryPlanner for HeuristicQueryPlanner {
             }
         }
 
-        // Step 4, Project on the field names and return
+        // Step 4, Project on the field names
         if let Some(fields) = &query.fields {
-            Ok(Plan::from(ProjectPlan::new(current_plan, fields.clone())))
-        } else {
-            Ok(current_plan)
+            current_plan = Plan::from(ProjectPlan::new(current_plan, fields.clone()));
         }
+
+        // Step 5, apply ordering if specified
+        if let Some(order_fields) = &query.order_by {
+            let comparator = Arc::new(RecordComparator::new(order_fields));
+            current_plan = Plan::from(SortPlan::new(current_plan, tx.clone(), comparator));
+        }
+
+        Ok(current_plan)
     }
 }
 
