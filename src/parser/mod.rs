@@ -186,4 +186,35 @@ mod tests {
             ))
         );
     }
+
+    #[test]
+    fn test_expression_arithmetic() {
+        assert_eq!(
+            grammar::TermParser::new().parse("1 + 2 * 3 = 7").unwrap(),
+            Term::Equality(
+                Expression::Add(
+                    Box::new(Expression::I32Constant(1)),
+                    Box::new(Expression::Mul(
+                        Box::new(Expression::I32Constant(2)),
+                        Box::new(Expression::I32Constant(3)),
+                    )),
+                ),
+                Expression::I32Constant(7),
+            )
+        );
+
+        assert_eq!(
+            grammar::TermParser::new().parse("(a + 1) / b = 3").unwrap(),
+            Term::Equality(
+                Expression::Div(
+                    Box::new(Expression::Add(
+                        Box::new(Expression::Field("a".to_string())),
+                        Box::new(Expression::I32Constant(1)),
+                    )),
+                    Box::new(Expression::Field("b".to_string())),
+                ),
+                Expression::I32Constant(3),
+            )
+        );
+    }
 }

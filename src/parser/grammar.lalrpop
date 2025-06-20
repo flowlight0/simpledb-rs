@@ -32,10 +32,13 @@ match {
     "(" => LPAREN,
     ")" => RPAREN,
     "*" => STAR,
+    "/" => SLASH,
+    "+" => PLUS,
     "," => COMMA,
     "=" => EQ,
 } else {
     r"-?[0-9]+" => I32_LITERAL,
+    "-" => MINUS,
     r"'[^']+'" => STRING_LITERAL,
 } else {
     r"[a-zA-Z][a-zA-Z0-9_]*" => ID,
@@ -104,6 +107,23 @@ pub Term: predicate::Term = {
 }
 
 Expression: predicate::Expression = {
+    <e:AddExpr> => e,
+}
+
+AddExpr: predicate::Expression = {
+    <l:AddExpr> PLUS <r:MulExpr> => predicate::Expression::Add(Box::new(l), Box::new(r)),
+    <l:AddExpr> MINUS <r:MulExpr> => predicate::Expression::Sub(Box::new(l), Box::new(r)),
+    <e:MulExpr> => e,
+}
+
+MulExpr: predicate::Expression = {
+    <l:MulExpr> STAR <r:Factor> => predicate::Expression::Mul(Box::new(l), Box::new(r)),
+    <l:MulExpr> SLASH <r:Factor> => predicate::Expression::Div(Box::new(l), Box::new(r)),
+    <e:Factor> => e,
+}
+
+Factor: predicate::Expression = {
+    LPAREN <e:Expression> RPAREN => e,
     NULL => predicate::Expression::NullConstant,
     <i:I32Constant> => predicate::Expression::I32Constant(i),
     <s:StringConstant> => predicate::Expression::StringConstant(s),
