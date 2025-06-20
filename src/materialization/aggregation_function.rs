@@ -2,12 +2,19 @@ use enum_dispatch::enum_dispatch;
 
 use crate::{errors::TransactionError, record::field::Value, scan::Scan};
 
-use super::max_function::MaxFn;
+use super::{
+    avg_function::AvgFn, count_function::CountFn, max_function::MaxFn, min_function::MinFn,
+    sum_function::SumFn,
+};
 
 #[derive(Clone)]
 #[enum_dispatch]
 pub enum AggregationFn {
     Max(MaxFn),
+    Count(CountFn),
+    Min(MinFn),
+    Sum(SumFn),
+    Avg(AvgFn),
 }
 
 #[enum_dispatch(AggregationFn)]
