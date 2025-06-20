@@ -1,4 +1,5 @@
 use enum_dispatch::enum_dispatch;
+use extend_scan::ExtendScan;
 use product_scan::ProductScan;
 use project_scan::ProjectScan;
 use select_scan::SelectScan;
@@ -37,6 +38,7 @@ pub enum Scan {
     TableScan(TableScan),
     ProjectScan(ProjectScan),
     SelectScan(SelectScan),
+    ExtendScan(ExtendScan),
     ProductScan(ProductScan),
     IndexSelectScan(IndexSelectScan),
     IndexJoinScan(IndexJoinScan),
@@ -104,6 +106,7 @@ pub trait ScanControl {
     }
 }
 
+pub mod extend_scan;
 pub mod product_scan;
 pub mod project_scan;
 pub mod select_scan;
