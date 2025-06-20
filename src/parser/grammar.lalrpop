@@ -60,7 +60,12 @@ pub Query: statement::QueryData = {
 
 FieldList: Option<Vec<String>> = {
     STAR => None,
-    <fs:Comma<IdToken>> => Some(fs),
+    <fs:Comma<SelectField>> => Some(fs),
+};
+
+SelectField: String = {
+    <f:IdToken> => f,
+    <f:IdToken> AS <_alias:IdToken> => f,
 };
 
 OptPredicate: Option<predicate::Predicate> = {

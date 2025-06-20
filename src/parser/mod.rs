@@ -217,4 +217,18 @@ mod tests {
             )
         );
     }
+
+    #[test]
+    fn test_select_as_alias() {
+        assert_eq!(
+            grammar::StatementParser::new()
+                .parse("SELECT col AS alias FROM tbl")
+                .unwrap(),
+            Statement::Query(QueryData::new(
+                vec!["col".to_string()],
+                vec!["tbl".to_string()],
+                None,
+            ))
+        );
+    }
 }
