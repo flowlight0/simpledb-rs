@@ -74,14 +74,14 @@ impl Expression {
         }
     }
 
-    pub fn try_get_field(&self) -> Option<&str> {
+    fn try_get_field(&self) -> Option<&str> {
         match self {
             Expression::Field(field_name) => Some(field_name),
             _ => None,
         }
     }
 
-    pub fn try_get_constant(&self) -> Option<Value> {
+    fn try_get_constant(&self) -> Option<Value> {
         match self {
             Expression::NullConstant => Some(Value::Null),
             Expression::I32Constant(value) => Some(Value::I32(*value)),
