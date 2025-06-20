@@ -13,22 +13,42 @@ pub struct QueryData {
     pub fields: Option<Vec<String>>, // None means all fields
     pub tables: Vec<String>,
     pub predicate: Option<Predicate>,
+    pub order_by: Option<Vec<String>>, // None means no ordering
 }
 
 impl QueryData {
     pub fn new(fields: Vec<String>, tables: Vec<String>, predicate: Option<Predicate>) -> Self {
+        QueryData::new_with_order(fields, tables, predicate, None)
+    }
+
+    pub fn new_all(tables: Vec<String>, predicate: Option<Predicate>) -> Self {
+        QueryData::new_all_with_order(tables, predicate, None)
+    }
+
+    pub fn new_with_order(
+        fields: Vec<String>,
+        tables: Vec<String>,
+        predicate: Option<Predicate>,
+        order_by: Option<Vec<String>>,
+    ) -> Self {
         QueryData {
             fields: Some(fields),
             tables,
             predicate,
+            order_by,
         }
     }
 
-    pub fn new_all(tables: Vec<String>, predicate: Option<Predicate>) -> Self {
+    pub fn new_all_with_order(
+        tables: Vec<String>,
+        predicate: Option<Predicate>,
+        order_by: Option<Vec<String>>,
+    ) -> Self {
         QueryData {
             fields: None,
             tables,
             predicate,
+            order_by,
         }
     }
 }

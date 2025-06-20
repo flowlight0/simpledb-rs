@@ -172,4 +172,18 @@ mod tests {
             Statement::Query(QueryData::new_all(vec!["mytable".to_string()], None))
         );
     }
+
+    #[test]
+    fn test_select_order_by() {
+        assert_eq!(
+            grammar::StatementParser::new()
+                .parse("SELECT * FROM mytable ORDER BY col")
+                .unwrap(),
+            Statement::Query(QueryData::new_all_with_order(
+                vec!["mytable".to_string()],
+                None,
+                Some(vec!["col".to_string()]),
+            ))
+        );
+    }
 }

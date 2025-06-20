@@ -19,6 +19,8 @@ match {
     r"(?i)TABLE" => TABLE,
     r"(?i)VIEW" => VIEW,
     r"(?i)INDEX" => INDEX,
+    r"(?i)ORDER" => ORDER,
+    r"(?i)BY" => BY,
     r"(?i)ON" => ON,
     r"(?i)AS" => AS,
     r"(?i)IS" => IS,
@@ -47,11 +49,26 @@ pub Statement: statement::Statement = {
 }
 
 pub Query: statement::QueryData = {
-    SELECT <fs:Comma<IdToken>> FROM <ts:Comma<IdToken>> WHERE <p:Predicate> => statement::QueryData::new(fs, ts, Some(p)),
-    SELECT <fs:Comma<IdToken>> FROM <ts:Comma<IdToken>> => statement::QueryData::new(fs, ts, None),
-    SELECT STAR FROM <ts:Comma<IdToken>> WHERE <p:Predicate> => statement::QueryData::new_all(ts, Some(p)),
-    SELECT STAR FROM <ts:Comma<IdToken>> => statement::QueryData::new_all(ts, None),
+    SELECT <fs:FieldList> FROM <ts:Comma<IdToken>> <p:OptPredicate> <o:OptOrderBy> => match fs {
+        Some(fields) => statement::QueryData::new_with_order(fields, ts, p, o),
+        None => statement::QueryData::new_all_with_order(ts, p, o),
+    },
 }
+
+FieldList: Option<Vec<String>> = {
+    STAR => None,
+    <fs:Comma<IdToken>> => Some(fs),
+};
+
+OptPredicate: Option<predicate::Predicate> = {
+    WHERE <p:Predicate> => Some(p),
+    => None,
+};
+
+OptOrderBy: Option<Vec<String>> = {
+    ORDER BY <os:Comma<IdToken>> => Some(os),
+    => None,
+};
 
 pub UpdateCommand: statement::UpdateCommand = {
     INSERT INTO <t:IdToken> LPAREN <fs:Comma<IdToken>> RPAREN VALUES LPAREN <vs:Comma<Constant>> RPAREN => statement::UpdateCommand::Insert(t, fs, vs),
