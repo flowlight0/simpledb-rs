@@ -129,7 +129,8 @@ mod tests {
     use crate::{
         db::SimpleDB,
         materialization::{
-            max_function::MaxFn, record_comparator::RecordComparator, temp_table::TempTable,
+            avg_function::AvgFn, count_function::CountFn, max_function::MaxFn, min_function::MinFn,
+            record_comparator::RecordComparator, sum_function::SumFn, temp_table::TempTable,
         },
         record::schema::Schema,
     };
@@ -173,6 +174,174 @@ mod tests {
             assert!(group_by_scan.next()?);
             assert_eq!(group_by_scan.get_i32("A")?, Some(i));
             assert_eq!(group_by_scan.get_i32("B")?, Some(i * 5 + 4));
+        }
+        assert!(!group_by_scan.next()?);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_group_by_scan_count() -> Result<(), TransactionError> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 1024;
+        let num_buffers = 100;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+
+        let mut schema = Schema::new();
+        schema.add_i32_field("A");
+        schema.add_i32_field("B");
+
+        let temp_table = TempTable::new(tx.clone(), &schema);
+
+        {
+            let mut scan = temp_table.open()?;
+            scan.before_first()?;
+            for i in 0..50 {
+                scan.insert()?;
+                scan.set_i32("A", i / 5)?;
+                scan.set_i32("B", i)?;
+            }
+        }
+
+        let group_fields = vec!["A".to_string()];
+        let sort_scan = SortScan::new(
+            vec![temp_table],
+            Arc::new(RecordComparator::new(&group_fields)),
+        )?;
+        let aggregation_functions = vec![AggregationFn::from(CountFn::new("B"))];
+        let mut group_by_scan = GroupByScan::new(sort_scan, &group_fields, &aggregation_functions)?;
+
+        group_by_scan.before_first()?;
+        for _ in 0..10 {
+            assert!(group_by_scan.next()?);
+            assert_eq!(group_by_scan.get_i32("B")?, Some(5));
+        }
+        assert!(!group_by_scan.next()?);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_group_by_scan_min() -> Result<(), TransactionError> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 1024;
+        let num_buffers = 100;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+
+        let mut schema = Schema::new();
+        schema.add_i32_field("A");
+        schema.add_i32_field("B");
+
+        let temp_table = TempTable::new(tx.clone(), &schema);
+
+        {
+            let mut scan = temp_table.open()?;
+            scan.before_first()?;
+            for i in 0..50 {
+                scan.insert()?;
+                scan.set_i32("A", i / 5)?;
+                scan.set_i32("B", i)?;
+            }
+        }
+
+        let group_fields = vec!["A".to_string()];
+        let sort_scan = SortScan::new(
+            vec![temp_table],
+            Arc::new(RecordComparator::new(&group_fields)),
+        )?;
+        let aggregation_functions = vec![AggregationFn::from(MinFn::new("B"))];
+        let mut group_by_scan = GroupByScan::new(sort_scan, &group_fields, &aggregation_functions)?;
+
+        group_by_scan.before_first()?;
+        for i in 0..10 {
+            assert!(group_by_scan.next()?);
+            assert_eq!(group_by_scan.get_i32("B")?, Some(i * 5));
+        }
+        assert!(!group_by_scan.next()?);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_group_by_scan_sum() -> Result<(), TransactionError> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 1024;
+        let num_buffers = 100;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+
+        let mut schema = Schema::new();
+        schema.add_i32_field("A");
+        schema.add_i32_field("B");
+
+        let temp_table = TempTable::new(tx.clone(), &schema);
+
+        {
+            let mut scan = temp_table.open()?;
+            scan.before_first()?;
+            for i in 0..50 {
+                scan.insert()?;
+                scan.set_i32("A", i / 5)?;
+                scan.set_i32("B", i)?;
+            }
+        }
+
+        let group_fields = vec!["A".to_string()];
+        let sort_scan = SortScan::new(
+            vec![temp_table],
+            Arc::new(RecordComparator::new(&group_fields)),
+        )?;
+        let aggregation_functions = vec![AggregationFn::from(SumFn::new("B"))];
+        let mut group_by_scan = GroupByScan::new(sort_scan, &group_fields, &aggregation_functions)?;
+
+        group_by_scan.before_first()?;
+        for i in 0..10 {
+            assert!(group_by_scan.next()?);
+            assert_eq!(group_by_scan.get_i32("B")?, Some(25 * i as i32 + 10));
+        }
+        assert!(!group_by_scan.next()?);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_group_by_scan_avg() -> Result<(), TransactionError> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 1024;
+        let num_buffers = 100;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+
+        let mut schema = Schema::new();
+        schema.add_i32_field("A");
+        schema.add_i32_field("B");
+
+        let temp_table = TempTable::new(tx.clone(), &schema);
+
+        {
+            let mut scan = temp_table.open()?;
+            scan.before_first()?;
+            for i in 0..50 {
+                scan.insert()?;
+                scan.set_i32("A", i / 5)?;
+                scan.set_i32("B", i)?;
+            }
+        }
+
+        let group_fields = vec!["A".to_string()];
+        let sort_scan = SortScan::new(
+            vec![temp_table],
+            Arc::new(RecordComparator::new(&group_fields)),
+        )?;
+        let aggregation_functions = vec![AggregationFn::from(AvgFn::new("B"))];
+        let mut group_by_scan = GroupByScan::new(sort_scan, &group_fields, &aggregation_functions)?;
+
+        group_by_scan.before_first()?;
+        for i in 0..10 {
+            assert!(group_by_scan.next()?);
+            assert_eq!(group_by_scan.get_i32("B")?, Some(i * 5 + 2));
         }
         assert!(!group_by_scan.next()?);
 
