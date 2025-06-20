@@ -13,6 +13,10 @@ path = "src/client.rs"
 name = "server"
 path = "src/server.rs"
 
+[[bin]]
+name = "create_student_db"
+path = "src/create_student_db.rs"
+
 
 [build-dependencies]
 lalrpop = "0.22.0"
