@@ -23,6 +23,7 @@ The following issues correspond to finished exercises from the book:
 - [Exercise 11.4](https://github.com/flowlight0/simpledb-rs/issues/63): Implement methods 'beforeFirst' and 'absolute(int n)' for ResultSet
 - [Exercise 11.5](https://github.com/flowlight0/simpledb-rs/issues/72): Modify ResultSet to support previous and after_last
 - [Exercise 11.6](https://github.com/flowlight0/simpledb-rs/issues/85): Implement wasNull method for ResultSet
+- [Exercise 13.15](https://github.com/flowlight0/simpledb-rs/issues/110) Support "ORDER BY" clause
 
 ## Interactive Client
 
