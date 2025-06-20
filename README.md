@@ -20,6 +20,7 @@ The following issues correspond to finished exercises from the book:
 - [Exercise 8.11](https://github.com/flowlight0/simpledb-rs/issues/77): Handle null in the query processor
 - [Exercise 8.13](https://github.com/flowlight0/simpledb-rs/issues/69): Implement previous and after_last for more scans
 - [Exercise 8.15](https://github.com/flowlight0/simpledb-rs/issues/115): Implement ExtendScan
+- [Exercise 9.12](https://github.com/flowlight0/simpledb-rs/issues/114): Allow keyword "AS" in queries
 - [Exercise 9.15](https://github.com/flowlight0/simpledb-rs/issues/79): Introduce "\*" character in the select clause
 - [Exercise 9.18](https://github.com/flowlight0/simpledb-rs/issues/83): More null handling in query processing
 - [Exercise 11.4](https://github.com/flowlight0/simpledb-rs/issues/63): Implement methods 'beforeFirst' and 'absolute(int n)' for ResultSet
