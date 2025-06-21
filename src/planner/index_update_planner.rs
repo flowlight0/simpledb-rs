@@ -5,7 +5,8 @@ use crate::{
     index::IndexControl,
     metadata::MetadataManager,
     parser::{
-        predicate::{Expression, Predicate},
+        expression::Expression,
+        predicate::Predicate,
         statement::{CreateCommand, UpdateCommand},
     },
     plan::{select_plan::SelectPlan, table_plan::TablePlan, Plan, PlanControl},

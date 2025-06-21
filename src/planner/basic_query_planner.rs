@@ -88,7 +88,10 @@ mod tests {
     use super::*;
     use crate::db::SimpleDB;
 
-    use crate::parser::predicate::{Expression, Predicate, Term};
+    use crate::parser::{
+        expression::Expression,
+        predicate::{Predicate, Term},
+    };
 
     use crate::record::schema::Schema;
     use crate::scan::table_scan::TableScan;

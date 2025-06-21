@@ -1,5 +1,6 @@
 // auto-generated: "lalrpop 0.22.0"
-// sha3: 781cf159053bf310ce27cd5af3ef62cb610d07ce259f5cc7f83c45204f510d67
+// sha3: 42cb9b044c6c2cf6e531c50e8ac57eba540a091e9a9e502952ac40803802b9d0
+use super::expression;
 use super::predicate;
 use super::statement;
 use crate::record::field::{Spec, Value};
@@ -18,6 +19,7 @@ mod __parse__Predicate {
     use std::str::FromStr;
     use super::super::statement;
     use super::super::predicate;
+    use super::super::expression;
     use crate::record::field::{Spec, Value};
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
@@ -36,18 +38,18 @@ mod __parse__Predicate {
         Variant4(alloc::vec::Vec<statement::FieldDefinition>),
         Variant5(String),
         Variant6(alloc::vec::Vec<String>),
-        Variant7((predicate::Expression, Option<String>)),
-        Variant8(alloc::vec::Vec<(predicate::Expression, Option<String>)>),
+        Variant7((expression::Expression, Option<String>)),
+        Variant8(alloc::vec::Vec<(expression::Expression, Option<String>)>),
         Variant9(predicate::Term),
         Variant10(alloc::vec::Vec<predicate::Term>),
-        Variant11(predicate::Expression),
+        Variant11(expression::Expression),
         Variant12(Vec<predicate::Term>),
         Variant13(Vec<Value>),
         Variant14(Vec<statement::FieldDefinition>),
         Variant15(Vec<String>),
-        Variant16(Vec<(predicate::Expression, Option<String>)>),
+        Variant16(Vec<(expression::Expression, Option<String>)>),
         Variant17(statement::CreateCommand),
-        Variant18(Option<Vec<(predicate::Expression, Option<String>)>>),
+        Variant18(Option<Vec<(expression::Expression, Option<String>)>>),
         Variant19(Spec),
         Variant20(i32),
         Variant21(Option<Vec<String>>),
@@ -1317,7 +1319,7 @@ mod __parse__Predicate {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, (predicate::Expression, Option<String>), usize)
+    ) -> (usize, (expression::Expression, Option<String>), usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
@@ -1328,7 +1330,7 @@ mod __parse__Predicate {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Option<Vec<(predicate::Expression, Option<String>)>>, usize)
+    ) -> (usize, Option<Vec<(expression::Expression, Option<String>)>>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant18(__v), __r)) => (__l, __v, __r),
@@ -1394,7 +1396,7 @@ mod __parse__Predicate {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<(predicate::Expression, Option<String>)>, usize)
+    ) -> (usize, Vec<(expression::Expression, Option<String>)>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
@@ -1449,7 +1451,7 @@ mod __parse__Predicate {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<(predicate::Expression, Option<String>)>, usize)
+    ) -> (usize, alloc::vec::Vec<(expression::Expression, Option<String>)>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
@@ -1500,6 +1502,17 @@ mod __parse__Predicate {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant11<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, expression::Expression, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant20<
       'input,
     >(
@@ -1508,17 +1521,6 @@ mod __parse__Predicate {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant11<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Expression, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -3162,6 +3164,7 @@ mod __parse__Query {
     use std::str::FromStr;
     use super::super::statement;
     use super::super::predicate;
+    use super::super::expression;
     use crate::record::field::{Spec, Value};
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
@@ -3180,18 +3183,18 @@ mod __parse__Query {
         Variant4(alloc::vec::Vec<statement::FieldDefinition>),
         Variant5(String),
         Variant6(alloc::vec::Vec<String>),
-        Variant7((predicate::Expression, Option<String>)),
-        Variant8(alloc::vec::Vec<(predicate::Expression, Option<String>)>),
+        Variant7((expression::Expression, Option<String>)),
+        Variant8(alloc::vec::Vec<(expression::Expression, Option<String>)>),
         Variant9(predicate::Term),
         Variant10(alloc::vec::Vec<predicate::Term>),
-        Variant11(predicate::Expression),
+        Variant11(expression::Expression),
         Variant12(Vec<predicate::Term>),
         Variant13(Vec<Value>),
         Variant14(Vec<statement::FieldDefinition>),
         Variant15(Vec<String>),
-        Variant16(Vec<(predicate::Expression, Option<String>)>),
+        Variant16(Vec<(expression::Expression, Option<String>)>),
         Variant17(statement::CreateCommand),
-        Variant18(Option<Vec<(predicate::Expression, Option<String>)>>),
+        Variant18(Option<Vec<(expression::Expression, Option<String>)>>),
         Variant19(Spec),
         Variant20(i32),
         Variant21(Option<Vec<String>>),
@@ -4591,7 +4594,7 @@ mod __parse__Query {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, (predicate::Expression, Option<String>), usize)
+    ) -> (usize, (expression::Expression, Option<String>), usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
@@ -4602,7 +4605,7 @@ mod __parse__Query {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Option<Vec<(predicate::Expression, Option<String>)>>, usize)
+    ) -> (usize, Option<Vec<(expression::Expression, Option<String>)>>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant18(__v), __r)) => (__l, __v, __r),
@@ -4668,7 +4671,7 @@ mod __parse__Query {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<(predicate::Expression, Option<String>)>, usize)
+    ) -> (usize, Vec<(expression::Expression, Option<String>)>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
@@ -4723,7 +4726,7 @@ mod __parse__Query {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<(predicate::Expression, Option<String>)>, usize)
+    ) -> (usize, alloc::vec::Vec<(expression::Expression, Option<String>)>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
@@ -4774,6 +4777,17 @@ mod __parse__Query {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant11<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, expression::Expression, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant20<
       'input,
     >(
@@ -4782,17 +4796,6 @@ mod __parse__Query {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant11<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Expression, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -6436,6 +6439,7 @@ mod __parse__Statement {
     use std::str::FromStr;
     use super::super::statement;
     use super::super::predicate;
+    use super::super::expression;
     use crate::record::field::{Spec, Value};
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
@@ -6454,18 +6458,18 @@ mod __parse__Statement {
         Variant4(alloc::vec::Vec<statement::FieldDefinition>),
         Variant5(String),
         Variant6(alloc::vec::Vec<String>),
-        Variant7((predicate::Expression, Option<String>)),
-        Variant8(alloc::vec::Vec<(predicate::Expression, Option<String>)>),
+        Variant7((expression::Expression, Option<String>)),
+        Variant8(alloc::vec::Vec<(expression::Expression, Option<String>)>),
         Variant9(predicate::Term),
         Variant10(alloc::vec::Vec<predicate::Term>),
-        Variant11(predicate::Expression),
+        Variant11(expression::Expression),
         Variant12(Vec<predicate::Term>),
         Variant13(Vec<Value>),
         Variant14(Vec<statement::FieldDefinition>),
         Variant15(Vec<String>),
-        Variant16(Vec<(predicate::Expression, Option<String>)>),
+        Variant16(Vec<(expression::Expression, Option<String>)>),
         Variant17(statement::CreateCommand),
-        Variant18(Option<Vec<(predicate::Expression, Option<String>)>>),
+        Variant18(Option<Vec<(expression::Expression, Option<String>)>>),
         Variant19(Spec),
         Variant20(i32),
         Variant21(Option<Vec<String>>),
@@ -8159,7 +8163,7 @@ mod __parse__Statement {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, (predicate::Expression, Option<String>), usize)
+    ) -> (usize, (expression::Expression, Option<String>), usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
@@ -8170,7 +8174,7 @@ mod __parse__Statement {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Option<Vec<(predicate::Expression, Option<String>)>>, usize)
+    ) -> (usize, Option<Vec<(expression::Expression, Option<String>)>>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant18(__v), __r)) => (__l, __v, __r),
@@ -8236,7 +8240,7 @@ mod __parse__Statement {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<(predicate::Expression, Option<String>)>, usize)
+    ) -> (usize, Vec<(expression::Expression, Option<String>)>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
@@ -8291,7 +8295,7 @@ mod __parse__Statement {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<(predicate::Expression, Option<String>)>, usize)
+    ) -> (usize, alloc::vec::Vec<(expression::Expression, Option<String>)>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
@@ -8342,6 +8346,17 @@ mod __parse__Statement {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant11<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, expression::Expression, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant20<
       'input,
     >(
@@ -8350,17 +8365,6 @@ mod __parse__Statement {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant11<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Expression, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -10004,6 +10008,7 @@ mod __parse__Term {
     use std::str::FromStr;
     use super::super::statement;
     use super::super::predicate;
+    use super::super::expression;
     use crate::record::field::{Spec, Value};
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
@@ -10022,18 +10027,18 @@ mod __parse__Term {
         Variant4(alloc::vec::Vec<statement::FieldDefinition>),
         Variant5(String),
         Variant6(alloc::vec::Vec<String>),
-        Variant7((predicate::Expression, Option<String>)),
-        Variant8(alloc::vec::Vec<(predicate::Expression, Option<String>)>),
+        Variant7((expression::Expression, Option<String>)),
+        Variant8(alloc::vec::Vec<(expression::Expression, Option<String>)>),
         Variant9(predicate::Term),
         Variant10(alloc::vec::Vec<predicate::Term>),
-        Variant11(predicate::Expression),
+        Variant11(expression::Expression),
         Variant12(Vec<predicate::Term>),
         Variant13(Vec<Value>),
         Variant14(Vec<statement::FieldDefinition>),
         Variant15(Vec<String>),
-        Variant16(Vec<(predicate::Expression, Option<String>)>),
+        Variant16(Vec<(expression::Expression, Option<String>)>),
         Variant17(statement::CreateCommand),
-        Variant18(Option<Vec<(predicate::Expression, Option<String>)>>),
+        Variant18(Option<Vec<(expression::Expression, Option<String>)>>),
         Variant19(Spec),
         Variant20(i32),
         Variant21(Option<Vec<String>>),
@@ -11273,7 +11278,7 @@ mod __parse__Term {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, (predicate::Expression, Option<String>), usize)
+    ) -> (usize, (expression::Expression, Option<String>), usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
@@ -11284,7 +11289,7 @@ mod __parse__Term {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Option<Vec<(predicate::Expression, Option<String>)>>, usize)
+    ) -> (usize, Option<Vec<(expression::Expression, Option<String>)>>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant18(__v), __r)) => (__l, __v, __r),
@@ -11350,7 +11355,7 @@ mod __parse__Term {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<(predicate::Expression, Option<String>)>, usize)
+    ) -> (usize, Vec<(expression::Expression, Option<String>)>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
@@ -11405,7 +11410,7 @@ mod __parse__Term {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<(predicate::Expression, Option<String>)>, usize)
+    ) -> (usize, alloc::vec::Vec<(expression::Expression, Option<String>)>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
@@ -11456,6 +11461,17 @@ mod __parse__Term {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant11<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, expression::Expression, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant20<
       'input,
     >(
@@ -11464,17 +11480,6 @@ mod __parse__Term {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant11<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Expression, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -13118,6 +13123,7 @@ mod __parse__UpdateCommand {
     use std::str::FromStr;
     use super::super::statement;
     use super::super::predicate;
+    use super::super::expression;
     use crate::record::field::{Spec, Value};
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
@@ -13136,18 +13142,18 @@ mod __parse__UpdateCommand {
         Variant4(alloc::vec::Vec<statement::FieldDefinition>),
         Variant5(String),
         Variant6(alloc::vec::Vec<String>),
-        Variant7((predicate::Expression, Option<String>)),
-        Variant8(alloc::vec::Vec<(predicate::Expression, Option<String>)>),
+        Variant7((expression::Expression, Option<String>)),
+        Variant8(alloc::vec::Vec<(expression::Expression, Option<String>)>),
         Variant9(predicate::Term),
         Variant10(alloc::vec::Vec<predicate::Term>),
-        Variant11(predicate::Expression),
+        Variant11(expression::Expression),
         Variant12(Vec<predicate::Term>),
         Variant13(Vec<Value>),
         Variant14(Vec<statement::FieldDefinition>),
         Variant15(Vec<String>),
-        Variant16(Vec<(predicate::Expression, Option<String>)>),
+        Variant16(Vec<(expression::Expression, Option<String>)>),
         Variant17(statement::CreateCommand),
-        Variant18(Option<Vec<(predicate::Expression, Option<String>)>>),
+        Variant18(Option<Vec<(expression::Expression, Option<String>)>>),
         Variant19(Spec),
         Variant20(i32),
         Variant21(Option<Vec<String>>),
@@ -14829,7 +14835,7 @@ mod __parse__UpdateCommand {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, (predicate::Expression, Option<String>), usize)
+    ) -> (usize, (expression::Expression, Option<String>), usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
@@ -14840,7 +14846,7 @@ mod __parse__UpdateCommand {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Option<Vec<(predicate::Expression, Option<String>)>>, usize)
+    ) -> (usize, Option<Vec<(expression::Expression, Option<String>)>>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant18(__v), __r)) => (__l, __v, __r),
@@ -14906,7 +14912,7 @@ mod __parse__UpdateCommand {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<(predicate::Expression, Option<String>)>, usize)
+    ) -> (usize, Vec<(expression::Expression, Option<String>)>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
@@ -14961,7 +14967,7 @@ mod __parse__UpdateCommand {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, alloc::vec::Vec<(predicate::Expression, Option<String>)>, usize)
+    ) -> (usize, alloc::vec::Vec<(expression::Expression, Option<String>)>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
@@ -15012,6 +15018,17 @@ mod __parse__UpdateCommand {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant11<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, expression::Expression, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant20<
       'input,
     >(
@@ -15020,17 +15037,6 @@ mod __parse__UpdateCommand {
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant11<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Expression, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -16672,6 +16678,7 @@ mod __intern_token {
     use std::str::FromStr;
     use super::super::statement;
     use super::super::predicate;
+    use super::super::expression;
     use crate::record::field::{Spec, Value};
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
@@ -16824,7 +16831,7 @@ fn __action7<'input>(
     (_, _, _): (usize, &'input str, usize),
     (_, fs, _): (
         usize,
-        Option<Vec<(predicate::Expression, Option<String>)>>,
+        Option<Vec<(expression::Expression, Option<String>)>>,
         usize,
     ),
     (_, _, _): (usize, &'input str, usize),
@@ -16838,7 +16845,7 @@ fn __action7<'input>(
                 .iter()
                 .map(|(expr, alias)| match (expr, alias) {
                     (_, Some(a)) => a.clone(),
-                    (predicate::Expression::Field(f), None) => f.clone(),
+                    (expression::Expression::Field(f), None) => f.clone(),
                     _ => panic!("expression without alias"),
                 })
                 .collect();
@@ -16861,7 +16868,7 @@ fn __action7<'input>(
 fn __action8<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> Option<Vec<(predicate::Expression, Option<String>)>> {
+) -> Option<Vec<(expression::Expression, Option<String>)>> {
     None
 }
 
@@ -16873,8 +16880,8 @@ fn __action8<'input>(
 )]
 fn __action9<'input>(
     input: &'input str,
-    (_, fs, _): (usize, Vec<(predicate::Expression, Option<String>)>, usize),
-) -> Option<Vec<(predicate::Expression, Option<String>)>> {
+    (_, fs, _): (usize, Vec<(expression::Expression, Option<String>)>, usize),
+) -> Option<Vec<(expression::Expression, Option<String>)>> {
     Some(fs)
 }
 
@@ -16886,10 +16893,10 @@ fn __action9<'input>(
 )]
 fn __action10<'input>(
     input: &'input str,
-    (_, e, _): (usize, predicate::Expression, usize),
+    (_, e, _): (usize, expression::Expression, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, alias, _): (usize, String, usize),
-) -> (predicate::Expression, Option<String>) {
+) -> (expression::Expression, Option<String>) {
     (e, Some(alias))
 }
 
@@ -16902,8 +16909,8 @@ fn __action10<'input>(
 fn __action11<'input>(
     input: &'input str,
     (_, f, _): (usize, String, usize),
-) -> (predicate::Expression, Option<String>) {
-    (predicate::Expression::Field(f.clone()), None)
+) -> (expression::Expression, Option<String>) {
+    (expression::Expression::Field(f.clone()), None)
 }
 
 #[allow(unused_variables)]
@@ -17030,7 +17037,7 @@ fn __action19<'input>(
     (_, _, _): (usize, &'input str, usize),
     (_, f, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, e, _): (usize, predicate::Expression, usize),
+    (_, e, _): (usize, expression::Expression, usize),
 ) -> statement::UpdateCommand {
     statement::UpdateCommand::Modify(t, f, e, None)
 }
@@ -17048,7 +17055,7 @@ fn __action20<'input>(
     (_, _, _): (usize, &'input str, usize),
     (_, f, _): (usize, String, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, e, _): (usize, predicate::Expression, usize),
+    (_, e, _): (usize, expression::Expression, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, p, _): (usize, predicate::Predicate, usize),
 ) -> statement::UpdateCommand {
@@ -17184,7 +17191,7 @@ fn __action28<'input>(
 )]
 fn __action29<'input>(
     input: &'input str,
-    (_, e, _): (usize, predicate::Expression, usize),
+    (_, e, _): (usize, expression::Expression, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
 ) -> predicate::Term {
@@ -17199,9 +17206,9 @@ fn __action29<'input>(
 )]
 fn __action30<'input>(
     input: &'input str,
-    (_, l, _): (usize, predicate::Expression, usize),
+    (_, l, _): (usize, expression::Expression, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, r, _): (usize, predicate::Expression, usize),
+    (_, r, _): (usize, expression::Expression, usize),
 ) -> predicate::Term {
     predicate::Term::Equality(l, r)
 }
@@ -17214,8 +17221,8 @@ fn __action30<'input>(
 )]
 fn __action31<'input>(
     input: &'input str,
-    (_, e, _): (usize, predicate::Expression, usize),
-) -> predicate::Expression {
+    (_, e, _): (usize, expression::Expression, usize),
+) -> expression::Expression {
     e
 }
 
@@ -17227,11 +17234,11 @@ fn __action31<'input>(
 )]
 fn __action32<'input>(
     input: &'input str,
-    (_, l, _): (usize, predicate::Expression, usize),
+    (_, l, _): (usize, expression::Expression, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, r, _): (usize, predicate::Expression, usize),
-) -> predicate::Expression {
-    predicate::Expression::Add(Box::new(l), Box::new(r))
+    (_, r, _): (usize, expression::Expression, usize),
+) -> expression::Expression {
+    expression::Expression::Add(Box::new(l), Box::new(r))
 }
 
 #[allow(unused_variables)]
@@ -17242,11 +17249,11 @@ fn __action32<'input>(
 )]
 fn __action33<'input>(
     input: &'input str,
-    (_, l, _): (usize, predicate::Expression, usize),
+    (_, l, _): (usize, expression::Expression, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, r, _): (usize, predicate::Expression, usize),
-) -> predicate::Expression {
-    predicate::Expression::Sub(Box::new(l), Box::new(r))
+    (_, r, _): (usize, expression::Expression, usize),
+) -> expression::Expression {
+    expression::Expression::Sub(Box::new(l), Box::new(r))
 }
 
 #[allow(unused_variables)]
@@ -17257,8 +17264,8 @@ fn __action33<'input>(
 )]
 fn __action34<'input>(
     input: &'input str,
-    (_, e, _): (usize, predicate::Expression, usize),
-) -> predicate::Expression {
+    (_, e, _): (usize, expression::Expression, usize),
+) -> expression::Expression {
     e
 }
 
@@ -17270,11 +17277,11 @@ fn __action34<'input>(
 )]
 fn __action35<'input>(
     input: &'input str,
-    (_, l, _): (usize, predicate::Expression, usize),
+    (_, l, _): (usize, expression::Expression, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, r, _): (usize, predicate::Expression, usize),
-) -> predicate::Expression {
-    predicate::Expression::Mul(Box::new(l), Box::new(r))
+    (_, r, _): (usize, expression::Expression, usize),
+) -> expression::Expression {
+    expression::Expression::Mul(Box::new(l), Box::new(r))
 }
 
 #[allow(unused_variables)]
@@ -17285,11 +17292,11 @@ fn __action35<'input>(
 )]
 fn __action36<'input>(
     input: &'input str,
-    (_, l, _): (usize, predicate::Expression, usize),
+    (_, l, _): (usize, expression::Expression, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, r, _): (usize, predicate::Expression, usize),
-) -> predicate::Expression {
-    predicate::Expression::Div(Box::new(l), Box::new(r))
+    (_, r, _): (usize, expression::Expression, usize),
+) -> expression::Expression {
+    expression::Expression::Div(Box::new(l), Box::new(r))
 }
 
 #[allow(unused_variables)]
@@ -17300,8 +17307,8 @@ fn __action36<'input>(
 )]
 fn __action37<'input>(
     input: &'input str,
-    (_, e, _): (usize, predicate::Expression, usize),
-) -> predicate::Expression {
+    (_, e, _): (usize, expression::Expression, usize),
+) -> expression::Expression {
     e
 }
 
@@ -17314,9 +17321,9 @@ fn __action37<'input>(
 fn __action38<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
-    (_, e, _): (usize, predicate::Expression, usize),
+    (_, e, _): (usize, expression::Expression, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> predicate::Expression {
+) -> expression::Expression {
     e
 }
 
@@ -17329,8 +17336,8 @@ fn __action38<'input>(
 fn __action39<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> predicate::Expression {
-    predicate::Expression::NullConstant
+) -> expression::Expression {
+    expression::Expression::NullConstant
 }
 
 #[allow(unused_variables)]
@@ -17339,8 +17346,11 @@ fn __action39<'input>(
     clippy::needless_lifetimes,
     clippy::just_underscores_and_digits
 )]
-fn __action40<'input>(input: &'input str, (_, i, _): (usize, i32, usize)) -> predicate::Expression {
-    predicate::Expression::I32Constant(i)
+fn __action40<'input>(
+    input: &'input str,
+    (_, i, _): (usize, i32, usize),
+) -> expression::Expression {
+    expression::Expression::I32Constant(i)
 }
 
 #[allow(unused_variables)]
@@ -17352,8 +17362,8 @@ fn __action40<'input>(input: &'input str, (_, i, _): (usize, i32, usize)) -> pre
 fn __action41<'input>(
     input: &'input str,
     (_, s, _): (usize, String, usize),
-) -> predicate::Expression {
-    predicate::Expression::StringConstant(s)
+) -> expression::Expression {
+    expression::Expression::StringConstant(s)
 }
 
 #[allow(unused_variables)]
@@ -17365,8 +17375,8 @@ fn __action41<'input>(
 fn __action42<'input>(
     input: &'input str,
     (_, t, _): (usize, String, usize),
-) -> predicate::Expression {
-    predicate::Expression::Field(t)
+) -> expression::Expression {
+    expression::Expression::Field(t)
 }
 
 #[allow(unused_variables)]
@@ -17490,11 +17500,11 @@ fn __action52<'input>(
     input: &'input str,
     (_, mut v, _): (
         usize,
-        alloc::vec::Vec<(predicate::Expression, Option<String>)>,
+        alloc::vec::Vec<(expression::Expression, Option<String>)>,
         usize,
     ),
-    (_, e, _): (usize, (predicate::Expression, Option<String>), usize),
-) -> Vec<(predicate::Expression, Option<String>)> {
+    (_, e, _): (usize, (expression::Expression, Option<String>), usize),
+) -> Vec<(expression::Expression, Option<String>)> {
     {
         v.push(e);
         v
@@ -17569,7 +17579,7 @@ fn __action57<'input>(
     input: &'input str,
     __lookbehind: &usize,
     __lookahead: &usize,
-) -> alloc::vec::Vec<(predicate::Expression, Option<String>)> {
+) -> alloc::vec::Vec<(expression::Expression, Option<String>)> {
     alloc::vec![]
 }
 
@@ -17583,10 +17593,10 @@ fn __action58<'input>(
     input: &'input str,
     (_, v, _): (
         usize,
-        alloc::vec::Vec<(predicate::Expression, Option<String>)>,
+        alloc::vec::Vec<(expression::Expression, Option<String>)>,
         usize,
     ),
-) -> alloc::vec::Vec<(predicate::Expression, Option<String>)> {
+) -> alloc::vec::Vec<(expression::Expression, Option<String>)> {
     v
 }
 
@@ -17598,9 +17608,9 @@ fn __action58<'input>(
 )]
 fn __action59<'input>(
     input: &'input str,
-    (_, __0, _): (usize, (predicate::Expression, Option<String>), usize),
+    (_, __0, _): (usize, (expression::Expression, Option<String>), usize),
     (_, _, _): (usize, &'input str, usize),
-) -> (predicate::Expression, Option<String>) {
+) -> (expression::Expression, Option<String>) {
     __0
 }
 
@@ -17828,8 +17838,8 @@ fn __action74<'input>(
 )]
 fn __action75<'input>(
     input: &'input str,
-    (_, __0, _): (usize, (predicate::Expression, Option<String>), usize),
-) -> alloc::vec::Vec<(predicate::Expression, Option<String>)> {
+    (_, __0, _): (usize, (expression::Expression, Option<String>), usize),
+) -> alloc::vec::Vec<(expression::Expression, Option<String>)> {
     alloc::vec![__0]
 }
 
@@ -17843,11 +17853,11 @@ fn __action76<'input>(
     input: &'input str,
     (_, v, _): (
         usize,
-        alloc::vec::Vec<(predicate::Expression, Option<String>)>,
+        alloc::vec::Vec<(expression::Expression, Option<String>)>,
         usize,
     ),
-    (_, e, _): (usize, (predicate::Expression, Option<String>), usize),
-) -> alloc::vec::Vec<(predicate::Expression, Option<String>)> {
+    (_, e, _): (usize, (expression::Expression, Option<String>), usize),
+) -> alloc::vec::Vec<(expression::Expression, Option<String>)> {
     {
         let mut v = v;
         v.push(e);
@@ -18104,9 +18114,9 @@ fn __action90<'input>(
 )]
 fn __action91<'input>(
     input: &'input str,
-    __0: (usize, (predicate::Expression, Option<String>), usize),
+    __0: (usize, (expression::Expression, Option<String>), usize),
     __1: (usize, &'input str, usize),
-) -> alloc::vec::Vec<(predicate::Expression, Option<String>)> {
+) -> alloc::vec::Vec<(expression::Expression, Option<String>)> {
     let __start0 = __0.0;
     let __end0 = __1.2;
     let __temp0 = __action59(input, __0, __1);
@@ -18124,12 +18134,12 @@ fn __action92<'input>(
     input: &'input str,
     __0: (
         usize,
-        alloc::vec::Vec<(predicate::Expression, Option<String>)>,
+        alloc::vec::Vec<(expression::Expression, Option<String>)>,
         usize,
     ),
-    __1: (usize, (predicate::Expression, Option<String>), usize),
+    __1: (usize, (expression::Expression, Option<String>), usize),
     __2: (usize, &'input str, usize),
-) -> alloc::vec::Vec<(predicate::Expression, Option<String>)> {
+) -> alloc::vec::Vec<(expression::Expression, Option<String>)> {
     let __start0 = __1.0;
     let __end0 = __2.2;
     let __temp0 = __action59(input, __1, __2);
@@ -18145,8 +18155,8 @@ fn __action92<'input>(
 )]
 fn __action93<'input>(
     input: &'input str,
-    __0: (usize, (predicate::Expression, Option<String>), usize),
-) -> Vec<(predicate::Expression, Option<String>)> {
+    __0: (usize, (expression::Expression, Option<String>), usize),
+) -> Vec<(expression::Expression, Option<String>)> {
     let __start0 = __0.0;
     let __end0 = __0.0;
     let __temp0 = __action57(input, &__start0, &__end0);
@@ -18164,11 +18174,11 @@ fn __action94<'input>(
     input: &'input str,
     __0: (
         usize,
-        alloc::vec::Vec<(predicate::Expression, Option<String>)>,
+        alloc::vec::Vec<(expression::Expression, Option<String>)>,
         usize,
     ),
-    __1: (usize, (predicate::Expression, Option<String>), usize),
-) -> Vec<(predicate::Expression, Option<String>)> {
+    __1: (usize, (expression::Expression, Option<String>), usize),
+) -> Vec<(expression::Expression, Option<String>)> {
     let __start0 = __0.0;
     let __end0 = __0.2;
     let __temp0 = __action58(input, __0);
