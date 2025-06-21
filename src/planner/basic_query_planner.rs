@@ -105,6 +105,7 @@ mod tests {
         predicate::{Predicate, Term},
     };
 
+    use crate::materialization::{aggregation_function::AggregationFn, sum_function::SumFn};
     use crate::record::schema::Schema;
     use crate::scan::table_scan::TableScan;
     use crate::scan::ScanControl;
@@ -334,6 +335,62 @@ mod tests {
             assert!(scan.next()?);
             assert_eq!(scan.get_i32("A")?, Some(i));
             assert_eq!(scan.get_i32("B")?, Some(i + 1));
+        }
+        assert!(!scan.next()?);
+        drop(scan);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_group_by_basic_query_planner() -> Result<(), TransactionError> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 256;
+        let num_buffers = 100;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+        {
+            let mut md = db.metadata_manager.lock().unwrap();
+            let mut schema = Schema::new();
+            schema.add_i32_field("A");
+            schema.add_i32_field("B");
+            md.create_table("table1", &schema, tx.clone())?;
+        }
+
+        {
+            let layout = {
+                let md = db.metadata_manager.lock().unwrap();
+                md.get_layout("table1", tx.clone())?.unwrap()
+            };
+            let mut table_scan = TableScan::new(tx.clone(), "table1", Arc::new(layout))?;
+            table_scan.before_first()?;
+            for i in 0..50 {
+                table_scan.insert()?;
+                table_scan.set_i32("A", i / 5)?;
+                table_scan.set_i32("B", i)?;
+            }
+        }
+
+        let query = QueryData::new_full(
+            Some(vec!["A".to_string(), "B".to_string()]),
+            vec!["table1".to_string()],
+            None,
+            Some(vec!["A".to_string()]),
+            None,
+            Vec::new(),
+            vec![AggregationFn::from(SumFn::new("B"))],
+        );
+
+        let planner = BasicQueryPlanner::new(db.metadata_manager.clone());
+        let mut plan = planner.create_plan(&query, tx.clone())?;
+
+        let mut scan = plan.open(tx.clone())?;
+        scan.before_first()?;
+        for i in 0..10 {
+            assert!(scan.next()?);
+            assert_eq!(scan.get_i32("A")?, Some(i));
+            assert_eq!(scan.get_i32("B")?, Some(25 * i + 10));
         }
         assert!(!scan.next()?);
         drop(scan);
