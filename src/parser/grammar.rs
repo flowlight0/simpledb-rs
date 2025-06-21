@@ -1,5 +1,5 @@
 // auto-generated: "lalrpop 0.22.0"
-// sha3: ed0a9ecf3352f0d04216c8a6e8f156885b4281b90970e7f454b937831a64721a
+// sha3: 781cf159053bf310ce27cd5af3ef62cb610d07ce259f5cc7f83c45204f510d67
 use super::predicate;
 use super::statement;
 use crate::record::field::{Spec, Value};
@@ -36,22 +36,26 @@ mod __parse__Predicate {
         Variant4(alloc::vec::Vec<statement::FieldDefinition>),
         Variant5(String),
         Variant6(alloc::vec::Vec<String>),
-        Variant7(predicate::Term),
-        Variant8(alloc::vec::Vec<predicate::Term>),
-        Variant9(predicate::Expression),
-        Variant10(Vec<predicate::Term>),
-        Variant11(Vec<Value>),
-        Variant12(Vec<statement::FieldDefinition>),
-        Variant13(Vec<String>),
-        Variant14(statement::CreateCommand),
-        Variant15(Option<Vec<String>>),
-        Variant16(Spec),
-        Variant17(i32),
-        Variant18(Option<predicate::Predicate>),
-        Variant19(predicate::Predicate),
-        Variant20(statement::QueryData),
-        Variant21(statement::Statement),
-        Variant22(statement::UpdateCommand),
+        Variant7((predicate::Expression, Option<String>)),
+        Variant8(alloc::vec::Vec<(predicate::Expression, Option<String>)>),
+        Variant9(predicate::Term),
+        Variant10(alloc::vec::Vec<predicate::Term>),
+        Variant11(predicate::Expression),
+        Variant12(Vec<predicate::Term>),
+        Variant13(Vec<Value>),
+        Variant14(Vec<statement::FieldDefinition>),
+        Variant15(Vec<String>),
+        Variant16(Vec<(predicate::Expression, Option<String>)>),
+        Variant17(statement::CreateCommand),
+        Variant18(Option<Vec<(predicate::Expression, Option<String>)>>),
+        Variant19(Spec),
+        Variant20(i32),
+        Variant21(Option<Vec<String>>),
+        Variant22(Option<predicate::Predicate>),
+        Variant23(predicate::Predicate),
+        Variant24(statement::QueryData),
+        Variant25(statement::Statement),
+        Variant26(statement::UpdateCommand),
     }
     const __ACTION: &[i8] = &[
         // State 0
@@ -857,13 +861,13 @@ mod __parse__Predicate {
             }
             66 => {
                 __state_machine::SimulatedReduce::Reduce {
-                    states_to_pop: 1,
+                    states_to_pop: 3,
                     nonterminal_produced: 35,
                 }
             }
             67 => {
                 __state_machine::SimulatedReduce::Reduce {
-                    states_to_pop: 3,
+                    states_to_pop: 1,
                     nonterminal_produced: 35,
                 }
             }
@@ -1278,7 +1282,7 @@ mod __parse__Predicate {
             }
             79 => {
                 // __Predicate = Predicate => ActionFn(3);
-                let __sym0 = __pop_Variant19(__symbols);
+                let __sym0 = __pop_Variant23(__symbols);
                 let __start = __sym0.0;
                 let __end = __sym0.2;
                 let __nt = super::__action3::<>(input, __sym0);
@@ -1309,14 +1313,14 @@ mod __parse__Predicate {
     fn __symbol_type_mismatch() -> ! {
         panic!("symbol type mismatch")
     }
-    fn __pop_Variant15<
+    fn __pop_Variant7<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Option<Vec<String>>, usize)
+    ) -> (usize, (predicate::Expression, Option<String>), usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -1324,21 +1328,43 @@ mod __parse__Predicate {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Option<predicate::Predicate>, usize)
+    ) -> (usize, Option<Vec<(predicate::Expression, Option<String>)>>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant18(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant16<
+    fn __pop_Variant21<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Option<Vec<String>>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant21(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant22<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Option<predicate::Predicate>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant22(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant19<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, Spec, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant19(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -1364,36 +1390,36 @@ mod __parse__Predicate {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant13<
+    fn __pop_Variant16<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Vec<(predicate::Expression, Option<String>)>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant15<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, Vec<String>, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant13(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant11<
+    fn __pop_Variant13<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, Vec<Value>, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant10<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<predicate::Term>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant13(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -1401,10 +1427,32 @@ mod __parse__Predicate {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<statement::FieldDefinition>, usize)
+    ) -> (usize, Vec<predicate::Term>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant12(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant14<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Vec<statement::FieldDefinition>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant8<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, alloc::vec::Vec<(predicate::Expression, Option<String>)>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -1430,14 +1478,14 @@ mod __parse__Predicate {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant8<
+    fn __pop_Variant10<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, alloc::vec::Vec<predicate::Term>, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -1452,14 +1500,36 @@ mod __parse__Predicate {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant17<
+    fn __pop_Variant20<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, i32, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant17(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant11<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Expression, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant23<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Predicate, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant23(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -1467,43 +1537,21 @@ mod __parse__Predicate {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Expression, usize)
+    ) -> (usize, predicate::Term, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant9(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant19<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Predicate, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant19(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant7<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Term, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant14<
+    fn __pop_Variant17<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::CreateCommand, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant17(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -1518,36 +1566,36 @@ mod __parse__Predicate {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant20<
+    fn __pop_Variant24<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::QueryData, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant24(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant21<
+    fn __pop_Variant25<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::Statement, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant21(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant25(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant22<
+    fn __pop_Variant26<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::UpdateCommand, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant22(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant26(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -1847,11 +1895,11 @@ mod __parse__Predicate {
         // (<SelectField> COMMA) = SelectField, COMMA => ActionFn(59);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant5(__symbols);
+        let __sym0 = __pop_Variant7(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action59::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant5(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
         (2, 9)
     }
     fn __reduce16<
@@ -1867,7 +1915,7 @@ mod __parse__Predicate {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action57::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (0, 10)
     }
     fn __reduce17<
@@ -1880,11 +1928,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // (<SelectField> COMMA)* = (<SelectField> COMMA)+ => ActionFn(58);
-        let __sym0 = __pop_Variant6(__symbols);
+        let __sym0 = __pop_Variant8(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action58::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (1, 10)
     }
     fn __reduce18<
@@ -1899,11 +1947,11 @@ mod __parse__Predicate {
         // (<SelectField> COMMA)+ = SelectField, COMMA => ActionFn(91);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant5(__symbols);
+        let __sym0 = __pop_Variant7(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action91::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (2, 11)
     }
     fn __reduce19<
@@ -1918,12 +1966,12 @@ mod __parse__Predicate {
         // (<SelectField> COMMA)+ = (<SelectField> COMMA)+, SelectField, COMMA => ActionFn(92);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant5(__symbols);
-        let __sym0 = __pop_Variant6(__symbols);
+        let __sym1 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant8(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action92::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (3, 11)
     }
     fn __reduce20<
@@ -1938,11 +1986,11 @@ mod __parse__Predicate {
         // (<Term> AND) = Term, AND => ActionFn(68);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action68::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (2, 12)
     }
     fn __reduce21<
@@ -1958,7 +2006,7 @@ mod __parse__Predicate {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action66::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (0, 13)
     }
     fn __reduce22<
@@ -1971,11 +2019,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // (<Term> AND)* = (<Term> AND)+ => ActionFn(67);
-        let __sym0 = __pop_Variant8(__symbols);
+        let __sym0 = __pop_Variant10(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action67::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (1, 13)
     }
     fn __reduce23<
@@ -1990,11 +2038,11 @@ mod __parse__Predicate {
         // (<Term> AND)+ = Term, AND => ActionFn(95);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action95::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (2, 14)
     }
     fn __reduce24<
@@ -2009,12 +2057,12 @@ mod __parse__Predicate {
         // (<Term> AND)+ = (<Term> AND)+, Term, AND => ActionFn(96);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant7(__symbols);
-        let __sym0 = __pop_Variant8(__symbols);
+        let __sym1 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant10(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action96::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (3, 14)
     }
     fn __reduce25<
@@ -2028,13 +2076,13 @@ mod __parse__Predicate {
     {
         // AddExpr = AddExpr, PLUS, MulExpr => ActionFn(32);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action32::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 15)
     }
     fn __reduce26<
@@ -2048,13 +2096,13 @@ mod __parse__Predicate {
     {
         // AddExpr = AddExpr, MINUS, MulExpr => ActionFn(33);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action33::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 15)
     }
     fn __reduce27<
@@ -2067,11 +2115,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // AddExpr = MulExpr => ActionFn(34);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action34::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 15)
     }
     fn __reduce28<
@@ -2084,11 +2132,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // And<Term> = Term => ActionFn(97);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action97::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
         (1, 16)
     }
     fn __reduce29<
@@ -2102,12 +2150,12 @@ mod __parse__Predicate {
     {
         // And<Term> = (<Term> AND)+, Term => ActionFn(98);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant7(__symbols);
-        let __sym0 = __pop_Variant8(__symbols);
+        let __sym1 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant10(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action98::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
         (2, 16)
     }
     fn __reduce30<
@@ -2124,7 +2172,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action81::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
         (1, 17)
     }
     fn __reduce31<
@@ -2143,7 +2191,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action82::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
         (2, 17)
     }
     fn __reduce32<
@@ -2160,7 +2208,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action85::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
         (1, 18)
     }
     fn __reduce33<
@@ -2179,7 +2227,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action86::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
         (2, 18)
     }
     fn __reduce34<
@@ -2196,7 +2244,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action89::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
         (1, 19)
     }
     fn __reduce35<
@@ -2215,7 +2263,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action90::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
         (2, 19)
     }
     fn __reduce36<
@@ -2228,11 +2276,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // Comma<SelectField> = SelectField => ActionFn(93);
-        let __sym0 = __pop_Variant5(__symbols);
+        let __sym0 = __pop_Variant7(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action93::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
         (1, 20)
     }
     fn __reduce37<
@@ -2246,12 +2294,12 @@ mod __parse__Predicate {
     {
         // Comma<SelectField> = (<SelectField> COMMA)+, SelectField => ActionFn(94);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant5(__symbols);
-        let __sym0 = __pop_Variant6(__symbols);
+        let __sym1 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant8(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action94::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
         (2, 20)
     }
     fn __reduce38<
@@ -2281,7 +2329,7 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // Constant = I32Constant => ActionFn(44);
-        let __sym0 = __pop_Variant17(__symbols);
+        let __sym0 = __pop_Variant20(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action44::<>(input, __sym0);
@@ -2317,7 +2365,7 @@ mod __parse__Predicate {
         // CreateCommand = CREATE, TABLE, IdToken, LPAREN, Comma<FieldDefinition>, RPAREN => ActionFn(22);
         assert!(__symbols.len() >= 6);
         let __sym5 = __pop_Variant0(__symbols);
-        let __sym4 = __pop_Variant12(__symbols);
+        let __sym4 = __pop_Variant14(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -2325,7 +2373,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym5.2;
         let __nt = super::__action22::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5);
-        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
         (6, 22)
     }
     fn __reduce42<
@@ -2339,7 +2387,7 @@ mod __parse__Predicate {
     {
         // CreateCommand = CREATE, VIEW, IdToken, AS, Query => ActionFn(23);
         assert!(__symbols.len() >= 5);
-        let __sym4 = __pop_Variant20(__symbols);
+        let __sym4 = __pop_Variant24(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -2347,7 +2395,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym4.2;
         let __nt = super::__action23::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4);
-        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
         (5, 22)
     }
     fn __reduce43<
@@ -2372,7 +2420,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym7.2;
         let __nt = super::__action24::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5, __sym6, __sym7);
-        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
         (8, 22)
     }
     fn __reduce44<
@@ -2385,11 +2433,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // Expression = AddExpr => ActionFn(31);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action31::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 23)
     }
     fn __reduce45<
@@ -2404,12 +2452,12 @@ mod __parse__Predicate {
         // Factor = LPAREN, Expression, RPAREN => ActionFn(38);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant9(__symbols);
+        let __sym1 = __pop_Variant11(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action38::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 24)
     }
     fn __reduce46<
@@ -2426,7 +2474,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action39::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce47<
@@ -2439,11 +2487,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // Factor = I32Constant => ActionFn(40);
-        let __sym0 = __pop_Variant17(__symbols);
+        let __sym0 = __pop_Variant20(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action40::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce48<
@@ -2460,7 +2508,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action41::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce49<
@@ -2477,7 +2525,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action42::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce50<
@@ -2491,7 +2539,7 @@ mod __parse__Predicate {
     {
         // FieldDefinition = IdToken, FieldType => ActionFn(25);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant16(__symbols);
+        let __sym1 = __pop_Variant19(__symbols);
         let __sym0 = __pop_Variant5(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
@@ -2513,7 +2561,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action8::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
         (1, 26)
     }
     fn __reduce52<
@@ -2526,11 +2574,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // FieldList = Comma<SelectField> => ActionFn(9);
-        let __sym0 = __pop_Variant13(__symbols);
+        let __sym0 = __pop_Variant16(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action9::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
         (1, 26)
     }
     fn __reduce53<
@@ -2547,7 +2595,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action26::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
         (1, 27)
     }
     fn __reduce54<
@@ -2562,13 +2610,13 @@ mod __parse__Predicate {
         // FieldType = VARCHAR, LPAREN, I32Constant, RPAREN => ActionFn(27);
         assert!(__symbols.len() >= 4);
         let __sym3 = __pop_Variant0(__symbols);
-        let __sym2 = __pop_Variant17(__symbols);
+        let __sym2 = __pop_Variant20(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym3.2;
         let __nt = super::__action27::<>(input, __sym0, __sym1, __sym2, __sym3);
-        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
         (4, 27)
     }
     fn __reduce55<
@@ -2585,7 +2633,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action46::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant20(__nt), __end));
         (1, 28)
     }
     fn __reduce56<
@@ -2616,13 +2664,13 @@ mod __parse__Predicate {
     {
         // MulExpr = MulExpr, STAR, Factor => ActionFn(35);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action35::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 30)
     }
     fn __reduce58<
@@ -2636,13 +2684,13 @@ mod __parse__Predicate {
     {
         // MulExpr = MulExpr, SLASH, Factor => ActionFn(36);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action36::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 30)
     }
     fn __reduce59<
@@ -2655,11 +2703,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // MulExpr = Factor => ActionFn(37);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action37::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 30)
     }
     fn __reduce60<
@@ -2673,13 +2721,13 @@ mod __parse__Predicate {
     {
         // OptOrderBy = ORDER, BY, Comma<IdToken> => ActionFn(14);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant13(__symbols);
+        let __sym2 = __pop_Variant15(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action14::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
         (3, 31)
     }
     fn __reduce61<
@@ -2695,7 +2743,7 @@ mod __parse__Predicate {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action15::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
         (0, 31)
     }
     fn __reduce62<
@@ -2709,12 +2757,12 @@ mod __parse__Predicate {
     {
         // OptPredicate = WHERE, Predicate => ActionFn(12);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant19(__symbols);
+        let __sym1 = __pop_Variant23(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action12::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
         (2, 32)
     }
     fn __reduce63<
@@ -2730,7 +2778,7 @@ mod __parse__Predicate {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action13::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
         (0, 32)
     }
     fn __reduce64<
@@ -2743,11 +2791,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // Predicate = And<Term> => ActionFn(28);
-        let __sym0 = __pop_Variant10(__symbols);
+        let __sym0 = __pop_Variant12(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action28::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant23(__nt), __end));
         (1, 33)
     }
     fn __reduce65<
@@ -2761,16 +2809,16 @@ mod __parse__Predicate {
     {
         // Query = SELECT, FieldList, FROM, Comma<IdToken>, OptPredicate, OptOrderBy => ActionFn(7);
         assert!(__symbols.len() >= 6);
-        let __sym5 = __pop_Variant15(__symbols);
-        let __sym4 = __pop_Variant18(__symbols);
-        let __sym3 = __pop_Variant13(__symbols);
+        let __sym5 = __pop_Variant21(__symbols);
+        let __sym4 = __pop_Variant22(__symbols);
+        let __sym3 = __pop_Variant15(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant15(__symbols);
+        let __sym1 = __pop_Variant18(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym5.2;
         let __nt = super::__action7::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5);
-        __symbols.push((__start, __Symbol::Variant20(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant24(__nt), __end));
         (6, 34)
     }
     fn __reduce66<
@@ -2782,13 +2830,16 @@ mod __parse__Predicate {
         _: core::marker::PhantomData<(&'input ())>,
     ) -> (usize, usize)
     {
-        // SelectField = IdToken => ActionFn(10);
-        let __sym0 = __pop_Variant5(__symbols);
+        // SelectField = Expression, AS, IdToken => ActionFn(10);
+        assert!(__symbols.len() >= 3);
+        let __sym2 = __pop_Variant5(__symbols);
+        let __sym1 = __pop_Variant0(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
-        let __end = __sym0.2;
-        let __nt = super::__action10::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant5(__nt), __end));
-        (1, 35)
+        let __end = __sym2.2;
+        let __nt = super::__action10::<>(input, __sym0, __sym1, __sym2);
+        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        (3, 35)
     }
     fn __reduce67<
         'input,
@@ -2799,16 +2850,13 @@ mod __parse__Predicate {
         _: core::marker::PhantomData<(&'input ())>,
     ) -> (usize, usize)
     {
-        // SelectField = IdToken, AS, IdToken => ActionFn(11);
-        assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant5(__symbols);
-        let __sym1 = __pop_Variant0(__symbols);
+        // SelectField = IdToken => ActionFn(11);
         let __sym0 = __pop_Variant5(__symbols);
         let __start = __sym0.0;
-        let __end = __sym2.2;
-        let __nt = super::__action11::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant5(__nt), __end));
-        (3, 35)
+        let __end = __sym0.2;
+        let __nt = super::__action11::<>(input, __sym0);
+        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        (1, 35)
     }
     fn __reduce68<
         'input,
@@ -2820,11 +2868,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // Statement = Query => ActionFn(5);
-        let __sym0 = __pop_Variant20(__symbols);
+        let __sym0 = __pop_Variant24(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action5::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant25(__nt), __end));
         (1, 36)
     }
     fn __reduce69<
@@ -2837,11 +2885,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // Statement = UpdateCommand => ActionFn(6);
-        let __sym0 = __pop_Variant22(__symbols);
+        let __sym0 = __pop_Variant26(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action6::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant25(__nt), __end));
         (1, 36)
     }
     fn __reduce70<
@@ -2874,11 +2922,11 @@ mod __parse__Predicate {
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action29::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (3, 38)
     }
     fn __reduce72<
@@ -2892,13 +2940,13 @@ mod __parse__Predicate {
     {
         // Term = Expression, EQ, Expression => ActionFn(30);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action30::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (3, 38)
     }
     fn __reduce73<
@@ -2913,11 +2961,11 @@ mod __parse__Predicate {
         // UpdateCommand = INSERT, INTO, IdToken, LPAREN, Comma<IdToken>, RPAREN, VALUES, LPAREN, Comma<Constant>, RPAREN => ActionFn(16);
         assert!(__symbols.len() >= 10);
         let __sym9 = __pop_Variant0(__symbols);
-        let __sym8 = __pop_Variant11(__symbols);
+        let __sym8 = __pop_Variant13(__symbols);
         let __sym7 = __pop_Variant0(__symbols);
         let __sym6 = __pop_Variant0(__symbols);
         let __sym5 = __pop_Variant0(__symbols);
-        let __sym4 = __pop_Variant13(__symbols);
+        let __sym4 = __pop_Variant15(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -2925,7 +2973,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym9.2;
         let __nt = super::__action16::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5, __sym6, __sym7, __sym8, __sym9);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (10, 39)
     }
     fn __reduce74<
@@ -2945,7 +2993,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action17::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (3, 39)
     }
     fn __reduce75<
@@ -2959,7 +3007,7 @@ mod __parse__Predicate {
     {
         // UpdateCommand = DELETE, FROM, IdToken, WHERE, Predicate => ActionFn(18);
         assert!(__symbols.len() >= 5);
-        let __sym4 = __pop_Variant19(__symbols);
+        let __sym4 = __pop_Variant23(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -2967,7 +3015,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym4.2;
         let __nt = super::__action18::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (5, 39)
     }
     fn __reduce76<
@@ -2981,7 +3029,7 @@ mod __parse__Predicate {
     {
         // UpdateCommand = MODIFY, IdToken, SET, IdToken, EQ, Expression => ActionFn(19);
         assert!(__symbols.len() >= 6);
-        let __sym5 = __pop_Variant9(__symbols);
+        let __sym5 = __pop_Variant11(__symbols);
         let __sym4 = __pop_Variant0(__symbols);
         let __sym3 = __pop_Variant5(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
@@ -2990,7 +3038,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym5.2;
         let __nt = super::__action19::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (6, 39)
     }
     fn __reduce77<
@@ -3004,9 +3052,9 @@ mod __parse__Predicate {
     {
         // UpdateCommand = MODIFY, IdToken, SET, IdToken, EQ, Expression, WHERE, Predicate => ActionFn(20);
         assert!(__symbols.len() >= 8);
-        let __sym7 = __pop_Variant19(__symbols);
+        let __sym7 = __pop_Variant23(__symbols);
         let __sym6 = __pop_Variant0(__symbols);
-        let __sym5 = __pop_Variant9(__symbols);
+        let __sym5 = __pop_Variant11(__symbols);
         let __sym4 = __pop_Variant0(__symbols);
         let __sym3 = __pop_Variant5(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
@@ -3015,7 +3063,7 @@ mod __parse__Predicate {
         let __start = __sym0.0;
         let __end = __sym7.2;
         let __nt = super::__action20::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5, __sym6, __sym7);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (8, 39)
     }
     fn __reduce78<
@@ -3028,11 +3076,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // UpdateCommand = CreateCommand => ActionFn(21);
-        let __sym0 = __pop_Variant14(__symbols);
+        let __sym0 = __pop_Variant17(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action21::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (1, 39)
     }
     fn __reduce80<
@@ -3045,11 +3093,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // __Query = Query => ActionFn(1);
-        let __sym0 = __pop_Variant20(__symbols);
+        let __sym0 = __pop_Variant24(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action1::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant20(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant24(__nt), __end));
         (1, 41)
     }
     fn __reduce81<
@@ -3062,11 +3110,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // __Statement = Statement => ActionFn(0);
-        let __sym0 = __pop_Variant21(__symbols);
+        let __sym0 = __pop_Variant25(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action0::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant25(__nt), __end));
         (1, 42)
     }
     fn __reduce82<
@@ -3079,11 +3127,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // __Term = Term => ActionFn(4);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action4::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (1, 43)
     }
     fn __reduce83<
@@ -3096,11 +3144,11 @@ mod __parse__Predicate {
     ) -> (usize, usize)
     {
         // __UpdateCommand = UpdateCommand => ActionFn(2);
-        let __sym0 = __pop_Variant22(__symbols);
+        let __sym0 = __pop_Variant26(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action2::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (1, 44)
     }
 }
@@ -3132,144 +3180,150 @@ mod __parse__Query {
         Variant4(alloc::vec::Vec<statement::FieldDefinition>),
         Variant5(String),
         Variant6(alloc::vec::Vec<String>),
-        Variant7(predicate::Term),
-        Variant8(alloc::vec::Vec<predicate::Term>),
-        Variant9(predicate::Expression),
-        Variant10(Vec<predicate::Term>),
-        Variant11(Vec<Value>),
-        Variant12(Vec<statement::FieldDefinition>),
-        Variant13(Vec<String>),
-        Variant14(statement::CreateCommand),
-        Variant15(Option<Vec<String>>),
-        Variant16(Spec),
-        Variant17(i32),
-        Variant18(Option<predicate::Predicate>),
-        Variant19(predicate::Predicate),
-        Variant20(statement::QueryData),
-        Variant21(statement::Statement),
-        Variant22(statement::UpdateCommand),
+        Variant7((predicate::Expression, Option<String>)),
+        Variant8(alloc::vec::Vec<(predicate::Expression, Option<String>)>),
+        Variant9(predicate::Term),
+        Variant10(alloc::vec::Vec<predicate::Term>),
+        Variant11(predicate::Expression),
+        Variant12(Vec<predicate::Term>),
+        Variant13(Vec<Value>),
+        Variant14(Vec<statement::FieldDefinition>),
+        Variant15(Vec<String>),
+        Variant16(Vec<(predicate::Expression, Option<String>)>),
+        Variant17(statement::CreateCommand),
+        Variant18(Option<Vec<(predicate::Expression, Option<String>)>>),
+        Variant19(Spec),
+        Variant20(i32),
+        Variant21(Option<Vec<String>>),
+        Variant22(Option<predicate::Predicate>),
+        Variant23(predicate::Predicate),
+        Variant24(statement::QueryData),
+        Variant25(statement::Statement),
+        Variant26(statement::UpdateCommand),
     }
     const __ACTION: &[i8] = &[
         // State 0
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0,
         // State 1
-        0, 23, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 30, 33, 29, 0, 4, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 2
-        0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 30, 33, 29, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 3
-        0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 30, 33, 29, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 4
-        0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 30, 33, 29, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 5
-        0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 30, 33, 29, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 6
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -64, 0, 0, 0, 0, 0, 0, 9,
+        0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 7
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 0, 0, 0, 0, 0, 0, 0,
+        0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 8
-        0, 23, 47, 45, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 30, 33, 29, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 9
-        0, 23, 47, 45, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 30, 33, 29, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 10
-        0, 23, 47, 45, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 11
-        0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -64, 0, 0, 0, 0, 0, 0, 14,
         // State 12
-        0, 23, 47, 45, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, 0, 0, 0, 0, 0, 0,
         // State 13
-        0, 23, 47, 45, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 30, 33, 29, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 14
-        0, 23, 47, 45, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 30, 33, 29, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 15
-        0, 23, 47, 45, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 16
-        0, 23, 47, 45, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 30, 33, 29, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 17
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 18
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 5, 0, -45, 0, 6, 0, 0, -45, -45, -45, 0, 0, 0, 0, 0, 0, 0, 0, -45, 0, 0, 0, -45, 0, 0, 0, 0, 0, 0, 0,
         // State 19
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 20
-        0, 0, 0, 0, 0, 0, 0, 0, 0, -67, 0, 0, 0, 5, 0, 0, 0, -67, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 21
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 0, 0, 0, 0, -37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -60, 0, -60, -60, -60, 0, -60, -60, -60, -60, 0, 0, 0, 0, 0, 0, 0, 0, -60, 0, 0, 0, -60, 0, 0, 0, 0, 0, 0, 0,
         // State 22
-        0, 0, 0, 0, -57, 0, -57, -57, -57, -57, -57, -57, -57, -57, 0, 0, 0, -57, 0, 0, 0, 0, -57, 0, 0, 0, -57, 0, 0, 0, 0, 0, 0, -57,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 23
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -52, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -48, 0, -48, -48, -48, 0, -48, -48, -48, -48, 0, 0, 0, 0, 0, 0, 0, 0, -48, 0, 0, 0, -48, 0, 0, 0, 0, 0, 0, 0,
         // State 24
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 0, -38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -50, 0, 0, -50, -50, -68, -50, 0, 0, -50, 0, 0, 0, -68, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 25
-        0, -19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -28, 0, -28, 10, -28, 0, 9, -28, -28, -28, 0, 0, 0, 0, 0, 0, 0, 0, -28, 0, 0, 0, -28, 0, 0, 0, 0, 0, 0, 0,
         // State 26
-        0, -20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, -37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 27
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -35, 0, 0, 0, 0, 0, 0, -35,
+        0, 0, 0, 0, -49, 0, -49, -49, -49, 0, -49, -49, -49, -49, 0, 0, 0, 0, 0, 0, 0, 0, -49, 0, 0, 0, -49, 0, 0, 0, 0, 0, 0, 0,
         // State 28
-        0, 0, 0, 0, 0, 0, 0, 0, 0, -68, 0, 0, 0, 0, 0, 0, 0, -68, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -56, 0, -56, -56, -56, 0, -56, -56, -56, -56, 0, 0, 0, 0, 0, 0, 0, 0, -56, 0, 0, 0, -56, 0, 0, 0, 0, 0, 0, 0,
         // State 29
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -36, 0, 0, 0, 0, 0, 0, -36,
+        0, 0, 0, 0, -57, 0, -57, -57, -57, -57, -57, -57, -57, -57, 0, 0, 0, -57, 0, 0, 0, 0, -57, 0, 0, 0, -57, 0, 0, 0, 0, 0, 0, -57,
         // State 30
-        0, -14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -47, 0, -47, -47, -47, 0, -47, -47, -47, -47, 0, 0, 0, 0, 0, 0, 0, 0, -47, 0, 0, 0, -47, 0, 0, 0, 0, 0, 0, 0,
         // State 31
-        0, -15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -52, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 32
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -71, 0, -71, -71, -71, 0, -71, -71, -71, -71, 0, 0, 0, 0, 0, 0, 0, 0, -71, 0, 0, 0, -71, 0, 0, 0, 0, 0, 0, 0,
         // State 33
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 0, 0, 0, 0, 0, -38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 34
-        0, 0, 0, 0, 13, 0, -45, 0, 14, 0, 0, -45, -45, 0, 0, 0, 0, 0, 0, 0, 0, 0, -45, 0, 0, 0, -45, 0, 0, 0, 0, 0, 0, 0,
+        0, -19, -19, -19, 0, -19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -19, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 35
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -65, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 45, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 36
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -50, 0, -50, -50, -50, 0, -50, -50, -50, -50, 0, 0, 0, 0, 0, 0, 0, 0, -50, 0, 0, 0, -50, 0, 0, 0, 0, 0, 0, 0,
         // State 37
-        0, 0, 0, 0, -60, 0, -60, -60, -60, 0, -60, -60, -60, 0, 0, 0, 0, 0, 0, 0, 0, 0, -60, 0, 0, 0, -60, 0, 0, 0, 0, 0, 0, 0,
+        0, -20, -20, -20, 0, -20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -20, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 38
-        0, 0, 0, 0, -48, 0, -48, -48, -48, 0, -48, -48, -48, 0, 0, 0, 0, 0, 0, 0, 0, 0, -48, 0, 0, 0, -48, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -27, 0, -27, 10, -27, 0, 9, -27, -27, -27, 0, 0, 0, 0, 0, 0, 0, 0, -27, 0, 0, 0, -27, 0, 0, 0, 0, 0, 0, 0,
         // State 39
-        0, 0, 0, 0, -50, 0, -50, -50, -50, 0, -50, -50, -50, 0, 0, 0, 0, 0, 0, 0, 0, 0, -50, 0, 0, 0, -50, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -26, 0, -26, 10, -26, 0, 9, -26, -26, -26, 0, 0, 0, 0, 0, 0, 0, 0, -26, 0, 0, 0, -26, 0, 0, 0, 0, 0, 0, 0,
         // State 40
-        0, 0, 0, 0, -28, 0, -28, 17, -28, 0, 16, -28, -28, 0, 0, 0, 0, 0, 0, 0, 0, 0, -28, 0, 0, 0, -28, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, -67, 0, 0, 0, 0, 0, 0, 0, -67, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 41
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -63, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -35, 0, 0, 0, 0, 0, 0, -35,
         // State 42
-        0, 0, 0, 0, -49, 0, -49, -49, -49, 0, -49, -49, -49, 0, 0, 0, 0, 0, 0, 0, 0, 0, -49, 0, 0, 0, -49, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -59, 0, -59, -59, -59, 0, -59, -59, -59, -59, 0, 0, 0, 0, 0, 0, 0, 0, -59, 0, 0, 0, -59, 0, 0, 0, 0, 0, 0, 0,
         // State 43
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -29, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -58, 0, -58, -58, -58, 0, -58, -58, -58, -58, 0, 0, 0, 0, 0, 0, 0, 0, -58, 0, 0, 0, -58, 0, 0, 0, 0, 0, 0, 0,
         // State 44
-        0, 0, 0, 0, -56, 0, -56, -56, -56, 0, -56, -56, -56, 0, 0, 0, 0, 0, 0, 0, 0, 0, -56, 0, 0, 0, -56, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -46, 0, -46, -46, -46, 0, -46, -46, -46, -46, 0, 0, 0, 0, 0, 0, 0, 0, -46, 0, 0, 0, -46, 0, 0, 0, 0, 0, 0, 0,
         // State 45
-        0, 0, 0, 0, -47, 0, -47, -47, -47, 0, -47, -47, -47, 0, 0, 0, 0, 0, 0, 0, 0, 0, -47, 0, 0, 0, -47, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -36, 0, 0, 0, 0, 0, 0, -36,
         // State 46
-        0, 0, 0, 0, -71, 0, -71, -71, -71, 0, -71, -71, -71, 0, 0, 0, 0, 0, 0, 0, 0, 0, -71, 0, 0, 0, -71, 0, 0, 0, 0, 0, 0, 0,
+        0, -14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 47
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -30, 0, 0, 0, 0, 0, 0, 0,
+        0, -15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 48
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 57, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 49
-        0, -24, -24, -24, 0, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 50
-        0, 0, 0, 0, 0, 0, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 51
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 49
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 50
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -65, 0, 0, 0, 0, 0, 0, 0,
+        // State 51
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 52
-        0, -25, -25, -25, 0, -25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -25, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -63, 0, 0, 0, 0, 0, 0, 0,
         // State 53
-        0, 0, 0, 0, -27, 0, -27, 17, -27, 0, 16, -27, -27, 0, 0, 0, 0, 0, 0, 0, 0, 0, -27, 0, 0, 0, -27, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 57, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -29, 0, 0, 0, 0, 0, 0, 0,
         // State 54
-        0, 0, 0, 0, -26, 0, -26, 17, -26, 0, 16, -26, -26, 0, 0, 0, 0, 0, 0, 0, 0, 0, -26, 0, 0, 0, -26, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 59, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -30, 0, 0, 0, 0, 0, 0, 0,
         // State 55
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -73, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 61, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 56
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -72, 0, 0, 0, 0, 0, 0, 0,
+        0, -24, -24, -24, 0, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 57
-        0, 0, 0, 0, -59, 0, -59, -59, -59, 0, -59, -59, -59, 0, 0, 0, 0, 0, 0, 0, 0, 0, -59, 0, 0, 0, -59, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 58
-        0, 0, 0, 0, -58, 0, -58, -58, -58, 0, -58, -58, -58, 0, 0, 0, 0, 0, 0, 0, 0, 0, -58, 0, 0, 0, -58, 0, 0, 0, 0, 0, 0, 0,
+        0, -25, -25, -25, 0, -25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -25, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 59
-        0, 0, 0, 0, -46, 0, -46, -46, -46, 0, -46, -46, -46, 0, 0, 0, 0, 0, 0, 0, 0, 0, -46, 0, 0, 0, -46, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -73, 0, 0, 0, 0, 0, 0, 0,
+        // State 60
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -72, 0, 0, 0, 0, 0, 0, 0,
     ];
     fn __action(state: i8, integer: usize) -> i8 {
         __ACTION[(state as usize) * 34 + integer]
@@ -3288,9 +3342,9 @@ mod __parse__Query {
         // State 5
         0,
         // State 6
-        -64,
+        0,
         // State 7
-        -62,
+        0,
         // State 8
         0,
         // State 9
@@ -3298,9 +3352,9 @@ mod __parse__Query {
         // State 10
         0,
         // State 11
-        0,
+        -64,
         // State 12
-        0,
+        -62,
         // State 13
         0,
         // State 14
@@ -3312,138 +3366,141 @@ mod __parse__Query {
         // State 17
         -81,
         // State 18
-        0,
+        -45,
         // State 19
         0,
         // State 20
         0,
         // State 21
-        0,
+        -60,
         // State 22
-        -57,
-        // State 23
         0,
+        // State 23
+        -48,
         // State 24
         0,
         // State 25
-        0,
+        -28,
         // State 26
         0,
         // State 27
-        -35,
+        -49,
         // State 28
-        0,
+        -56,
         // State 29
-        -36,
+        -57,
         // State 30
-        0,
+        -47,
         // State 31
         0,
         // State 32
-        -66,
+        -71,
         // State 33
         0,
         // State 34
-        -45,
+        0,
         // State 35
-        -65,
+        0,
         // State 36
-        0,
-        // State 37
-        -60,
-        // State 38
-        -48,
-        // State 39
         -50,
-        // State 40
-        -28,
-        // State 41
-        -63,
-        // State 42
-        -49,
-        // State 43
-        -29,
-        // State 44
-        -56,
-        // State 45
-        -47,
-        // State 46
-        -71,
-        // State 47
-        -30,
-        // State 48
+        // State 37
         0,
+        // State 38
+        -27,
+        // State 39
+        -26,
+        // State 40
+        0,
+        // State 41
+        -35,
+        // State 42
+        -59,
+        // State 43
+        -58,
+        // State 44
+        -46,
+        // State 45
+        -36,
+        // State 46
+        0,
+        // State 47
+        0,
+        // State 48
+        -66,
         // State 49
         0,
         // State 50
-        0,
+        -65,
         // State 51
-        -61,
-        // State 52
         0,
+        // State 52
+        -63,
         // State 53
-        -27,
+        -29,
         // State 54
-        -26,
+        -30,
         // State 55
-        -73,
+        0,
         // State 56
-        -72,
+        0,
         // State 57
-        -59,
+        -61,
         // State 58
-        -58,
+        0,
         // State 59
-        -46,
+        -73,
+        // State 60
+        -72,
     ];
     fn __goto(state: i8, nt: usize) -> i8 {
         match nt {
-            8 => 5,
+            8 => 10,
             11 => 2,
-            14 => 9,
-            15 => 34,
-            16 => 35,
+            14 => 14,
+            15 => 18,
+            16 => 50,
             19 => match state {
-                11 => 51,
-                _ => 6,
+                15 => 57,
+                _ => 11,
             },
-            20 => 18,
+            20 => 19,
             23 => match state {
-                10 => 50,
-                14 => 55,
-                _ => 36,
+                3 => 35,
+                13..=14 => 51,
+                16 => 59,
+                _ => 20,
             },
             24 => match state {
-                15 => 57,
-                16 => 58,
-                _ => 37,
-            },
-            26 => 19,
-            28 => 38,
-            29 => match state {
-                1..=2 => 20,
-                4 => 28,
-                5 => 29,
-                8..=10 | 12..=16 => 39,
-                _ => 27,
-            },
-            30 => match state {
-                12 => 53,
-                13 => 54,
-                _ => 40,
-            },
-            31 => 32,
-            32 => 7,
-            33 => 41,
-            34 => 17,
-            35 => match state {
-                2 => 24,
+                8 => 42,
+                9 => 43,
                 _ => 21,
             },
-            37 => 42,
+            26 => 22,
+            28 => 23,
+            29 => match state {
+                1..=2 => 24,
+                6 => 40,
+                7 | 15 => 41,
+                10 => 45,
+                _ => 36,
+            },
+            30 => match state {
+                4 => 38,
+                5 => 39,
+                _ => 25,
+            },
+            31 => 48,
+            32 => 12,
+            33 => 52,
+            34 => 17,
+            35 => match state {
+                2 => 33,
+                _ => 26,
+            },
+            37 => 27,
             38 => match state {
-                9 => 47,
-                _ => 43,
+                14 => 54,
+                _ => 53,
             },
             _ => 0,
         }
@@ -4078,13 +4135,13 @@ mod __parse__Query {
             }
             66 => {
                 __state_machine::SimulatedReduce::Reduce {
-                    states_to_pop: 1,
+                    states_to_pop: 3,
                     nonterminal_produced: 35,
                 }
             }
             67 => {
                 __state_machine::SimulatedReduce::Reduce {
-                    states_to_pop: 3,
+                    states_to_pop: 1,
                     nonterminal_produced: 35,
                 }
             }
@@ -4502,7 +4559,7 @@ mod __parse__Query {
             }
             80 => {
                 // __Query = Query => ActionFn(1);
-                let __sym0 = __pop_Variant20(__symbols);
+                let __sym0 = __pop_Variant24(__symbols);
                 let __start = __sym0.0;
                 let __end = __sym0.2;
                 let __nt = super::__action1::<>(input, __sym0);
@@ -4530,14 +4587,14 @@ mod __parse__Query {
     fn __symbol_type_mismatch() -> ! {
         panic!("symbol type mismatch")
     }
-    fn __pop_Variant15<
+    fn __pop_Variant7<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Option<Vec<String>>, usize)
+    ) -> (usize, (predicate::Expression, Option<String>), usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -4545,21 +4602,43 @@ mod __parse__Query {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Option<predicate::Predicate>, usize)
+    ) -> (usize, Option<Vec<(predicate::Expression, Option<String>)>>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant18(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant16<
+    fn __pop_Variant21<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Option<Vec<String>>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant21(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant22<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Option<predicate::Predicate>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant22(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant19<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, Spec, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant19(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -4585,36 +4664,36 @@ mod __parse__Query {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant13<
+    fn __pop_Variant16<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Vec<(predicate::Expression, Option<String>)>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant15<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, Vec<String>, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant13(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant11<
+    fn __pop_Variant13<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, Vec<Value>, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant10<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<predicate::Term>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant13(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -4622,10 +4701,32 @@ mod __parse__Query {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<statement::FieldDefinition>, usize)
+    ) -> (usize, Vec<predicate::Term>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant12(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant14<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Vec<statement::FieldDefinition>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant8<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, alloc::vec::Vec<(predicate::Expression, Option<String>)>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -4651,14 +4752,14 @@ mod __parse__Query {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant8<
+    fn __pop_Variant10<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, alloc::vec::Vec<predicate::Term>, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -4673,14 +4774,36 @@ mod __parse__Query {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant17<
+    fn __pop_Variant20<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, i32, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant17(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant11<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Expression, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant23<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Predicate, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant23(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -4688,43 +4811,21 @@ mod __parse__Query {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Expression, usize)
+    ) -> (usize, predicate::Term, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant9(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant19<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Predicate, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant19(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant7<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Term, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant14<
+    fn __pop_Variant17<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::CreateCommand, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant17(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -4739,36 +4840,36 @@ mod __parse__Query {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant20<
+    fn __pop_Variant24<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::QueryData, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant24(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant21<
+    fn __pop_Variant25<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::Statement, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant21(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant25(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant22<
+    fn __pop_Variant26<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::UpdateCommand, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant22(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant26(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -5068,11 +5169,11 @@ mod __parse__Query {
         // (<SelectField> COMMA) = SelectField, COMMA => ActionFn(59);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant5(__symbols);
+        let __sym0 = __pop_Variant7(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action59::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant5(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
         (2, 9)
     }
     fn __reduce16<
@@ -5088,7 +5189,7 @@ mod __parse__Query {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action57::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (0, 10)
     }
     fn __reduce17<
@@ -5101,11 +5202,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // (<SelectField> COMMA)* = (<SelectField> COMMA)+ => ActionFn(58);
-        let __sym0 = __pop_Variant6(__symbols);
+        let __sym0 = __pop_Variant8(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action58::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (1, 10)
     }
     fn __reduce18<
@@ -5120,11 +5221,11 @@ mod __parse__Query {
         // (<SelectField> COMMA)+ = SelectField, COMMA => ActionFn(91);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant5(__symbols);
+        let __sym0 = __pop_Variant7(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action91::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (2, 11)
     }
     fn __reduce19<
@@ -5139,12 +5240,12 @@ mod __parse__Query {
         // (<SelectField> COMMA)+ = (<SelectField> COMMA)+, SelectField, COMMA => ActionFn(92);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant5(__symbols);
-        let __sym0 = __pop_Variant6(__symbols);
+        let __sym1 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant8(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action92::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (3, 11)
     }
     fn __reduce20<
@@ -5159,11 +5260,11 @@ mod __parse__Query {
         // (<Term> AND) = Term, AND => ActionFn(68);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action68::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (2, 12)
     }
     fn __reduce21<
@@ -5179,7 +5280,7 @@ mod __parse__Query {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action66::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (0, 13)
     }
     fn __reduce22<
@@ -5192,11 +5293,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // (<Term> AND)* = (<Term> AND)+ => ActionFn(67);
-        let __sym0 = __pop_Variant8(__symbols);
+        let __sym0 = __pop_Variant10(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action67::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (1, 13)
     }
     fn __reduce23<
@@ -5211,11 +5312,11 @@ mod __parse__Query {
         // (<Term> AND)+ = Term, AND => ActionFn(95);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action95::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (2, 14)
     }
     fn __reduce24<
@@ -5230,12 +5331,12 @@ mod __parse__Query {
         // (<Term> AND)+ = (<Term> AND)+, Term, AND => ActionFn(96);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant7(__symbols);
-        let __sym0 = __pop_Variant8(__symbols);
+        let __sym1 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant10(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action96::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (3, 14)
     }
     fn __reduce25<
@@ -5249,13 +5350,13 @@ mod __parse__Query {
     {
         // AddExpr = AddExpr, PLUS, MulExpr => ActionFn(32);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action32::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 15)
     }
     fn __reduce26<
@@ -5269,13 +5370,13 @@ mod __parse__Query {
     {
         // AddExpr = AddExpr, MINUS, MulExpr => ActionFn(33);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action33::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 15)
     }
     fn __reduce27<
@@ -5288,11 +5389,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // AddExpr = MulExpr => ActionFn(34);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action34::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 15)
     }
     fn __reduce28<
@@ -5305,11 +5406,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // And<Term> = Term => ActionFn(97);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action97::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
         (1, 16)
     }
     fn __reduce29<
@@ -5323,12 +5424,12 @@ mod __parse__Query {
     {
         // And<Term> = (<Term> AND)+, Term => ActionFn(98);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant7(__symbols);
-        let __sym0 = __pop_Variant8(__symbols);
+        let __sym1 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant10(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action98::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
         (2, 16)
     }
     fn __reduce30<
@@ -5345,7 +5446,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action81::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
         (1, 17)
     }
     fn __reduce31<
@@ -5364,7 +5465,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action82::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
         (2, 17)
     }
     fn __reduce32<
@@ -5381,7 +5482,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action85::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
         (1, 18)
     }
     fn __reduce33<
@@ -5400,7 +5501,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action86::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
         (2, 18)
     }
     fn __reduce34<
@@ -5417,7 +5518,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action89::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
         (1, 19)
     }
     fn __reduce35<
@@ -5436,7 +5537,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action90::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
         (2, 19)
     }
     fn __reduce36<
@@ -5449,11 +5550,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // Comma<SelectField> = SelectField => ActionFn(93);
-        let __sym0 = __pop_Variant5(__symbols);
+        let __sym0 = __pop_Variant7(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action93::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
         (1, 20)
     }
     fn __reduce37<
@@ -5467,12 +5568,12 @@ mod __parse__Query {
     {
         // Comma<SelectField> = (<SelectField> COMMA)+, SelectField => ActionFn(94);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant5(__symbols);
-        let __sym0 = __pop_Variant6(__symbols);
+        let __sym1 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant8(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action94::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
         (2, 20)
     }
     fn __reduce38<
@@ -5502,7 +5603,7 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // Constant = I32Constant => ActionFn(44);
-        let __sym0 = __pop_Variant17(__symbols);
+        let __sym0 = __pop_Variant20(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action44::<>(input, __sym0);
@@ -5538,7 +5639,7 @@ mod __parse__Query {
         // CreateCommand = CREATE, TABLE, IdToken, LPAREN, Comma<FieldDefinition>, RPAREN => ActionFn(22);
         assert!(__symbols.len() >= 6);
         let __sym5 = __pop_Variant0(__symbols);
-        let __sym4 = __pop_Variant12(__symbols);
+        let __sym4 = __pop_Variant14(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -5546,7 +5647,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym5.2;
         let __nt = super::__action22::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5);
-        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
         (6, 22)
     }
     fn __reduce42<
@@ -5560,7 +5661,7 @@ mod __parse__Query {
     {
         // CreateCommand = CREATE, VIEW, IdToken, AS, Query => ActionFn(23);
         assert!(__symbols.len() >= 5);
-        let __sym4 = __pop_Variant20(__symbols);
+        let __sym4 = __pop_Variant24(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -5568,7 +5669,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym4.2;
         let __nt = super::__action23::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4);
-        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
         (5, 22)
     }
     fn __reduce43<
@@ -5593,7 +5694,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym7.2;
         let __nt = super::__action24::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5, __sym6, __sym7);
-        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
         (8, 22)
     }
     fn __reduce44<
@@ -5606,11 +5707,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // Expression = AddExpr => ActionFn(31);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action31::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 23)
     }
     fn __reduce45<
@@ -5625,12 +5726,12 @@ mod __parse__Query {
         // Factor = LPAREN, Expression, RPAREN => ActionFn(38);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant9(__symbols);
+        let __sym1 = __pop_Variant11(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action38::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 24)
     }
     fn __reduce46<
@@ -5647,7 +5748,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action39::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce47<
@@ -5660,11 +5761,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // Factor = I32Constant => ActionFn(40);
-        let __sym0 = __pop_Variant17(__symbols);
+        let __sym0 = __pop_Variant20(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action40::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce48<
@@ -5681,7 +5782,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action41::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce49<
@@ -5698,7 +5799,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action42::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce50<
@@ -5712,7 +5813,7 @@ mod __parse__Query {
     {
         // FieldDefinition = IdToken, FieldType => ActionFn(25);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant16(__symbols);
+        let __sym1 = __pop_Variant19(__symbols);
         let __sym0 = __pop_Variant5(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
@@ -5734,7 +5835,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action8::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
         (1, 26)
     }
     fn __reduce52<
@@ -5747,11 +5848,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // FieldList = Comma<SelectField> => ActionFn(9);
-        let __sym0 = __pop_Variant13(__symbols);
+        let __sym0 = __pop_Variant16(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action9::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
         (1, 26)
     }
     fn __reduce53<
@@ -5768,7 +5869,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action26::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
         (1, 27)
     }
     fn __reduce54<
@@ -5783,13 +5884,13 @@ mod __parse__Query {
         // FieldType = VARCHAR, LPAREN, I32Constant, RPAREN => ActionFn(27);
         assert!(__symbols.len() >= 4);
         let __sym3 = __pop_Variant0(__symbols);
-        let __sym2 = __pop_Variant17(__symbols);
+        let __sym2 = __pop_Variant20(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym3.2;
         let __nt = super::__action27::<>(input, __sym0, __sym1, __sym2, __sym3);
-        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
         (4, 27)
     }
     fn __reduce55<
@@ -5806,7 +5907,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action46::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant20(__nt), __end));
         (1, 28)
     }
     fn __reduce56<
@@ -5837,13 +5938,13 @@ mod __parse__Query {
     {
         // MulExpr = MulExpr, STAR, Factor => ActionFn(35);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action35::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 30)
     }
     fn __reduce58<
@@ -5857,13 +5958,13 @@ mod __parse__Query {
     {
         // MulExpr = MulExpr, SLASH, Factor => ActionFn(36);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action36::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 30)
     }
     fn __reduce59<
@@ -5876,11 +5977,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // MulExpr = Factor => ActionFn(37);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action37::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 30)
     }
     fn __reduce60<
@@ -5894,13 +5995,13 @@ mod __parse__Query {
     {
         // OptOrderBy = ORDER, BY, Comma<IdToken> => ActionFn(14);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant13(__symbols);
+        let __sym2 = __pop_Variant15(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action14::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
         (3, 31)
     }
     fn __reduce61<
@@ -5916,7 +6017,7 @@ mod __parse__Query {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action15::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
         (0, 31)
     }
     fn __reduce62<
@@ -5930,12 +6031,12 @@ mod __parse__Query {
     {
         // OptPredicate = WHERE, Predicate => ActionFn(12);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant19(__symbols);
+        let __sym1 = __pop_Variant23(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action12::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
         (2, 32)
     }
     fn __reduce63<
@@ -5951,7 +6052,7 @@ mod __parse__Query {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action13::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
         (0, 32)
     }
     fn __reduce64<
@@ -5964,11 +6065,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // Predicate = And<Term> => ActionFn(28);
-        let __sym0 = __pop_Variant10(__symbols);
+        let __sym0 = __pop_Variant12(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action28::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant23(__nt), __end));
         (1, 33)
     }
     fn __reduce65<
@@ -5982,16 +6083,16 @@ mod __parse__Query {
     {
         // Query = SELECT, FieldList, FROM, Comma<IdToken>, OptPredicate, OptOrderBy => ActionFn(7);
         assert!(__symbols.len() >= 6);
-        let __sym5 = __pop_Variant15(__symbols);
-        let __sym4 = __pop_Variant18(__symbols);
-        let __sym3 = __pop_Variant13(__symbols);
+        let __sym5 = __pop_Variant21(__symbols);
+        let __sym4 = __pop_Variant22(__symbols);
+        let __sym3 = __pop_Variant15(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant15(__symbols);
+        let __sym1 = __pop_Variant18(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym5.2;
         let __nt = super::__action7::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5);
-        __symbols.push((__start, __Symbol::Variant20(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant24(__nt), __end));
         (6, 34)
     }
     fn __reduce66<
@@ -6003,13 +6104,16 @@ mod __parse__Query {
         _: core::marker::PhantomData<(&'input ())>,
     ) -> (usize, usize)
     {
-        // SelectField = IdToken => ActionFn(10);
-        let __sym0 = __pop_Variant5(__symbols);
+        // SelectField = Expression, AS, IdToken => ActionFn(10);
+        assert!(__symbols.len() >= 3);
+        let __sym2 = __pop_Variant5(__symbols);
+        let __sym1 = __pop_Variant0(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
-        let __end = __sym0.2;
-        let __nt = super::__action10::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant5(__nt), __end));
-        (1, 35)
+        let __end = __sym2.2;
+        let __nt = super::__action10::<>(input, __sym0, __sym1, __sym2);
+        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        (3, 35)
     }
     fn __reduce67<
         'input,
@@ -6020,16 +6124,13 @@ mod __parse__Query {
         _: core::marker::PhantomData<(&'input ())>,
     ) -> (usize, usize)
     {
-        // SelectField = IdToken, AS, IdToken => ActionFn(11);
-        assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant5(__symbols);
-        let __sym1 = __pop_Variant0(__symbols);
+        // SelectField = IdToken => ActionFn(11);
         let __sym0 = __pop_Variant5(__symbols);
         let __start = __sym0.0;
-        let __end = __sym2.2;
-        let __nt = super::__action11::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant5(__nt), __end));
-        (3, 35)
+        let __end = __sym0.2;
+        let __nt = super::__action11::<>(input, __sym0);
+        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        (1, 35)
     }
     fn __reduce68<
         'input,
@@ -6041,11 +6142,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // Statement = Query => ActionFn(5);
-        let __sym0 = __pop_Variant20(__symbols);
+        let __sym0 = __pop_Variant24(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action5::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant25(__nt), __end));
         (1, 36)
     }
     fn __reduce69<
@@ -6058,11 +6159,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // Statement = UpdateCommand => ActionFn(6);
-        let __sym0 = __pop_Variant22(__symbols);
+        let __sym0 = __pop_Variant26(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action6::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant25(__nt), __end));
         (1, 36)
     }
     fn __reduce70<
@@ -6095,11 +6196,11 @@ mod __parse__Query {
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action29::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (3, 38)
     }
     fn __reduce72<
@@ -6113,13 +6214,13 @@ mod __parse__Query {
     {
         // Term = Expression, EQ, Expression => ActionFn(30);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action30::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (3, 38)
     }
     fn __reduce73<
@@ -6134,11 +6235,11 @@ mod __parse__Query {
         // UpdateCommand = INSERT, INTO, IdToken, LPAREN, Comma<IdToken>, RPAREN, VALUES, LPAREN, Comma<Constant>, RPAREN => ActionFn(16);
         assert!(__symbols.len() >= 10);
         let __sym9 = __pop_Variant0(__symbols);
-        let __sym8 = __pop_Variant11(__symbols);
+        let __sym8 = __pop_Variant13(__symbols);
         let __sym7 = __pop_Variant0(__symbols);
         let __sym6 = __pop_Variant0(__symbols);
         let __sym5 = __pop_Variant0(__symbols);
-        let __sym4 = __pop_Variant13(__symbols);
+        let __sym4 = __pop_Variant15(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -6146,7 +6247,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym9.2;
         let __nt = super::__action16::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5, __sym6, __sym7, __sym8, __sym9);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (10, 39)
     }
     fn __reduce74<
@@ -6166,7 +6267,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action17::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (3, 39)
     }
     fn __reduce75<
@@ -6180,7 +6281,7 @@ mod __parse__Query {
     {
         // UpdateCommand = DELETE, FROM, IdToken, WHERE, Predicate => ActionFn(18);
         assert!(__symbols.len() >= 5);
-        let __sym4 = __pop_Variant19(__symbols);
+        let __sym4 = __pop_Variant23(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -6188,7 +6289,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym4.2;
         let __nt = super::__action18::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (5, 39)
     }
     fn __reduce76<
@@ -6202,7 +6303,7 @@ mod __parse__Query {
     {
         // UpdateCommand = MODIFY, IdToken, SET, IdToken, EQ, Expression => ActionFn(19);
         assert!(__symbols.len() >= 6);
-        let __sym5 = __pop_Variant9(__symbols);
+        let __sym5 = __pop_Variant11(__symbols);
         let __sym4 = __pop_Variant0(__symbols);
         let __sym3 = __pop_Variant5(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
@@ -6211,7 +6312,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym5.2;
         let __nt = super::__action19::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (6, 39)
     }
     fn __reduce77<
@@ -6225,9 +6326,9 @@ mod __parse__Query {
     {
         // UpdateCommand = MODIFY, IdToken, SET, IdToken, EQ, Expression, WHERE, Predicate => ActionFn(20);
         assert!(__symbols.len() >= 8);
-        let __sym7 = __pop_Variant19(__symbols);
+        let __sym7 = __pop_Variant23(__symbols);
         let __sym6 = __pop_Variant0(__symbols);
-        let __sym5 = __pop_Variant9(__symbols);
+        let __sym5 = __pop_Variant11(__symbols);
         let __sym4 = __pop_Variant0(__symbols);
         let __sym3 = __pop_Variant5(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
@@ -6236,7 +6337,7 @@ mod __parse__Query {
         let __start = __sym0.0;
         let __end = __sym7.2;
         let __nt = super::__action20::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5, __sym6, __sym7);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (8, 39)
     }
     fn __reduce78<
@@ -6249,11 +6350,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // UpdateCommand = CreateCommand => ActionFn(21);
-        let __sym0 = __pop_Variant14(__symbols);
+        let __sym0 = __pop_Variant17(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action21::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (1, 39)
     }
     fn __reduce79<
@@ -6266,11 +6367,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // __Predicate = Predicate => ActionFn(3);
-        let __sym0 = __pop_Variant19(__symbols);
+        let __sym0 = __pop_Variant23(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action3::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant23(__nt), __end));
         (1, 40)
     }
     fn __reduce81<
@@ -6283,11 +6384,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // __Statement = Statement => ActionFn(0);
-        let __sym0 = __pop_Variant21(__symbols);
+        let __sym0 = __pop_Variant25(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action0::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant25(__nt), __end));
         (1, 42)
     }
     fn __reduce82<
@@ -6300,11 +6401,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // __Term = Term => ActionFn(4);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action4::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (1, 43)
     }
     fn __reduce83<
@@ -6317,11 +6418,11 @@ mod __parse__Query {
     ) -> (usize, usize)
     {
         // __UpdateCommand = UpdateCommand => ActionFn(2);
-        let __sym0 = __pop_Variant22(__symbols);
+        let __sym0 = __pop_Variant26(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action2::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (1, 44)
     }
 }
@@ -6353,22 +6454,26 @@ mod __parse__Statement {
         Variant4(alloc::vec::Vec<statement::FieldDefinition>),
         Variant5(String),
         Variant6(alloc::vec::Vec<String>),
-        Variant7(predicate::Term),
-        Variant8(alloc::vec::Vec<predicate::Term>),
-        Variant9(predicate::Expression),
-        Variant10(Vec<predicate::Term>),
-        Variant11(Vec<Value>),
-        Variant12(Vec<statement::FieldDefinition>),
-        Variant13(Vec<String>),
-        Variant14(statement::CreateCommand),
-        Variant15(Option<Vec<String>>),
-        Variant16(Spec),
-        Variant17(i32),
-        Variant18(Option<predicate::Predicate>),
-        Variant19(predicate::Predicate),
-        Variant20(statement::QueryData),
-        Variant21(statement::Statement),
-        Variant22(statement::UpdateCommand),
+        Variant7((predicate::Expression, Option<String>)),
+        Variant8(alloc::vec::Vec<(predicate::Expression, Option<String>)>),
+        Variant9(predicate::Term),
+        Variant10(alloc::vec::Vec<predicate::Term>),
+        Variant11(predicate::Expression),
+        Variant12(Vec<predicate::Term>),
+        Variant13(Vec<Value>),
+        Variant14(Vec<statement::FieldDefinition>),
+        Variant15(Vec<String>),
+        Variant16(Vec<(predicate::Expression, Option<String>)>),
+        Variant17(statement::CreateCommand),
+        Variant18(Option<Vec<(predicate::Expression, Option<String>)>>),
+        Variant19(Spec),
+        Variant20(i32),
+        Variant21(Option<Vec<String>>),
+        Variant22(Option<predicate::Predicate>),
+        Variant23(predicate::Predicate),
+        Variant24(statement::QueryData),
+        Variant25(statement::Statement),
+        Variant26(statement::UpdateCommand),
     }
     const __ACTION: &[i8] = &[
         // State 0
@@ -6376,7 +6481,7 @@ mod __parse__Statement {
         // State 1
         0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 2
-        0, 46, 0, 0, 0, 0, 0, 51, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 46, 60, 57, 0, 10, 0, 59, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 3
         0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 4
@@ -6388,63 +6493,63 @@ mod __parse__Statement {
         // State 7
         0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 8
-        0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 46, 60, 57, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 9
-        0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 46, 60, 57, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 10
         0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 11
-        0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 46, 60, 57, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 12
-        0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 46, 60, 57, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 13
         0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 14
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0,
-        // State 15
-        0, 46, 79, 77, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 16
         0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 15
+        0, 46, 60, 57, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 16
+        0, 46, 60, 57, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 17
         0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 18
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -64, 0, 0, 0, 0, 0, 0, 26,
+        0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 19
-        0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0,
         // State 20
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 87, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 88, 0, 0,
+        0, 46, 60, 57, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 21
-        0, 46, 79, 77, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 22
-        0, 46, 79, 77, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 23
-        0, 46, 79, 77, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 24
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 97, 0, 0, 0, 0, 0, 0, 0,
-        // State 25
-        0, 46, 79, 77, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 26
         0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 22
+        0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 23
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -64, 0, 0, 0, 0, 0, 0, 30,
+        // State 24
+        0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 25
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 95, 0, 0,
+        // State 26
+        0, 46, 60, 57, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 27
-        0, 46, 79, 77, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 46, 60, 57, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 28
-        0, 46, 79, 77, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 103, 0, 0, 0, 0, 0, 0, 0,
         // State 29
-        0, 46, 79, 77, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 46, 60, 57, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 30
-        0, 46, 79, 77, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 31
-        0, 46, 79, 77, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 46, 60, 57, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 32
-        0, 0, 0, 77, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 57, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 33
-        0, 46, 79, 77, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 46, 60, 57, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 34
         0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 35
-        0, 0, 79, 77, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 119, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 60, 57, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 36
-        0, 0, 79, 77, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 119, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 60, 57, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 37
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 38
@@ -6460,162 +6565,164 @@ mod __parse__Statement {
         // State 43
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 44
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0,
         // State 45
         0, 0, 0, 0, -57, -57, -57, -57, -57, -57, -57, -57, -57, -57, 0, 0, 0, -57, -57, 0, 0, 0, -57, 0, 0, -57, -57, 0, -57, 0, 0, -57, 0, -57,
         // State 46
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 12, 0, -45, 0, 13, 0, 0, -45, -45, -45, 0, 0, 0, 0, 0, 0, 0, 0, -45, 0, 0, 0, -45, 0, 0, 0, 0, 0, 0, -45,
         // State 47
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 48
-        0, 0, 0, 0, 0, 0, 0, 0, 0, -67, 0, 0, 0, 12, 0, 0, 0, -67, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 49
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, -37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -60, 0, -60, -60, -60, 0, -60, -60, -60, -60, 0, 0, 0, 0, 0, 0, 0, 0, -60, 0, 0, 0, -60, 0, 0, 0, 0, 0, 0, -60,
         // State 50
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -52, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 51
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -48, 0, -48, -48, -48, 0, -48, -48, -48, -48, 0, 0, 0, 0, 0, 0, 0, 0, -48, 0, 0, 0, -48, 0, 0, 0, 0, 0, 0, -48,
         // State 52
-        0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -50, 0, 0, -50, -50, -68, -50, 0, 0, -50, 0, 0, 0, -68, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 53
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -28, 0, -28, 17, -28, 0, 16, -28, -28, -28, 0, 0, 0, 0, 0, 0, 0, 0, -28, 0, 0, 0, -28, 0, 0, 0, 0, 0, 0, -28,
         // State 54
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 67, 0, 0, 0, 0, 0, 0, 0, -37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 55
-        0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -49, 0, -49, -49, -49, 0, -49, -49, -49, -49, 0, 0, 0, 0, 0, 0, 0, 0, -49, 0, 0, 0, -49, 0, 0, 0, 0, 0, 0, -49,
         // State 56
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 60, 0, 0, 0, 0, 0, 0, 0, -38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -56, 0, -56, -56, -56, -56, -56, -56, -56, -56, 0, 0, 0, 0, 0, 0, 0, 0, -56, 0, 0, 0, -56, 0, 0, 0, 0, 0, 0, -56,
         // State 57
-        0, -19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -47, 0, -47, -47, -47, 0, -47, -47, -47, -47, 0, 0, 0, 0, 0, 0, 0, 0, -47, 0, 0, 0, -47, 0, 0, 0, 0, 0, 0, -47,
         // State 58
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -52, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 59
-        0, -20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -71, 0, -71, -71, -71, -71, -71, -71, -71, -71, 0, 0, 0, 0, 0, 0, 0, 0, -71, 0, 0, 0, -71, 0, 0, 0, 0, 0, 0, -71,
         // State 60
-        0, 0, 0, 0, 0, 0, -35, 0, 0, 82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -35, 0, 0, 0, 0, 0, 0, -35,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 61
-        0, 0, 0, 0, 0, 0, 0, 0, 0, -68, 0, 0, 0, 0, 0, 0, 0, -68, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 62
-        0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 63
-        0, 0, 0, 0, 0, 0, 84, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21,
         // State 64
-        0, 0, 0, 0, 0, 0, -33, 0, 0, 85, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 65
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 0, 0, 0, 0, 0, 0, 0, -38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 66
-        0, 0, 0, 0, 28, 0, -45, 0, 29, 0, 0, -45, -45, 0, 0, 0, 0, 0, 0, 0, 0, 0, -45, 0, 0, 0, -45, 0, 0, 0, 0, 0, 0, -45,
+        0, -19, -19, -19, 0, -19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -19, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 67
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -65, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 68
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -50, 0, -50, -50, -50, 0, -50, -50, -50, -50, 0, 0, 0, 0, 0, 0, 0, 0, -50, 0, 0, 0, -50, 0, 0, 0, 0, 0, 0, -50,
         // State 69
-        0, 0, 0, 0, -60, 0, -60, -60, -60, 0, -60, -60, -60, 0, 0, 0, 0, 0, 0, 0, 0, 0, -60, 0, 0, 0, -60, 0, 0, 0, 0, 0, 0, -60,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 70
-        0, 0, 0, 0, -48, 0, -48, -48, -48, 0, -48, -48, -48, 0, 0, 0, 0, 0, 0, 0, 0, 0, -48, 0, 0, 0, -48, 0, 0, 0, 0, 0, 0, -48,
+        0, -20, -20, -20, 0, -20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -20, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 71
-        0, 0, 0, 0, -50, 0, -50, -50, -50, 0, -50, -50, -50, 0, 0, 0, 0, 0, 0, 0, 0, 0, -50, 0, 0, 0, -50, 0, 0, 0, 0, 0, 0, -50,
+        0, 0, 0, 0, -27, 0, -27, 17, -27, 0, 16, -27, -27, -27, 0, 0, 0, 0, 0, 0, 0, 0, -27, 0, 0, 0, -27, 0, 0, 0, 0, 0, 0, -27,
         // State 72
-        0, 0, 0, 0, -28, 0, -28, 32, -28, 0, 31, -28, -28, 0, 0, 0, 0, 0, 0, 0, 0, 0, -28, 0, 0, 0, -28, 0, 0, 0, 0, 0, 0, -28,
+        0, 0, 0, 0, -26, 0, -26, 17, -26, 0, 16, -26, -26, -26, 0, 0, 0, 0, 0, 0, 0, 0, -26, 0, 0, 0, -26, 0, 0, 0, 0, 0, 0, -26,
         // State 73
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, -67, 0, 0, 0, 0, 0, 0, 0, -67, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 74
-        0, 0, 0, 0, -49, 0, -49, -49, -49, 0, -49, -49, -49, 0, 0, 0, 0, 0, 0, 0, 0, 0, -49, 0, 0, 0, -49, 0, 0, 0, 0, 0, 0, -49,
+        0, 0, 0, 0, 0, 0, -35, 0, 0, 89, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -35, 0, 0, 0, 0, 0, 0, -35,
         // State 75
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -29, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -59, 0, -59, -59, -59, 0, -59, -59, -59, -59, 0, 0, 0, 0, 0, 0, 0, 0, -59, 0, 0, 0, -59, 0, 0, 0, 0, 0, 0, -59,
         // State 76
-        0, 0, 0, 0, -56, 0, -56, -56, -56, -56, -56, -56, -56, 0, 0, 0, 0, 0, 0, 0, 0, 0, -56, 0, 0, 0, -56, 0, 0, 0, 0, 0, 0, -56,
+        0, 0, 0, 0, -58, 0, -58, -58, -58, 0, -58, -58, -58, -58, 0, 0, 0, 0, 0, 0, 0, 0, -58, 0, 0, 0, -58, 0, 0, 0, 0, 0, 0, -58,
         // State 77
-        0, 0, 0, 0, -47, 0, -47, -47, -47, 0, -47, -47, -47, 0, 0, 0, 0, 0, 0, 0, 0, 0, -47, 0, 0, 0, -47, 0, 0, 0, 0, 0, 0, -47,
+        0, 0, 0, 0, -46, 0, -46, -46, -46, 0, -46, -46, -46, -46, 0, 0, 0, 0, 0, 0, 0, 0, -46, 0, 0, 0, -46, 0, 0, 0, 0, 0, 0, -46,
         // State 78
-        0, 0, 0, 0, -71, 0, -71, -71, -71, -71, -71, -71, -71, 0, 0, 0, 0, 0, 0, 0, 0, 0, -71, 0, 0, 0, -71, 0, 0, 0, 0, 0, 0, -71,
+        0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 79
-        0, 0, 0, 0, 0, 0, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 91, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 80
-        0, 0, 0, 0, 0, 0, -36, 0, 0, 95, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -36, 0, 0, 0, 0, 0, 0, -36,
+        0, 0, 0, 0, 0, 0, -33, 0, 0, 92, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 81
-        0, -14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 82
-        0, 0, 0, 0, 0, 0, -34, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -65, 0, 0, 0, 0, 0, 0, 0,
         // State 83
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 84
-        0, -9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 85
-        0, 0, 0, 0, 0, 0, -51, 0, 0, -51, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 98, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -29, 0, 0, 0, 0, 0, 0, 0,
         // State 86
-        0, 0, 0, 0, 0, 0, -54, 0, 0, -54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 87
-        0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, -36, 0, 0, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -36, 0, 0, 0, 0, 0, 0, -36,
         // State 88
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -30, 0, 0, 0, 0, 0, 0, 0,
+        0, -14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 89
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 105, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, -34, 0, 0, 106, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 90
-        0, -24, -24, -24, 0, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 91
-        0, 0, 0, 0, 0, 0, 108, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, -9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 92
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 109, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, -51, 0, 0, -51, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 93
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34,
+        0, 0, 0, 0, 0, 0, -54, 0, 0, -54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 94
-        0, -15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 95
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 107, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -30, 0, 0, 0, 0, 0, 0, 0,
         // State 96
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 109, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 97
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -63, 0, 0, 0, 0, 0, 0, 0,
+        0, -24, -24, -24, 0, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 98
-        0, 0, 0, 0, 0, 0, 110, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 110, 0, 0, 0,
         // State 99
-        0, -10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34,
         // State 100
-        0, -25, -25, -25, 0, -25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -25, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, -15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 101
-        0, 0, 0, 0, -27, 0, -27, 32, -27, 0, 31, -27, -27, 0, 0, 0, 0, 0, 0, 0, 0, 0, -27, 0, 0, 0, -27, 0, 0, 0, 0, 0, 0, -27,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 102
-        0, 0, 0, 0, -26, 0, -26, 32, -26, 0, 31, -26, -26, 0, 0, 0, 0, 0, 0, 0, 0, 0, -26, 0, 0, 0, -26, 0, 0, 0, 0, 0, 0, -26,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 103
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -73, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -63, 0, 0, 0, 0, 0, 0, 0,
         // State 104
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -72, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 105
-        0, 0, 0, 0, -59, 0, -59, -59, -59, 0, -59, -59, -59, 0, 0, 0, 0, 0, 0, 0, 0, 0, -59, 0, 0, 0, -59, 0, 0, 0, 0, 0, 0, -59,
+        0, -10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 106
-        0, 0, 0, 0, -58, 0, -58, -58, -58, 0, -58, -58, -58, 0, 0, 0, 0, 0, 0, 0, 0, 0, -58, 0, 0, 0, -58, 0, 0, 0, 0, 0, 0, -58,
+        0, -25, -25, -25, 0, -25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -25, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 107
-        0, 0, 0, 0, -46, 0, -46, -46, -46, 0, -46, -46, -46, 0, 0, 0, 0, 0, 0, 0, 0, 0, -46, 0, 0, 0, -46, 0, 0, 0, 0, 0, 0, -46,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -73, 0, 0, 0, 0, 0, 0, 0,
         // State 108
-        0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -72, 0, 0, 0, 0, 0, 0, 0,
         // State 109
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 110
-        0, 0, 0, 0, 0, 0, 114, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 111
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 111
+        0, 0, 0, 0, 0, 0, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 112
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 113
-        0, 0, 0, 0, 0, 0, -55, 0, 0, -55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 114
-        0, 0, 0, 0, 0, 0, 121, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 115
-        0, 0, 0, 0, 0, 0, -31, 0, 0, 122, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 116
-        0, 0, 0, 0, 0, 0, -40, 0, 0, -40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 117
-        0, 0, 0, 0, 0, 0, -41, 0, 0, -41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 118
-        0, 0, 0, 0, 0, 0, -39, 0, 0, -39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 119
-        0, 0, 0, 0, 0, 0, -32, 0, 0, 123, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 120
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 114
+        0, 0, 0, 0, 0, 0, -55, 0, 0, -55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 115
+        0, 0, 0, 0, 0, 0, 122, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 116
+        0, 0, 0, 0, 0, 0, -31, 0, 0, 123, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 117
+        0, 0, 0, 0, 0, 0, -40, 0, 0, -40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 118
+        0, 0, 0, 0, 0, 0, -41, 0, 0, -41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 119
+        0, 0, 0, 0, 0, 0, -39, 0, 0, -39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 120
+        0, 0, 0, 0, 0, 0, -32, 0, 0, 124, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 121
-        0, 0, -4, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 122
+        0, 0, -4, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 123
         0, 0, -5, -5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -5, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ];
     fn __action(state: i8, integer: usize) -> i8 {
@@ -6659,7 +6766,7 @@ mod __parse__Statement {
         // State 17
         0,
         // State 18
-        -64,
+        0,
         // State 19
         0,
         // State 20
@@ -6669,9 +6776,9 @@ mod __parse__Statement {
         // State 22
         0,
         // State 23
-        0,
+        -64,
         // State 24
-        -62,
+        0,
         // State 25
         0,
         // State 26
@@ -6679,7 +6786,7 @@ mod __parse__Statement {
         // State 27
         0,
         // State 28
-        0,
+        -62,
         // State 29
         0,
         // State 30
@@ -6715,141 +6822,141 @@ mod __parse__Statement {
         // State 45
         -57,
         // State 46
-        0,
+        -45,
         // State 47
         0,
         // State 48
         0,
         // State 49
-        0,
+        -60,
         // State 50
         0,
         // State 51
-        0,
+        -48,
         // State 52
         0,
         // State 53
-        0,
+        -28,
         // State 54
-        -75,
+        0,
         // State 55
-        0,
+        -49,
         // State 56
-        0,
+        -56,
         // State 57
-        0,
+        -47,
         // State 58
         0,
         // State 59
-        0,
+        -71,
         // State 60
-        -35,
+        0,
         // State 61
         0,
         // State 62
         0,
         // State 63
-        0,
+        -75,
         // State 64
         0,
         // State 65
-        -43,
-        // State 66
-        -45,
-        // State 67
-        -65,
-        // State 68
         0,
-        // State 69
-        -60,
-        // State 70
-        -48,
-        // State 71
+        // State 66
+        0,
+        // State 67
+        0,
+        // State 68
         -50,
+        // State 69
+        0,
+        // State 70
+        0,
+        // State 71
+        -27,
         // State 72
-        -28,
+        -26,
         // State 73
-        -76,
+        0,
         // State 74
-        -49,
+        -35,
         // State 75
-        -29,
+        -59,
         // State 76
-        -56,
+        -58,
         // State 77
-        -47,
+        -46,
         // State 78
-        -71,
+        0,
         // State 79
         0,
         // State 80
-        -36,
+        0,
         // State 81
-        0,
+        -43,
         // State 82
-        0,
+        -65,
         // State 83
-        -42,
+        0,
         // State 84
-        0,
+        -76,
         // State 85
-        0,
+        -29,
         // State 86
         0,
         // State 87
-        0,
+        -36,
         // State 88
-        -30,
+        0,
         // State 89
         0,
         // State 90
-        0,
+        -42,
         // State 91
         0,
         // State 92
         0,
         // State 93
-        -77,
+        0,
         // State 94
         0,
         // State 95
-        -66,
+        -30,
         // State 96
         0,
         // State 97
-        -63,
+        0,
         // State 98
         0,
         // State 99
-        0,
+        -77,
         // State 100
         0,
         // State 101
-        -27,
+        -66,
         // State 102
-        -26,
+        0,
         // State 103
-        -73,
+        -63,
         // State 104
-        -72,
+        0,
         // State 105
-        -59,
+        0,
         // State 106
-        -58,
+        0,
         // State 107
-        -46,
+        -73,
         // State 108
-        0,
+        -72,
         // State 109
-        -44,
+        0,
         // State 110
-        0,
+        -44,
         // State 111
-        -78,
-        // State 112
-        -61,
-        // State 113
         0,
+        // State 112
+        -78,
+        // State 113
+        -61,
         // State 114
         0,
         // State 115
@@ -6863,101 +6970,104 @@ mod __parse__Statement {
         // State 119
         0,
         // State 120
-        -74,
-        // State 121
         0,
+        // State 121
+        -74,
         // State 122
+        0,
+        // State 123
         0,
     ];
     fn __goto(state: i8, nt: usize) -> i8 {
         match nt {
             2 => 36,
-            5 => 19,
-            8 => 17,
+            5 => 24,
+            8 => 22,
             11 => 8,
-            14 => 21,
-            15 => 66,
-            16 => 67,
-            17 => 114,
-            18 => 63,
+            14 => 26,
+            15 => 46,
+            16 => 82,
+            17 => 115,
+            18 => 79,
             19 => match state {
-                16 => 79,
-                34 => 112,
-                _ => 18,
+                21 => 86,
+                34 => 113,
+                _ => 23,
             },
-            20 => 46,
+            20 => 47,
             21 => match state {
-                36 => 119,
-                _ => 115,
+                36 => 120,
+                _ => 116,
             },
             22 => 37,
             23 => match state {
-                22 => 91,
-                23 => 93,
-                29 => 103,
-                _ => 68,
+                2 | 8 => 48,
+                9 => 67,
+                27 => 99,
+                31 => 107,
+                _ => 83,
             },
             24 => match state {
-                30 => 105,
-                31 => 106,
-                _ => 69,
+                15 => 75,
+                16 => 76,
+                _ => 49,
             },
             25 => match state {
-                19 => 82,
-                _ => 64,
+                24 => 89,
+                _ => 80,
             },
-            26 => 47,
-            27 => 85,
+            26 => 50,
+            27 => 92,
             28 => match state {
-                32 => 110,
-                35..=36 => 116,
-                _ => 70,
+                32 => 111,
+                35..=36 => 117,
+                _ => 51,
             },
             29 => match state {
-                13 | 19 => 20,
+                18 | 24 => 25,
                 1 => 44,
-                2 | 8 => 48,
-                3 => 51,
-                4 => 52,
-                5 => 53,
-                6 => 54,
-                7 => 55,
-                9 => 58,
-                10 | 16 | 34 => 60,
-                11 => 61,
-                12 => 62,
-                17 => 80,
-                26 => 98,
-                _ => 71,
+                2 | 8 => 52,
+                3 => 60,
+                4 => 61,
+                5 => 62,
+                6 => 63,
+                7 => 64,
+                10 => 69,
+                13 => 73,
+                14 | 21 | 34 => 74,
+                17 => 78,
+                22 => 87,
+                30 => 104,
+                _ => 68,
             },
             30 => match state {
-                27 => 101,
-                28 => 102,
-                _ => 72,
+                11 => 71,
+                12 => 72,
+                _ => 53,
             },
-            31 => 95,
-            32 => 24,
+            31 => 101,
+            32 => 28,
             33 => match state {
-                25 => 97,
-                33 => 111,
-                _ => 73,
+                29 => 103,
+                33 => 112,
+                _ => 84,
             },
             34 => match state {
-                14 => 65,
+                19 => 81,
                 _ => 38,
             },
             35 => match state {
-                8 => 56,
-                _ => 49,
+                8 => 65,
+                _ => 54,
             },
             36 => 39,
             37 => match state {
-                35..=36 => 117,
-                _ => 74,
+                35..=36 => 118,
+                _ => 55,
             },
             38 => match state {
-                21 => 88,
-                _ => 75,
+                26 => 95,
+                _ => 85,
             },
             39 => 40,
             _ => 0,
@@ -7593,13 +7703,13 @@ mod __parse__Statement {
             }
             66 => {
                 __state_machine::SimulatedReduce::Reduce {
-                    states_to_pop: 1,
+                    states_to_pop: 3,
                     nonterminal_produced: 35,
                 }
             }
             67 => {
                 __state_machine::SimulatedReduce::Reduce {
-                    states_to_pop: 3,
+                    states_to_pop: 1,
                     nonterminal_produced: 35,
                 }
             }
@@ -8020,7 +8130,7 @@ mod __parse__Statement {
             }
             81 => {
                 // __Statement = Statement => ActionFn(0);
-                let __sym0 = __pop_Variant21(__symbols);
+                let __sym0 = __pop_Variant25(__symbols);
                 let __start = __sym0.0;
                 let __end = __sym0.2;
                 let __nt = super::__action0::<>(input, __sym0);
@@ -8045,14 +8155,14 @@ mod __parse__Statement {
     fn __symbol_type_mismatch() -> ! {
         panic!("symbol type mismatch")
     }
-    fn __pop_Variant15<
+    fn __pop_Variant7<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Option<Vec<String>>, usize)
+    ) -> (usize, (predicate::Expression, Option<String>), usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -8060,21 +8170,43 @@ mod __parse__Statement {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Option<predicate::Predicate>, usize)
+    ) -> (usize, Option<Vec<(predicate::Expression, Option<String>)>>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant18(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant16<
+    fn __pop_Variant21<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Option<Vec<String>>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant21(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant22<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Option<predicate::Predicate>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant22(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant19<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, Spec, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant19(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -8100,36 +8232,36 @@ mod __parse__Statement {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant13<
+    fn __pop_Variant16<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Vec<(predicate::Expression, Option<String>)>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant15<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, Vec<String>, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant13(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant11<
+    fn __pop_Variant13<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, Vec<Value>, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant10<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<predicate::Term>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant13(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -8137,10 +8269,32 @@ mod __parse__Statement {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<statement::FieldDefinition>, usize)
+    ) -> (usize, Vec<predicate::Term>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant12(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant14<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Vec<statement::FieldDefinition>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant8<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, alloc::vec::Vec<(predicate::Expression, Option<String>)>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -8166,14 +8320,14 @@ mod __parse__Statement {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant8<
+    fn __pop_Variant10<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, alloc::vec::Vec<predicate::Term>, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -8188,14 +8342,36 @@ mod __parse__Statement {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant17<
+    fn __pop_Variant20<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, i32, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant17(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant11<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Expression, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant23<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Predicate, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant23(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -8203,43 +8379,21 @@ mod __parse__Statement {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Expression, usize)
+    ) -> (usize, predicate::Term, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant9(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant19<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Predicate, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant19(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant7<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Term, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant14<
+    fn __pop_Variant17<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::CreateCommand, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant17(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -8254,36 +8408,36 @@ mod __parse__Statement {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant20<
+    fn __pop_Variant24<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::QueryData, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant24(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant21<
+    fn __pop_Variant25<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::Statement, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant21(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant25(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant22<
+    fn __pop_Variant26<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::UpdateCommand, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant22(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant26(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -8583,11 +8737,11 @@ mod __parse__Statement {
         // (<SelectField> COMMA) = SelectField, COMMA => ActionFn(59);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant5(__symbols);
+        let __sym0 = __pop_Variant7(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action59::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant5(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
         (2, 9)
     }
     fn __reduce16<
@@ -8603,7 +8757,7 @@ mod __parse__Statement {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action57::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (0, 10)
     }
     fn __reduce17<
@@ -8616,11 +8770,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // (<SelectField> COMMA)* = (<SelectField> COMMA)+ => ActionFn(58);
-        let __sym0 = __pop_Variant6(__symbols);
+        let __sym0 = __pop_Variant8(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action58::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (1, 10)
     }
     fn __reduce18<
@@ -8635,11 +8789,11 @@ mod __parse__Statement {
         // (<SelectField> COMMA)+ = SelectField, COMMA => ActionFn(91);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant5(__symbols);
+        let __sym0 = __pop_Variant7(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action91::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (2, 11)
     }
     fn __reduce19<
@@ -8654,12 +8808,12 @@ mod __parse__Statement {
         // (<SelectField> COMMA)+ = (<SelectField> COMMA)+, SelectField, COMMA => ActionFn(92);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant5(__symbols);
-        let __sym0 = __pop_Variant6(__symbols);
+        let __sym1 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant8(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action92::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (3, 11)
     }
     fn __reduce20<
@@ -8674,11 +8828,11 @@ mod __parse__Statement {
         // (<Term> AND) = Term, AND => ActionFn(68);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action68::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (2, 12)
     }
     fn __reduce21<
@@ -8694,7 +8848,7 @@ mod __parse__Statement {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action66::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (0, 13)
     }
     fn __reduce22<
@@ -8707,11 +8861,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // (<Term> AND)* = (<Term> AND)+ => ActionFn(67);
-        let __sym0 = __pop_Variant8(__symbols);
+        let __sym0 = __pop_Variant10(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action67::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (1, 13)
     }
     fn __reduce23<
@@ -8726,11 +8880,11 @@ mod __parse__Statement {
         // (<Term> AND)+ = Term, AND => ActionFn(95);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action95::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (2, 14)
     }
     fn __reduce24<
@@ -8745,12 +8899,12 @@ mod __parse__Statement {
         // (<Term> AND)+ = (<Term> AND)+, Term, AND => ActionFn(96);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant7(__symbols);
-        let __sym0 = __pop_Variant8(__symbols);
+        let __sym1 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant10(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action96::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (3, 14)
     }
     fn __reduce25<
@@ -8764,13 +8918,13 @@ mod __parse__Statement {
     {
         // AddExpr = AddExpr, PLUS, MulExpr => ActionFn(32);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action32::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 15)
     }
     fn __reduce26<
@@ -8784,13 +8938,13 @@ mod __parse__Statement {
     {
         // AddExpr = AddExpr, MINUS, MulExpr => ActionFn(33);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action33::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 15)
     }
     fn __reduce27<
@@ -8803,11 +8957,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // AddExpr = MulExpr => ActionFn(34);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action34::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 15)
     }
     fn __reduce28<
@@ -8820,11 +8974,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // And<Term> = Term => ActionFn(97);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action97::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
         (1, 16)
     }
     fn __reduce29<
@@ -8838,12 +8992,12 @@ mod __parse__Statement {
     {
         // And<Term> = (<Term> AND)+, Term => ActionFn(98);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant7(__symbols);
-        let __sym0 = __pop_Variant8(__symbols);
+        let __sym1 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant10(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action98::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
         (2, 16)
     }
     fn __reduce30<
@@ -8860,7 +9014,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action81::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
         (1, 17)
     }
     fn __reduce31<
@@ -8879,7 +9033,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action82::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
         (2, 17)
     }
     fn __reduce32<
@@ -8896,7 +9050,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action85::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
         (1, 18)
     }
     fn __reduce33<
@@ -8915,7 +9069,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action86::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
         (2, 18)
     }
     fn __reduce34<
@@ -8932,7 +9086,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action89::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
         (1, 19)
     }
     fn __reduce35<
@@ -8951,7 +9105,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action90::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
         (2, 19)
     }
     fn __reduce36<
@@ -8964,11 +9118,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // Comma<SelectField> = SelectField => ActionFn(93);
-        let __sym0 = __pop_Variant5(__symbols);
+        let __sym0 = __pop_Variant7(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action93::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
         (1, 20)
     }
     fn __reduce37<
@@ -8982,12 +9136,12 @@ mod __parse__Statement {
     {
         // Comma<SelectField> = (<SelectField> COMMA)+, SelectField => ActionFn(94);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant5(__symbols);
-        let __sym0 = __pop_Variant6(__symbols);
+        let __sym1 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant8(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action94::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
         (2, 20)
     }
     fn __reduce38<
@@ -9017,7 +9171,7 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // Constant = I32Constant => ActionFn(44);
-        let __sym0 = __pop_Variant17(__symbols);
+        let __sym0 = __pop_Variant20(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action44::<>(input, __sym0);
@@ -9053,7 +9207,7 @@ mod __parse__Statement {
         // CreateCommand = CREATE, TABLE, IdToken, LPAREN, Comma<FieldDefinition>, RPAREN => ActionFn(22);
         assert!(__symbols.len() >= 6);
         let __sym5 = __pop_Variant0(__symbols);
-        let __sym4 = __pop_Variant12(__symbols);
+        let __sym4 = __pop_Variant14(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -9061,7 +9215,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym5.2;
         let __nt = super::__action22::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5);
-        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
         (6, 22)
     }
     fn __reduce42<
@@ -9075,7 +9229,7 @@ mod __parse__Statement {
     {
         // CreateCommand = CREATE, VIEW, IdToken, AS, Query => ActionFn(23);
         assert!(__symbols.len() >= 5);
-        let __sym4 = __pop_Variant20(__symbols);
+        let __sym4 = __pop_Variant24(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -9083,7 +9237,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym4.2;
         let __nt = super::__action23::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4);
-        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
         (5, 22)
     }
     fn __reduce43<
@@ -9108,7 +9262,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym7.2;
         let __nt = super::__action24::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5, __sym6, __sym7);
-        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
         (8, 22)
     }
     fn __reduce44<
@@ -9121,11 +9275,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // Expression = AddExpr => ActionFn(31);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action31::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 23)
     }
     fn __reduce45<
@@ -9140,12 +9294,12 @@ mod __parse__Statement {
         // Factor = LPAREN, Expression, RPAREN => ActionFn(38);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant9(__symbols);
+        let __sym1 = __pop_Variant11(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action38::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 24)
     }
     fn __reduce46<
@@ -9162,7 +9316,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action39::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce47<
@@ -9175,11 +9329,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // Factor = I32Constant => ActionFn(40);
-        let __sym0 = __pop_Variant17(__symbols);
+        let __sym0 = __pop_Variant20(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action40::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce48<
@@ -9196,7 +9350,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action41::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce49<
@@ -9213,7 +9367,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action42::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce50<
@@ -9227,7 +9381,7 @@ mod __parse__Statement {
     {
         // FieldDefinition = IdToken, FieldType => ActionFn(25);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant16(__symbols);
+        let __sym1 = __pop_Variant19(__symbols);
         let __sym0 = __pop_Variant5(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
@@ -9249,7 +9403,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action8::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
         (1, 26)
     }
     fn __reduce52<
@@ -9262,11 +9416,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // FieldList = Comma<SelectField> => ActionFn(9);
-        let __sym0 = __pop_Variant13(__symbols);
+        let __sym0 = __pop_Variant16(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action9::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
         (1, 26)
     }
     fn __reduce53<
@@ -9283,7 +9437,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action26::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
         (1, 27)
     }
     fn __reduce54<
@@ -9298,13 +9452,13 @@ mod __parse__Statement {
         // FieldType = VARCHAR, LPAREN, I32Constant, RPAREN => ActionFn(27);
         assert!(__symbols.len() >= 4);
         let __sym3 = __pop_Variant0(__symbols);
-        let __sym2 = __pop_Variant17(__symbols);
+        let __sym2 = __pop_Variant20(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym3.2;
         let __nt = super::__action27::<>(input, __sym0, __sym1, __sym2, __sym3);
-        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
         (4, 27)
     }
     fn __reduce55<
@@ -9321,7 +9475,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action46::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant20(__nt), __end));
         (1, 28)
     }
     fn __reduce56<
@@ -9352,13 +9506,13 @@ mod __parse__Statement {
     {
         // MulExpr = MulExpr, STAR, Factor => ActionFn(35);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action35::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 30)
     }
     fn __reduce58<
@@ -9372,13 +9526,13 @@ mod __parse__Statement {
     {
         // MulExpr = MulExpr, SLASH, Factor => ActionFn(36);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action36::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 30)
     }
     fn __reduce59<
@@ -9391,11 +9545,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // MulExpr = Factor => ActionFn(37);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action37::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 30)
     }
     fn __reduce60<
@@ -9409,13 +9563,13 @@ mod __parse__Statement {
     {
         // OptOrderBy = ORDER, BY, Comma<IdToken> => ActionFn(14);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant13(__symbols);
+        let __sym2 = __pop_Variant15(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action14::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
         (3, 31)
     }
     fn __reduce61<
@@ -9431,7 +9585,7 @@ mod __parse__Statement {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action15::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
         (0, 31)
     }
     fn __reduce62<
@@ -9445,12 +9599,12 @@ mod __parse__Statement {
     {
         // OptPredicate = WHERE, Predicate => ActionFn(12);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant19(__symbols);
+        let __sym1 = __pop_Variant23(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action12::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
         (2, 32)
     }
     fn __reduce63<
@@ -9466,7 +9620,7 @@ mod __parse__Statement {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action13::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
         (0, 32)
     }
     fn __reduce64<
@@ -9479,11 +9633,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // Predicate = And<Term> => ActionFn(28);
-        let __sym0 = __pop_Variant10(__symbols);
+        let __sym0 = __pop_Variant12(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action28::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant23(__nt), __end));
         (1, 33)
     }
     fn __reduce65<
@@ -9497,16 +9651,16 @@ mod __parse__Statement {
     {
         // Query = SELECT, FieldList, FROM, Comma<IdToken>, OptPredicate, OptOrderBy => ActionFn(7);
         assert!(__symbols.len() >= 6);
-        let __sym5 = __pop_Variant15(__symbols);
-        let __sym4 = __pop_Variant18(__symbols);
-        let __sym3 = __pop_Variant13(__symbols);
+        let __sym5 = __pop_Variant21(__symbols);
+        let __sym4 = __pop_Variant22(__symbols);
+        let __sym3 = __pop_Variant15(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant15(__symbols);
+        let __sym1 = __pop_Variant18(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym5.2;
         let __nt = super::__action7::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5);
-        __symbols.push((__start, __Symbol::Variant20(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant24(__nt), __end));
         (6, 34)
     }
     fn __reduce66<
@@ -9518,13 +9672,16 @@ mod __parse__Statement {
         _: core::marker::PhantomData<(&'input ())>,
     ) -> (usize, usize)
     {
-        // SelectField = IdToken => ActionFn(10);
-        let __sym0 = __pop_Variant5(__symbols);
+        // SelectField = Expression, AS, IdToken => ActionFn(10);
+        assert!(__symbols.len() >= 3);
+        let __sym2 = __pop_Variant5(__symbols);
+        let __sym1 = __pop_Variant0(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
-        let __end = __sym0.2;
-        let __nt = super::__action10::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant5(__nt), __end));
-        (1, 35)
+        let __end = __sym2.2;
+        let __nt = super::__action10::<>(input, __sym0, __sym1, __sym2);
+        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        (3, 35)
     }
     fn __reduce67<
         'input,
@@ -9535,16 +9692,13 @@ mod __parse__Statement {
         _: core::marker::PhantomData<(&'input ())>,
     ) -> (usize, usize)
     {
-        // SelectField = IdToken, AS, IdToken => ActionFn(11);
-        assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant5(__symbols);
-        let __sym1 = __pop_Variant0(__symbols);
+        // SelectField = IdToken => ActionFn(11);
         let __sym0 = __pop_Variant5(__symbols);
         let __start = __sym0.0;
-        let __end = __sym2.2;
-        let __nt = super::__action11::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant5(__nt), __end));
-        (3, 35)
+        let __end = __sym0.2;
+        let __nt = super::__action11::<>(input, __sym0);
+        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        (1, 35)
     }
     fn __reduce68<
         'input,
@@ -9556,11 +9710,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // Statement = Query => ActionFn(5);
-        let __sym0 = __pop_Variant20(__symbols);
+        let __sym0 = __pop_Variant24(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action5::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant25(__nt), __end));
         (1, 36)
     }
     fn __reduce69<
@@ -9573,11 +9727,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // Statement = UpdateCommand => ActionFn(6);
-        let __sym0 = __pop_Variant22(__symbols);
+        let __sym0 = __pop_Variant26(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action6::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant25(__nt), __end));
         (1, 36)
     }
     fn __reduce70<
@@ -9610,11 +9764,11 @@ mod __parse__Statement {
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action29::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (3, 38)
     }
     fn __reduce72<
@@ -9628,13 +9782,13 @@ mod __parse__Statement {
     {
         // Term = Expression, EQ, Expression => ActionFn(30);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action30::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (3, 38)
     }
     fn __reduce73<
@@ -9649,11 +9803,11 @@ mod __parse__Statement {
         // UpdateCommand = INSERT, INTO, IdToken, LPAREN, Comma<IdToken>, RPAREN, VALUES, LPAREN, Comma<Constant>, RPAREN => ActionFn(16);
         assert!(__symbols.len() >= 10);
         let __sym9 = __pop_Variant0(__symbols);
-        let __sym8 = __pop_Variant11(__symbols);
+        let __sym8 = __pop_Variant13(__symbols);
         let __sym7 = __pop_Variant0(__symbols);
         let __sym6 = __pop_Variant0(__symbols);
         let __sym5 = __pop_Variant0(__symbols);
-        let __sym4 = __pop_Variant13(__symbols);
+        let __sym4 = __pop_Variant15(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -9661,7 +9815,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym9.2;
         let __nt = super::__action16::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5, __sym6, __sym7, __sym8, __sym9);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (10, 39)
     }
     fn __reduce74<
@@ -9681,7 +9835,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action17::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (3, 39)
     }
     fn __reduce75<
@@ -9695,7 +9849,7 @@ mod __parse__Statement {
     {
         // UpdateCommand = DELETE, FROM, IdToken, WHERE, Predicate => ActionFn(18);
         assert!(__symbols.len() >= 5);
-        let __sym4 = __pop_Variant19(__symbols);
+        let __sym4 = __pop_Variant23(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -9703,7 +9857,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym4.2;
         let __nt = super::__action18::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (5, 39)
     }
     fn __reduce76<
@@ -9717,7 +9871,7 @@ mod __parse__Statement {
     {
         // UpdateCommand = MODIFY, IdToken, SET, IdToken, EQ, Expression => ActionFn(19);
         assert!(__symbols.len() >= 6);
-        let __sym5 = __pop_Variant9(__symbols);
+        let __sym5 = __pop_Variant11(__symbols);
         let __sym4 = __pop_Variant0(__symbols);
         let __sym3 = __pop_Variant5(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
@@ -9726,7 +9880,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym5.2;
         let __nt = super::__action19::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (6, 39)
     }
     fn __reduce77<
@@ -9740,9 +9894,9 @@ mod __parse__Statement {
     {
         // UpdateCommand = MODIFY, IdToken, SET, IdToken, EQ, Expression, WHERE, Predicate => ActionFn(20);
         assert!(__symbols.len() >= 8);
-        let __sym7 = __pop_Variant19(__symbols);
+        let __sym7 = __pop_Variant23(__symbols);
         let __sym6 = __pop_Variant0(__symbols);
-        let __sym5 = __pop_Variant9(__symbols);
+        let __sym5 = __pop_Variant11(__symbols);
         let __sym4 = __pop_Variant0(__symbols);
         let __sym3 = __pop_Variant5(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
@@ -9751,7 +9905,7 @@ mod __parse__Statement {
         let __start = __sym0.0;
         let __end = __sym7.2;
         let __nt = super::__action20::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5, __sym6, __sym7);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (8, 39)
     }
     fn __reduce78<
@@ -9764,11 +9918,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // UpdateCommand = CreateCommand => ActionFn(21);
-        let __sym0 = __pop_Variant14(__symbols);
+        let __sym0 = __pop_Variant17(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action21::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (1, 39)
     }
     fn __reduce79<
@@ -9781,11 +9935,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // __Predicate = Predicate => ActionFn(3);
-        let __sym0 = __pop_Variant19(__symbols);
+        let __sym0 = __pop_Variant23(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action3::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant23(__nt), __end));
         (1, 40)
     }
     fn __reduce80<
@@ -9798,11 +9952,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // __Query = Query => ActionFn(1);
-        let __sym0 = __pop_Variant20(__symbols);
+        let __sym0 = __pop_Variant24(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action1::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant20(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant24(__nt), __end));
         (1, 41)
     }
     fn __reduce82<
@@ -9815,11 +9969,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // __Term = Term => ActionFn(4);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action4::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (1, 43)
     }
     fn __reduce83<
@@ -9832,11 +9986,11 @@ mod __parse__Statement {
     ) -> (usize, usize)
     {
         // __UpdateCommand = UpdateCommand => ActionFn(2);
-        let __sym0 = __pop_Variant22(__symbols);
+        let __sym0 = __pop_Variant26(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action2::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (1, 44)
     }
 }
@@ -9868,22 +10022,26 @@ mod __parse__Term {
         Variant4(alloc::vec::Vec<statement::FieldDefinition>),
         Variant5(String),
         Variant6(alloc::vec::Vec<String>),
-        Variant7(predicate::Term),
-        Variant8(alloc::vec::Vec<predicate::Term>),
-        Variant9(predicate::Expression),
-        Variant10(Vec<predicate::Term>),
-        Variant11(Vec<Value>),
-        Variant12(Vec<statement::FieldDefinition>),
-        Variant13(Vec<String>),
-        Variant14(statement::CreateCommand),
-        Variant15(Option<Vec<String>>),
-        Variant16(Spec),
-        Variant17(i32),
-        Variant18(Option<predicate::Predicate>),
-        Variant19(predicate::Predicate),
-        Variant20(statement::QueryData),
-        Variant21(statement::Statement),
-        Variant22(statement::UpdateCommand),
+        Variant7((predicate::Expression, Option<String>)),
+        Variant8(alloc::vec::Vec<(predicate::Expression, Option<String>)>),
+        Variant9(predicate::Term),
+        Variant10(alloc::vec::Vec<predicate::Term>),
+        Variant11(predicate::Expression),
+        Variant12(Vec<predicate::Term>),
+        Variant13(Vec<Value>),
+        Variant14(Vec<statement::FieldDefinition>),
+        Variant15(Vec<String>),
+        Variant16(Vec<(predicate::Expression, Option<String>)>),
+        Variant17(statement::CreateCommand),
+        Variant18(Option<Vec<(predicate::Expression, Option<String>)>>),
+        Variant19(Spec),
+        Variant20(i32),
+        Variant21(Option<Vec<String>>),
+        Variant22(Option<predicate::Predicate>),
+        Variant23(predicate::Predicate),
+        Variant24(statement::QueryData),
+        Variant25(statement::Statement),
+        Variant26(statement::UpdateCommand),
     }
     const __ACTION: &[i8] = &[
         // State 0
@@ -10659,13 +10817,13 @@ mod __parse__Term {
             }
             66 => {
                 __state_machine::SimulatedReduce::Reduce {
-                    states_to_pop: 1,
+                    states_to_pop: 3,
                     nonterminal_produced: 35,
                 }
             }
             67 => {
                 __state_machine::SimulatedReduce::Reduce {
-                    states_to_pop: 3,
+                    states_to_pop: 1,
                     nonterminal_produced: 35,
                 }
             }
@@ -11089,7 +11247,7 @@ mod __parse__Term {
             }
             82 => {
                 // __Term = Term => ActionFn(4);
-                let __sym0 = __pop_Variant7(__symbols);
+                let __sym0 = __pop_Variant9(__symbols);
                 let __start = __sym0.0;
                 let __end = __sym0.2;
                 let __nt = super::__action4::<>(input, __sym0);
@@ -11111,14 +11269,14 @@ mod __parse__Term {
     fn __symbol_type_mismatch() -> ! {
         panic!("symbol type mismatch")
     }
-    fn __pop_Variant15<
+    fn __pop_Variant7<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Option<Vec<String>>, usize)
+    ) -> (usize, (predicate::Expression, Option<String>), usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -11126,21 +11284,43 @@ mod __parse__Term {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Option<predicate::Predicate>, usize)
+    ) -> (usize, Option<Vec<(predicate::Expression, Option<String>)>>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant18(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant16<
+    fn __pop_Variant21<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Option<Vec<String>>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant21(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant22<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Option<predicate::Predicate>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant22(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant19<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, Spec, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant19(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -11166,36 +11346,36 @@ mod __parse__Term {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant13<
+    fn __pop_Variant16<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Vec<(predicate::Expression, Option<String>)>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant15<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, Vec<String>, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant13(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant11<
+    fn __pop_Variant13<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, Vec<Value>, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant10<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<predicate::Term>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant13(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -11203,10 +11383,32 @@ mod __parse__Term {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<statement::FieldDefinition>, usize)
+    ) -> (usize, Vec<predicate::Term>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant12(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant14<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Vec<statement::FieldDefinition>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant8<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, alloc::vec::Vec<(predicate::Expression, Option<String>)>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -11232,14 +11434,14 @@ mod __parse__Term {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant8<
+    fn __pop_Variant10<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, alloc::vec::Vec<predicate::Term>, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -11254,14 +11456,36 @@ mod __parse__Term {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant17<
+    fn __pop_Variant20<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, i32, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant17(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant11<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Expression, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant23<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Predicate, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant23(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -11269,43 +11493,21 @@ mod __parse__Term {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Expression, usize)
+    ) -> (usize, predicate::Term, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant9(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant19<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Predicate, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant19(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant7<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Term, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant14<
+    fn __pop_Variant17<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::CreateCommand, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant17(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -11320,36 +11522,36 @@ mod __parse__Term {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant20<
+    fn __pop_Variant24<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::QueryData, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant24(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant21<
+    fn __pop_Variant25<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::Statement, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant21(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant25(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant22<
+    fn __pop_Variant26<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::UpdateCommand, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant22(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant26(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -11649,11 +11851,11 @@ mod __parse__Term {
         // (<SelectField> COMMA) = SelectField, COMMA => ActionFn(59);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant5(__symbols);
+        let __sym0 = __pop_Variant7(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action59::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant5(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
         (2, 9)
     }
     fn __reduce16<
@@ -11669,7 +11871,7 @@ mod __parse__Term {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action57::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (0, 10)
     }
     fn __reduce17<
@@ -11682,11 +11884,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // (<SelectField> COMMA)* = (<SelectField> COMMA)+ => ActionFn(58);
-        let __sym0 = __pop_Variant6(__symbols);
+        let __sym0 = __pop_Variant8(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action58::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (1, 10)
     }
     fn __reduce18<
@@ -11701,11 +11903,11 @@ mod __parse__Term {
         // (<SelectField> COMMA)+ = SelectField, COMMA => ActionFn(91);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant5(__symbols);
+        let __sym0 = __pop_Variant7(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action91::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (2, 11)
     }
     fn __reduce19<
@@ -11720,12 +11922,12 @@ mod __parse__Term {
         // (<SelectField> COMMA)+ = (<SelectField> COMMA)+, SelectField, COMMA => ActionFn(92);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant5(__symbols);
-        let __sym0 = __pop_Variant6(__symbols);
+        let __sym1 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant8(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action92::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (3, 11)
     }
     fn __reduce20<
@@ -11740,11 +11942,11 @@ mod __parse__Term {
         // (<Term> AND) = Term, AND => ActionFn(68);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action68::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (2, 12)
     }
     fn __reduce21<
@@ -11760,7 +11962,7 @@ mod __parse__Term {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action66::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (0, 13)
     }
     fn __reduce22<
@@ -11773,11 +11975,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // (<Term> AND)* = (<Term> AND)+ => ActionFn(67);
-        let __sym0 = __pop_Variant8(__symbols);
+        let __sym0 = __pop_Variant10(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action67::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (1, 13)
     }
     fn __reduce23<
@@ -11792,11 +11994,11 @@ mod __parse__Term {
         // (<Term> AND)+ = Term, AND => ActionFn(95);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action95::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (2, 14)
     }
     fn __reduce24<
@@ -11811,12 +12013,12 @@ mod __parse__Term {
         // (<Term> AND)+ = (<Term> AND)+, Term, AND => ActionFn(96);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant7(__symbols);
-        let __sym0 = __pop_Variant8(__symbols);
+        let __sym1 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant10(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action96::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (3, 14)
     }
     fn __reduce25<
@@ -11830,13 +12032,13 @@ mod __parse__Term {
     {
         // AddExpr = AddExpr, PLUS, MulExpr => ActionFn(32);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action32::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 15)
     }
     fn __reduce26<
@@ -11850,13 +12052,13 @@ mod __parse__Term {
     {
         // AddExpr = AddExpr, MINUS, MulExpr => ActionFn(33);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action33::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 15)
     }
     fn __reduce27<
@@ -11869,11 +12071,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // AddExpr = MulExpr => ActionFn(34);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action34::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 15)
     }
     fn __reduce28<
@@ -11886,11 +12088,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // And<Term> = Term => ActionFn(97);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action97::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
         (1, 16)
     }
     fn __reduce29<
@@ -11904,12 +12106,12 @@ mod __parse__Term {
     {
         // And<Term> = (<Term> AND)+, Term => ActionFn(98);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant7(__symbols);
-        let __sym0 = __pop_Variant8(__symbols);
+        let __sym1 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant10(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action98::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
         (2, 16)
     }
     fn __reduce30<
@@ -11926,7 +12128,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action81::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
         (1, 17)
     }
     fn __reduce31<
@@ -11945,7 +12147,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action82::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
         (2, 17)
     }
     fn __reduce32<
@@ -11962,7 +12164,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action85::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
         (1, 18)
     }
     fn __reduce33<
@@ -11981,7 +12183,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action86::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
         (2, 18)
     }
     fn __reduce34<
@@ -11998,7 +12200,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action89::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
         (1, 19)
     }
     fn __reduce35<
@@ -12017,7 +12219,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action90::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
         (2, 19)
     }
     fn __reduce36<
@@ -12030,11 +12232,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // Comma<SelectField> = SelectField => ActionFn(93);
-        let __sym0 = __pop_Variant5(__symbols);
+        let __sym0 = __pop_Variant7(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action93::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
         (1, 20)
     }
     fn __reduce37<
@@ -12048,12 +12250,12 @@ mod __parse__Term {
     {
         // Comma<SelectField> = (<SelectField> COMMA)+, SelectField => ActionFn(94);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant5(__symbols);
-        let __sym0 = __pop_Variant6(__symbols);
+        let __sym1 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant8(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action94::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
         (2, 20)
     }
     fn __reduce38<
@@ -12083,7 +12285,7 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // Constant = I32Constant => ActionFn(44);
-        let __sym0 = __pop_Variant17(__symbols);
+        let __sym0 = __pop_Variant20(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action44::<>(input, __sym0);
@@ -12119,7 +12321,7 @@ mod __parse__Term {
         // CreateCommand = CREATE, TABLE, IdToken, LPAREN, Comma<FieldDefinition>, RPAREN => ActionFn(22);
         assert!(__symbols.len() >= 6);
         let __sym5 = __pop_Variant0(__symbols);
-        let __sym4 = __pop_Variant12(__symbols);
+        let __sym4 = __pop_Variant14(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -12127,7 +12329,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym5.2;
         let __nt = super::__action22::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5);
-        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
         (6, 22)
     }
     fn __reduce42<
@@ -12141,7 +12343,7 @@ mod __parse__Term {
     {
         // CreateCommand = CREATE, VIEW, IdToken, AS, Query => ActionFn(23);
         assert!(__symbols.len() >= 5);
-        let __sym4 = __pop_Variant20(__symbols);
+        let __sym4 = __pop_Variant24(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -12149,7 +12351,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym4.2;
         let __nt = super::__action23::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4);
-        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
         (5, 22)
     }
     fn __reduce43<
@@ -12174,7 +12376,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym7.2;
         let __nt = super::__action24::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5, __sym6, __sym7);
-        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
         (8, 22)
     }
     fn __reduce44<
@@ -12187,11 +12389,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // Expression = AddExpr => ActionFn(31);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action31::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 23)
     }
     fn __reduce45<
@@ -12206,12 +12408,12 @@ mod __parse__Term {
         // Factor = LPAREN, Expression, RPAREN => ActionFn(38);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant9(__symbols);
+        let __sym1 = __pop_Variant11(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action38::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 24)
     }
     fn __reduce46<
@@ -12228,7 +12430,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action39::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce47<
@@ -12241,11 +12443,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // Factor = I32Constant => ActionFn(40);
-        let __sym0 = __pop_Variant17(__symbols);
+        let __sym0 = __pop_Variant20(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action40::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce48<
@@ -12262,7 +12464,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action41::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce49<
@@ -12279,7 +12481,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action42::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce50<
@@ -12293,7 +12495,7 @@ mod __parse__Term {
     {
         // FieldDefinition = IdToken, FieldType => ActionFn(25);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant16(__symbols);
+        let __sym1 = __pop_Variant19(__symbols);
         let __sym0 = __pop_Variant5(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
@@ -12315,7 +12517,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action8::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
         (1, 26)
     }
     fn __reduce52<
@@ -12328,11 +12530,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // FieldList = Comma<SelectField> => ActionFn(9);
-        let __sym0 = __pop_Variant13(__symbols);
+        let __sym0 = __pop_Variant16(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action9::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
         (1, 26)
     }
     fn __reduce53<
@@ -12349,7 +12551,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action26::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
         (1, 27)
     }
     fn __reduce54<
@@ -12364,13 +12566,13 @@ mod __parse__Term {
         // FieldType = VARCHAR, LPAREN, I32Constant, RPAREN => ActionFn(27);
         assert!(__symbols.len() >= 4);
         let __sym3 = __pop_Variant0(__symbols);
-        let __sym2 = __pop_Variant17(__symbols);
+        let __sym2 = __pop_Variant20(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym3.2;
         let __nt = super::__action27::<>(input, __sym0, __sym1, __sym2, __sym3);
-        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
         (4, 27)
     }
     fn __reduce55<
@@ -12387,7 +12589,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action46::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant20(__nt), __end));
         (1, 28)
     }
     fn __reduce56<
@@ -12418,13 +12620,13 @@ mod __parse__Term {
     {
         // MulExpr = MulExpr, STAR, Factor => ActionFn(35);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action35::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 30)
     }
     fn __reduce58<
@@ -12438,13 +12640,13 @@ mod __parse__Term {
     {
         // MulExpr = MulExpr, SLASH, Factor => ActionFn(36);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action36::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 30)
     }
     fn __reduce59<
@@ -12457,11 +12659,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // MulExpr = Factor => ActionFn(37);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action37::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 30)
     }
     fn __reduce60<
@@ -12475,13 +12677,13 @@ mod __parse__Term {
     {
         // OptOrderBy = ORDER, BY, Comma<IdToken> => ActionFn(14);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant13(__symbols);
+        let __sym2 = __pop_Variant15(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action14::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
         (3, 31)
     }
     fn __reduce61<
@@ -12497,7 +12699,7 @@ mod __parse__Term {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action15::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
         (0, 31)
     }
     fn __reduce62<
@@ -12511,12 +12713,12 @@ mod __parse__Term {
     {
         // OptPredicate = WHERE, Predicate => ActionFn(12);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant19(__symbols);
+        let __sym1 = __pop_Variant23(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action12::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
         (2, 32)
     }
     fn __reduce63<
@@ -12532,7 +12734,7 @@ mod __parse__Term {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action13::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
         (0, 32)
     }
     fn __reduce64<
@@ -12545,11 +12747,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // Predicate = And<Term> => ActionFn(28);
-        let __sym0 = __pop_Variant10(__symbols);
+        let __sym0 = __pop_Variant12(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action28::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant23(__nt), __end));
         (1, 33)
     }
     fn __reduce65<
@@ -12563,16 +12765,16 @@ mod __parse__Term {
     {
         // Query = SELECT, FieldList, FROM, Comma<IdToken>, OptPredicate, OptOrderBy => ActionFn(7);
         assert!(__symbols.len() >= 6);
-        let __sym5 = __pop_Variant15(__symbols);
-        let __sym4 = __pop_Variant18(__symbols);
-        let __sym3 = __pop_Variant13(__symbols);
+        let __sym5 = __pop_Variant21(__symbols);
+        let __sym4 = __pop_Variant22(__symbols);
+        let __sym3 = __pop_Variant15(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant15(__symbols);
+        let __sym1 = __pop_Variant18(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym5.2;
         let __nt = super::__action7::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5);
-        __symbols.push((__start, __Symbol::Variant20(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant24(__nt), __end));
         (6, 34)
     }
     fn __reduce66<
@@ -12584,13 +12786,16 @@ mod __parse__Term {
         _: core::marker::PhantomData<(&'input ())>,
     ) -> (usize, usize)
     {
-        // SelectField = IdToken => ActionFn(10);
-        let __sym0 = __pop_Variant5(__symbols);
+        // SelectField = Expression, AS, IdToken => ActionFn(10);
+        assert!(__symbols.len() >= 3);
+        let __sym2 = __pop_Variant5(__symbols);
+        let __sym1 = __pop_Variant0(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
-        let __end = __sym0.2;
-        let __nt = super::__action10::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant5(__nt), __end));
-        (1, 35)
+        let __end = __sym2.2;
+        let __nt = super::__action10::<>(input, __sym0, __sym1, __sym2);
+        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        (3, 35)
     }
     fn __reduce67<
         'input,
@@ -12601,16 +12806,13 @@ mod __parse__Term {
         _: core::marker::PhantomData<(&'input ())>,
     ) -> (usize, usize)
     {
-        // SelectField = IdToken, AS, IdToken => ActionFn(11);
-        assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant5(__symbols);
-        let __sym1 = __pop_Variant0(__symbols);
+        // SelectField = IdToken => ActionFn(11);
         let __sym0 = __pop_Variant5(__symbols);
         let __start = __sym0.0;
-        let __end = __sym2.2;
-        let __nt = super::__action11::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant5(__nt), __end));
-        (3, 35)
+        let __end = __sym0.2;
+        let __nt = super::__action11::<>(input, __sym0);
+        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        (1, 35)
     }
     fn __reduce68<
         'input,
@@ -12622,11 +12824,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // Statement = Query => ActionFn(5);
-        let __sym0 = __pop_Variant20(__symbols);
+        let __sym0 = __pop_Variant24(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action5::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant25(__nt), __end));
         (1, 36)
     }
     fn __reduce69<
@@ -12639,11 +12841,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // Statement = UpdateCommand => ActionFn(6);
-        let __sym0 = __pop_Variant22(__symbols);
+        let __sym0 = __pop_Variant26(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action6::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant25(__nt), __end));
         (1, 36)
     }
     fn __reduce70<
@@ -12676,11 +12878,11 @@ mod __parse__Term {
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action29::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (3, 38)
     }
     fn __reduce72<
@@ -12694,13 +12896,13 @@ mod __parse__Term {
     {
         // Term = Expression, EQ, Expression => ActionFn(30);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action30::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (3, 38)
     }
     fn __reduce73<
@@ -12715,11 +12917,11 @@ mod __parse__Term {
         // UpdateCommand = INSERT, INTO, IdToken, LPAREN, Comma<IdToken>, RPAREN, VALUES, LPAREN, Comma<Constant>, RPAREN => ActionFn(16);
         assert!(__symbols.len() >= 10);
         let __sym9 = __pop_Variant0(__symbols);
-        let __sym8 = __pop_Variant11(__symbols);
+        let __sym8 = __pop_Variant13(__symbols);
         let __sym7 = __pop_Variant0(__symbols);
         let __sym6 = __pop_Variant0(__symbols);
         let __sym5 = __pop_Variant0(__symbols);
-        let __sym4 = __pop_Variant13(__symbols);
+        let __sym4 = __pop_Variant15(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -12727,7 +12929,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym9.2;
         let __nt = super::__action16::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5, __sym6, __sym7, __sym8, __sym9);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (10, 39)
     }
     fn __reduce74<
@@ -12747,7 +12949,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action17::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (3, 39)
     }
     fn __reduce75<
@@ -12761,7 +12963,7 @@ mod __parse__Term {
     {
         // UpdateCommand = DELETE, FROM, IdToken, WHERE, Predicate => ActionFn(18);
         assert!(__symbols.len() >= 5);
-        let __sym4 = __pop_Variant19(__symbols);
+        let __sym4 = __pop_Variant23(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -12769,7 +12971,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym4.2;
         let __nt = super::__action18::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (5, 39)
     }
     fn __reduce76<
@@ -12783,7 +12985,7 @@ mod __parse__Term {
     {
         // UpdateCommand = MODIFY, IdToken, SET, IdToken, EQ, Expression => ActionFn(19);
         assert!(__symbols.len() >= 6);
-        let __sym5 = __pop_Variant9(__symbols);
+        let __sym5 = __pop_Variant11(__symbols);
         let __sym4 = __pop_Variant0(__symbols);
         let __sym3 = __pop_Variant5(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
@@ -12792,7 +12994,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym5.2;
         let __nt = super::__action19::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (6, 39)
     }
     fn __reduce77<
@@ -12806,9 +13008,9 @@ mod __parse__Term {
     {
         // UpdateCommand = MODIFY, IdToken, SET, IdToken, EQ, Expression, WHERE, Predicate => ActionFn(20);
         assert!(__symbols.len() >= 8);
-        let __sym7 = __pop_Variant19(__symbols);
+        let __sym7 = __pop_Variant23(__symbols);
         let __sym6 = __pop_Variant0(__symbols);
-        let __sym5 = __pop_Variant9(__symbols);
+        let __sym5 = __pop_Variant11(__symbols);
         let __sym4 = __pop_Variant0(__symbols);
         let __sym3 = __pop_Variant5(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
@@ -12817,7 +13019,7 @@ mod __parse__Term {
         let __start = __sym0.0;
         let __end = __sym7.2;
         let __nt = super::__action20::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5, __sym6, __sym7);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (8, 39)
     }
     fn __reduce78<
@@ -12830,11 +13032,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // UpdateCommand = CreateCommand => ActionFn(21);
-        let __sym0 = __pop_Variant14(__symbols);
+        let __sym0 = __pop_Variant17(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action21::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (1, 39)
     }
     fn __reduce79<
@@ -12847,11 +13049,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // __Predicate = Predicate => ActionFn(3);
-        let __sym0 = __pop_Variant19(__symbols);
+        let __sym0 = __pop_Variant23(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action3::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant23(__nt), __end));
         (1, 40)
     }
     fn __reduce80<
@@ -12864,11 +13066,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // __Query = Query => ActionFn(1);
-        let __sym0 = __pop_Variant20(__symbols);
+        let __sym0 = __pop_Variant24(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action1::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant20(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant24(__nt), __end));
         (1, 41)
     }
     fn __reduce81<
@@ -12881,11 +13083,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // __Statement = Statement => ActionFn(0);
-        let __sym0 = __pop_Variant21(__symbols);
+        let __sym0 = __pop_Variant25(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action0::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant25(__nt), __end));
         (1, 42)
     }
     fn __reduce83<
@@ -12898,11 +13100,11 @@ mod __parse__Term {
     ) -> (usize, usize)
     {
         // __UpdateCommand = UpdateCommand => ActionFn(2);
-        let __sym0 = __pop_Variant22(__symbols);
+        let __sym0 = __pop_Variant26(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action2::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (1, 44)
     }
 }
@@ -12934,22 +13136,26 @@ mod __parse__UpdateCommand {
         Variant4(alloc::vec::Vec<statement::FieldDefinition>),
         Variant5(String),
         Variant6(alloc::vec::Vec<String>),
-        Variant7(predicate::Term),
-        Variant8(alloc::vec::Vec<predicate::Term>),
-        Variant9(predicate::Expression),
-        Variant10(Vec<predicate::Term>),
-        Variant11(Vec<Value>),
-        Variant12(Vec<statement::FieldDefinition>),
-        Variant13(Vec<String>),
-        Variant14(statement::CreateCommand),
-        Variant15(Option<Vec<String>>),
-        Variant16(Spec),
-        Variant17(i32),
-        Variant18(Option<predicate::Predicate>),
-        Variant19(predicate::Predicate),
-        Variant20(statement::QueryData),
-        Variant21(statement::Statement),
-        Variant22(statement::UpdateCommand),
+        Variant7((predicate::Expression, Option<String>)),
+        Variant8(alloc::vec::Vec<(predicate::Expression, Option<String>)>),
+        Variant9(predicate::Term),
+        Variant10(alloc::vec::Vec<predicate::Term>),
+        Variant11(predicate::Expression),
+        Variant12(Vec<predicate::Term>),
+        Variant13(Vec<Value>),
+        Variant14(Vec<statement::FieldDefinition>),
+        Variant15(Vec<String>),
+        Variant16(Vec<(predicate::Expression, Option<String>)>),
+        Variant17(statement::CreateCommand),
+        Variant18(Option<Vec<(predicate::Expression, Option<String>)>>),
+        Variant19(Spec),
+        Variant20(i32),
+        Variant21(Option<Vec<String>>),
+        Variant22(Option<predicate::Predicate>),
+        Variant23(predicate::Predicate),
+        Variant24(statement::QueryData),
+        Variant25(statement::Statement),
+        Variant26(statement::UpdateCommand),
     }
     const __ACTION: &[i8] = &[
         // State 0
@@ -12983,7 +13189,7 @@ mod __parse__UpdateCommand {
         // State 14
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 74, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 75, 0, 0,
         // State 15
-        0, 44, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 44, 67, 65, 0, 18, 0, 81, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 16
         0, 44, 67, 65, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 17
@@ -12995,7 +13201,7 @@ mod __parse__UpdateCommand {
         // State 20
         0, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 21
-        0, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 44, 67, 65, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 22
         0, 44, 67, 65, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 23
@@ -13017,13 +13223,13 @@ mod __parse__UpdateCommand {
         // State 31
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -64, 0, 0, 0, 0, 0, 0, 35,
         // State 32
-        0, 0, 67, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 113, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 67, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 114, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 33
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 115, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 116, 0, 0, 0, 0, 0, 0, 0,
         // State 34
         0, 44, 67, 65, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 35
-        0, 0, 67, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 113, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 67, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 114, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 36
         0, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 37
@@ -13061,37 +13267,37 @@ mod __parse__UpdateCommand {
         // State 53
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 54
-        0, 0, 0, 0, 23, 0, -45, 0, 24, 0, 0, -45, -45, 0, 0, 0, 0, 0, 0, 0, 0, 0, -45, 0, 0, 0, -45, 0, 0, 0, 0, 0, 0, -45,
+        0, 0, 0, 0, 23, 0, -45, 0, 24, 0, 0, -45, -45, -45, 0, 0, 0, 0, 0, 0, 0, 0, -45, 0, 0, 0, -45, 0, 0, 0, 0, 0, 0, -45,
         // State 55
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -65, 0, 0, 0, 0, 0, 0, 0,
         // State 56
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 83, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 57
-        0, 0, 0, 0, -60, 0, -60, -60, -60, 0, -60, -60, -60, 0, 0, 0, 0, 0, 0, 0, 0, 0, -60, 0, 0, 0, -60, 0, 0, 0, 0, 0, 0, -60,
+        0, 0, 0, 0, -60, 0, -60, -60, -60, 0, -60, -60, -60, -60, 0, 0, 0, 0, 0, 0, 0, 0, -60, 0, 0, 0, -60, 0, 0, 0, 0, 0, 0, -60,
         // State 58
-        0, 0, 0, 0, -48, 0, -48, -48, -48, 0, -48, -48, -48, 0, 0, 0, 0, 0, 0, 0, 0, 0, -48, 0, 0, 0, -48, 0, 0, 0, 0, 0, 0, -48,
+        0, 0, 0, 0, -48, 0, -48, -48, -48, 0, -48, -48, -48, -48, 0, 0, 0, 0, 0, 0, 0, 0, -48, 0, 0, 0, -48, 0, 0, 0, 0, 0, 0, -48,
         // State 59
-        0, 0, 0, 0, -50, 0, -50, -50, -50, 0, -50, -50, -50, 0, 0, 0, 0, 0, 0, 0, 0, 0, -50, 0, 0, 0, -50, 0, 0, 0, 0, 0, 0, -50,
+        0, 0, 0, 0, -50, 0, -50, -50, -50, 0, -50, -50, -50, -50, 0, 0, 0, 0, 0, 0, 0, 0, -50, 0, 0, 0, -50, 0, 0, 0, 0, 0, 0, -50,
         // State 60
-        0, 0, 0, 0, -28, 0, -28, 27, -28, 0, 26, -28, -28, 0, 0, 0, 0, 0, 0, 0, 0, 0, -28, 0, 0, 0, -28, 0, 0, 0, 0, 0, 0, -28,
+        0, 0, 0, 0, -28, 0, -28, 27, -28, 0, 26, -28, -28, -28, 0, 0, 0, 0, 0, 0, 0, 0, -28, 0, 0, 0, -28, 0, 0, 0, 0, 0, 0, -28,
         // State 61
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 62
-        0, 0, 0, 0, -49, 0, -49, -49, -49, 0, -49, -49, -49, 0, 0, 0, 0, 0, 0, 0, 0, 0, -49, 0, 0, 0, -49, 0, 0, 0, 0, 0, 0, -49,
+        0, 0, 0, 0, -49, 0, -49, -49, -49, 0, -49, -49, -49, -49, 0, 0, 0, 0, 0, 0, 0, 0, -49, 0, 0, 0, -49, 0, 0, 0, 0, 0, 0, -49,
         // State 63
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 83, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -29, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 84, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -29, 0, 0, 0, 0, 0, 0, 0,
         // State 64
-        0, 0, 0, 0, -56, 0, -56, -56, -56, -56, -56, -56, -56, 0, 0, 0, 0, 0, 0, 0, 0, 0, -56, 0, 0, 0, -56, 0, 0, 0, 0, 0, 0, -56,
+        0, 0, 0, 0, -56, 0, -56, -56, -56, -56, -56, -56, -56, -56, 0, 0, 0, 0, 0, 0, 0, 0, -56, 0, 0, 0, -56, 0, 0, 0, 0, 0, 0, -56,
         // State 65
-        0, 0, 0, 0, -47, 0, -47, -47, -47, 0, -47, -47, -47, 0, 0, 0, 0, 0, 0, 0, 0, 0, -47, 0, 0, 0, -47, 0, 0, 0, 0, 0, 0, -47,
+        0, 0, 0, 0, -47, 0, -47, -47, -47, 0, -47, -47, -47, -47, 0, 0, 0, 0, 0, 0, 0, 0, -47, 0, 0, 0, -47, 0, 0, 0, 0, 0, 0, -47,
         // State 66
-        0, 0, 0, 0, -71, 0, -71, -71, -71, -71, -71, -71, -71, 0, 0, 0, 0, 0, 0, 0, 0, 0, -71, 0, 0, 0, -71, 0, 0, 0, 0, 0, 0, -71,
+        0, 0, 0, 0, -71, 0, -71, -71, -71, -71, -71, -71, -71, -71, 0, 0, 0, 0, 0, 0, 0, 0, -71, 0, 0, 0, -71, 0, 0, 0, 0, 0, 0, -71,
         // State 67
-        0, 0, 0, 0, 0, 0, 86, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 87, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 68
-        0, 0, 0, 0, 0, 0, -35, 0, 0, 87, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -35, 0, 0, 0, 0, 0, 0, -35,
+        0, 0, 0, 0, 0, 0, -35, 0, 0, 88, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -35, 0, 0, 0, 0, 0, 0, -35,
         // State 69
-        0, 0, 0, 0, 0, 0, -34, 0, 0, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, -34, 0, 0, 91, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 70
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 71
@@ -13105,94 +13311,96 @@ mod __parse__UpdateCommand {
         // State 75
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 76
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 77
-        0, 0, 0, 0, 0, 0, 0, 0, 0, -67, 0, 0, 0, 30, 0, 0, 0, -67, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 78
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 92, 0, 0, 0, 0, 0, 0, 0, -37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -50, 0, 0, -50, -50, -68, -50, 0, 0, -50, 0, 0, 0, -68, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 79
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -52, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 93, 0, 0, 0, 0, 0, 0, 0, -37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 80
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -30, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -52, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 81
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -30, 0, 0, 0, 0, 0, 0, 0,
         // State 82
-        0, -24, -24, -24, 0, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 98, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 83
-        0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, -24, -24, -24, 0, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 84
-        0, 0, 0, 0, 0, 0, -36, 0, 0, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -36, 0, 0, 0, 0, 0, 0, -36,
+        0, 0, 0, 0, 0, 0, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 85
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 102, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, -36, 0, 0, 102, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -36, 0, 0, 0, 0, 0, 0, -36,
         // State 86
-        0, -14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 103, 0, 0, 0,
         // State 87
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31,
+        0, -14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 88
-        0, 0, 0, 0, 0, 0, 103, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31,
         // State 89
-        0, -10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 104, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 90
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 105, 0, 0, 0, 0, 0, 0, 0, -38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, -10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 91
-        0, -19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 106, 0, 0, 0, 0, 0, 0, 0, -38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 92
-        0, -25, -25, -25, 0, -25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -25, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, -19, -19, -19, 0, -19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -19, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 93
-        0, 0, 0, 0, -27, 0, -27, 27, -27, 0, 26, -27, -27, 0, 0, 0, 0, 0, 0, 0, 0, 0, -27, 0, 0, 0, -27, 0, 0, 0, 0, 0, 0, -27,
+        0, -25, -25, -25, 0, -25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -25, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 94
-        0, 0, 0, 0, -26, 0, -26, 27, -26, 0, 26, -26, -26, 0, 0, 0, 0, 0, 0, 0, 0, 0, -26, 0, 0, 0, -26, 0, 0, 0, 0, 0, 0, -26,
+        0, 0, 0, 0, -27, 0, -27, 27, -27, 0, 26, -27, -27, -27, 0, 0, 0, 0, 0, 0, 0, 0, -27, 0, 0, 0, -27, 0, 0, 0, 0, 0, 0, -27,
         // State 95
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -73, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -26, 0, -26, 27, -26, 0, 26, -26, -26, -26, 0, 0, 0, 0, 0, 0, 0, 0, -26, 0, 0, 0, -26, 0, 0, 0, 0, 0, 0, -26,
         // State 96
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -72, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -73, 0, 0, 0, 0, 0, 0, 0,
         // State 97
-        0, 0, 0, 0, -59, 0, -59, -59, -59, 0, -59, -59, -59, 0, 0, 0, 0, 0, 0, 0, 0, 0, -59, 0, 0, 0, -59, 0, 0, 0, 0, 0, 0, -59,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -72, 0, 0, 0, 0, 0, 0, 0,
         // State 98
-        0, 0, 0, 0, -58, 0, -58, -58, -58, 0, -58, -58, -58, 0, 0, 0, 0, 0, 0, 0, 0, 0, -58, 0, 0, 0, -58, 0, 0, 0, 0, 0, 0, -58,
+        0, 0, 0, 0, -59, 0, -59, -59, -59, 0, -59, -59, -59, -59, 0, 0, 0, 0, 0, 0, 0, 0, -59, 0, 0, 0, -59, 0, 0, 0, 0, 0, 0, -59,
         // State 99
-        0, 0, 0, 0, -46, 0, -46, -46, -46, 0, -46, -46, -46, 0, 0, 0, 0, 0, 0, 0, 0, 0, -46, 0, 0, 0, -46, 0, 0, 0, 0, 0, 0, -46,
+        0, 0, 0, 0, -58, 0, -58, -58, -58, 0, -58, -58, -58, -58, 0, 0, 0, 0, 0, 0, 0, 0, -58, 0, 0, 0, -58, 0, 0, 0, 0, 0, 0, -58,
         // State 100
-        0, -15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, -46, 0, -46, -46, -46, 0, -46, -46, -46, -46, 0, 0, 0, 0, 0, 0, 0, 0, -46, 0, 0, 0, -46, 0, 0, 0, 0, 0, 0, -46,
         // State 101
-        0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, -15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 102
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 103
-        0, 0, 0, 0, 0, 0, 108, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 104
-        0, -20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 109, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 105
-        0, 0, 0, 0, 0, 0, 0, 0, 0, -68, 0, 0, 0, 0, 0, 0, 0, -68, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, -20, -20, -20, 0, -20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -20, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 106
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, -67, 0, 0, 0, 0, 0, 0, 0, -67, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 107
-        0, 0, 0, 0, 0, 0, -55, 0, 0, -55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 108
-        0, 0, 0, 0, 0, 0, 118, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, -55, 0, 0, -55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 109
-        0, 0, 0, 0, 0, 0, -31, 0, 0, 119, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 119, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 110
-        0, 0, 0, 0, 0, 0, -40, 0, 0, -40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, -31, 0, 0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 111
-        0, 0, 0, 0, 0, 0, -41, 0, 0, -41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, -40, 0, 0, -40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 112
-        0, 0, 0, 0, 0, 0, -39, 0, 0, -39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, -41, 0, 0, -41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 113
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, -39, 0, 0, -39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 114
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 115
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -63, 0, 0, 0, 0, 0, 0, 0,
-        // State 116
-        0, 0, 0, 0, 0, 0, -32, 0, 0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // State 117
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 115
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 116
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -63, 0, 0, 0, 0, 0, 0, 0,
+        // State 117
+        0, 0, 0, 0, 0, 0, -32, 0, 0, 121, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 118
-        0, 0, -4, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 119
-        0, 0, -5, -5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -5, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, -4, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 120
+        0, 0, -5, -5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -5, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // State 121
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ];
     fn __action(state: i8, integer: usize) -> i8 {
@@ -13360,23 +13568,23 @@ mod __parse__UpdateCommand {
         // State 79
         0,
         // State 80
-        -30,
-        // State 81
         0,
+        // State 81
+        -30,
         // State 82
         0,
         // State 83
         0,
         // State 84
-        -36,
-        // State 85
         0,
+        // State 85
+        -36,
         // State 86
         0,
         // State 87
-        -77,
-        // State 88
         0,
+        // State 88
+        -77,
         // State 89
         0,
         // State 90
@@ -13386,35 +13594,35 @@ mod __parse__UpdateCommand {
         // State 92
         0,
         // State 93
-        -27,
-        // State 94
-        -26,
-        // State 95
-        -73,
-        // State 96
-        -72,
-        // State 97
-        -59,
-        // State 98
-        -58,
-        // State 99
-        -46,
-        // State 100
         0,
+        // State 94
+        -27,
+        // State 95
+        -26,
+        // State 96
+        -73,
+        // State 97
+        -72,
+        // State 98
+        -59,
+        // State 99
+        -58,
+        // State 100
+        -46,
         // State 101
         0,
         // State 102
-        -44,
-        // State 103
         0,
+        // State 103
+        -44,
         // State 104
         0,
         // State 105
         0,
         // State 106
-        -78,
-        // State 107
         0,
+        // State 107
+        -78,
         // State 108
         0,
         // State 109
@@ -13426,20 +13634,22 @@ mod __parse__UpdateCommand {
         // State 112
         0,
         // State 113
-        -66,
+        0,
         // State 114
-        0,
+        -66,
         // State 115
-        -63,
+        0,
         // State 116
-        0,
+        -63,
         // State 117
-        -74,
-        // State 118
         0,
+        // State 118
+        -74,
         // State 119
         0,
         // State 120
+        0,
+        // State 121
         -61,
     ];
     fn __goto(state: i8, nt: usize) -> i8 {
@@ -13451,39 +13661,40 @@ mod __parse__UpdateCommand {
             14 => 16,
             15 => 54,
             16 => 55,
-            17 => 108,
+            17 => 109,
             18 => 51,
             19 => match state {
                 12 => 67,
-                36 => 120,
+                36 => 121,
                 _ => 31,
             },
             20 => 75,
             21 => match state {
-                35 => 116,
-                _ => 109,
+                35 => 117,
+                _ => 110,
             },
             22 => 37,
             23 => match state {
-                17 => 83,
-                19 => 87,
-                24 => 95,
+                15 | 21 => 76,
+                17 => 84,
+                19 => 88,
+                24 => 96,
                 _ => 56,
             },
             24 => match state {
-                25 => 97,
-                26 => 98,
+                25 => 98,
+                26 => 99,
                 _ => 57,
             },
             25 => match state {
                 13 => 69,
                 _ => 52,
             },
-            26 => 76,
+            26 => 77,
             27 => 72,
             28 => match state {
-                27 => 103,
-                32 | 35 => 110,
+                27 => 104,
+                32 | 35 => 111,
                 _ => 58,
             },
             29 => match state {
@@ -13496,36 +13707,36 @@ mod __parse__UpdateCommand {
                 6 => 48,
                 7 => 49,
                 8 => 50,
-                12 | 28 | 36 => 68,
-                15 | 21 => 77,
-                18 => 84,
-                20 => 88,
-                29 => 105,
+                12 | 29 | 36 => 68,
+                15 | 21 => 78,
+                18 => 85,
+                20 => 89,
+                28 => 106,
                 _ => 59,
             },
             30 => match state {
-                22 => 93,
-                23 => 94,
+                22 => 94,
+                23 => 95,
                 _ => 60,
             },
-            31 => 113,
+            31 => 114,
             32 => 33,
             33 => match state {
-                30 => 106,
-                34 => 115,
+                30 => 107,
+                34 => 116,
                 _ => 61,
             },
             34 => 53,
             35 => match state {
-                21 => 90,
-                _ => 78,
+                21 => 91,
+                _ => 79,
             },
             37 => match state {
-                32 | 35 => 111,
+                32 | 35 => 112,
                 _ => 62,
             },
             38 => match state {
-                16 => 80,
+                16 => 81,
                 _ => 63,
             },
             39 => 38,
@@ -14162,13 +14373,13 @@ mod __parse__UpdateCommand {
             }
             66 => {
                 __state_machine::SimulatedReduce::Reduce {
-                    states_to_pop: 1,
+                    states_to_pop: 3,
                     nonterminal_produced: 35,
                 }
             }
             67 => {
                 __state_machine::SimulatedReduce::Reduce {
-                    states_to_pop: 3,
+                    states_to_pop: 1,
                     nonterminal_produced: 35,
                 }
             }
@@ -14595,7 +14806,7 @@ mod __parse__UpdateCommand {
             }
             83 => {
                 // __UpdateCommand = UpdateCommand => ActionFn(2);
-                let __sym0 = __pop_Variant22(__symbols);
+                let __sym0 = __pop_Variant26(__symbols);
                 let __start = __sym0.0;
                 let __end = __sym0.2;
                 let __nt = super::__action2::<>(input, __sym0);
@@ -14614,14 +14825,14 @@ mod __parse__UpdateCommand {
     fn __symbol_type_mismatch() -> ! {
         panic!("symbol type mismatch")
     }
-    fn __pop_Variant15<
+    fn __pop_Variant7<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Option<Vec<String>>, usize)
+    ) -> (usize, (predicate::Expression, Option<String>), usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -14629,21 +14840,43 @@ mod __parse__UpdateCommand {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Option<predicate::Predicate>, usize)
+    ) -> (usize, Option<Vec<(predicate::Expression, Option<String>)>>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant18(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant16<
+    fn __pop_Variant21<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Option<Vec<String>>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant21(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant22<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Option<predicate::Predicate>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant22(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant19<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, Spec, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant19(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -14669,36 +14902,36 @@ mod __parse__UpdateCommand {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant13<
+    fn __pop_Variant16<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Vec<(predicate::Expression, Option<String>)>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant16(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant15<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, Vec<String>, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant13(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant15(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant11<
+    fn __pop_Variant13<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, Vec<Value>, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant10<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<predicate::Term>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant13(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -14706,10 +14939,32 @@ mod __parse__UpdateCommand {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<statement::FieldDefinition>, usize)
+    ) -> (usize, Vec<predicate::Term>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant12(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant14<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Vec<statement::FieldDefinition>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant8<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, alloc::vec::Vec<(predicate::Expression, Option<String>)>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -14735,14 +14990,14 @@ mod __parse__UpdateCommand {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant8<
+    fn __pop_Variant10<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, alloc::vec::Vec<predicate::Term>, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -14757,14 +15012,36 @@ mod __parse__UpdateCommand {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant17<
+    fn __pop_Variant20<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, i32, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant17(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant11<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Expression, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant23<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, predicate::Predicate, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant23(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -14772,43 +15049,21 @@ mod __parse__UpdateCommand {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Expression, usize)
+    ) -> (usize, predicate::Term, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant9(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant19<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Predicate, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant19(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant7<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, predicate::Term, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant14<
+    fn __pop_Variant17<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::CreateCommand, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant17(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -14823,36 +15078,36 @@ mod __parse__UpdateCommand {
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant20<
+    fn __pop_Variant24<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::QueryData, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant20(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant24(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant21<
+    fn __pop_Variant25<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::Statement, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant21(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant25(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
-    fn __pop_Variant22<
+    fn __pop_Variant26<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
     ) -> (usize, statement::UpdateCommand, usize)
      {
         match __symbols.pop() {
-            Some((__l, __Symbol::Variant22(__v), __r)) => (__l, __v, __r),
+            Some((__l, __Symbol::Variant26(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -15152,11 +15407,11 @@ mod __parse__UpdateCommand {
         // (<SelectField> COMMA) = SelectField, COMMA => ActionFn(59);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant5(__symbols);
+        let __sym0 = __pop_Variant7(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action59::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant5(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
         (2, 9)
     }
     fn __reduce16<
@@ -15172,7 +15427,7 @@ mod __parse__UpdateCommand {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action57::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (0, 10)
     }
     fn __reduce17<
@@ -15185,11 +15440,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // (<SelectField> COMMA)* = (<SelectField> COMMA)+ => ActionFn(58);
-        let __sym0 = __pop_Variant6(__symbols);
+        let __sym0 = __pop_Variant8(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action58::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (1, 10)
     }
     fn __reduce18<
@@ -15204,11 +15459,11 @@ mod __parse__UpdateCommand {
         // (<SelectField> COMMA)+ = SelectField, COMMA => ActionFn(91);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant5(__symbols);
+        let __sym0 = __pop_Variant7(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action91::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (2, 11)
     }
     fn __reduce19<
@@ -15223,12 +15478,12 @@ mod __parse__UpdateCommand {
         // (<SelectField> COMMA)+ = (<SelectField> COMMA)+, SelectField, COMMA => ActionFn(92);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant5(__symbols);
-        let __sym0 = __pop_Variant6(__symbols);
+        let __sym1 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant8(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action92::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant6(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
         (3, 11)
     }
     fn __reduce20<
@@ -15243,11 +15498,11 @@ mod __parse__UpdateCommand {
         // (<Term> AND) = Term, AND => ActionFn(68);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action68::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (2, 12)
     }
     fn __reduce21<
@@ -15263,7 +15518,7 @@ mod __parse__UpdateCommand {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action66::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (0, 13)
     }
     fn __reduce22<
@@ -15276,11 +15531,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // (<Term> AND)* = (<Term> AND)+ => ActionFn(67);
-        let __sym0 = __pop_Variant8(__symbols);
+        let __sym0 = __pop_Variant10(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action67::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (1, 13)
     }
     fn __reduce23<
@@ -15295,11 +15550,11 @@ mod __parse__UpdateCommand {
         // (<Term> AND)+ = Term, AND => ActionFn(95);
         assert!(__symbols.len() >= 2);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action95::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (2, 14)
     }
     fn __reduce24<
@@ -15314,12 +15569,12 @@ mod __parse__UpdateCommand {
         // (<Term> AND)+ = (<Term> AND)+, Term, AND => ActionFn(96);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant7(__symbols);
-        let __sym0 = __pop_Variant8(__symbols);
+        let __sym1 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant10(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action96::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant8(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
         (3, 14)
     }
     fn __reduce25<
@@ -15333,13 +15588,13 @@ mod __parse__UpdateCommand {
     {
         // AddExpr = AddExpr, PLUS, MulExpr => ActionFn(32);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action32::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 15)
     }
     fn __reduce26<
@@ -15353,13 +15608,13 @@ mod __parse__UpdateCommand {
     {
         // AddExpr = AddExpr, MINUS, MulExpr => ActionFn(33);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action33::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 15)
     }
     fn __reduce27<
@@ -15372,11 +15627,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // AddExpr = MulExpr => ActionFn(34);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action34::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 15)
     }
     fn __reduce28<
@@ -15389,11 +15644,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // And<Term> = Term => ActionFn(97);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action97::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
         (1, 16)
     }
     fn __reduce29<
@@ -15407,12 +15662,12 @@ mod __parse__UpdateCommand {
     {
         // And<Term> = (<Term> AND)+, Term => ActionFn(98);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant7(__symbols);
-        let __sym0 = __pop_Variant8(__symbols);
+        let __sym1 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant10(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action98::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant10(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
         (2, 16)
     }
     fn __reduce30<
@@ -15429,7 +15684,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action81::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
         (1, 17)
     }
     fn __reduce31<
@@ -15448,7 +15703,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action82::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
         (2, 17)
     }
     fn __reduce32<
@@ -15465,7 +15720,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action85::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
         (1, 18)
     }
     fn __reduce33<
@@ -15484,7 +15739,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action86::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant12(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
         (2, 18)
     }
     fn __reduce34<
@@ -15501,7 +15756,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action89::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
         (1, 19)
     }
     fn __reduce35<
@@ -15520,7 +15775,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action90::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
         (2, 19)
     }
     fn __reduce36<
@@ -15533,11 +15788,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // Comma<SelectField> = SelectField => ActionFn(93);
-        let __sym0 = __pop_Variant5(__symbols);
+        let __sym0 = __pop_Variant7(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action93::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
         (1, 20)
     }
     fn __reduce37<
@@ -15551,12 +15806,12 @@ mod __parse__UpdateCommand {
     {
         // Comma<SelectField> = (<SelectField> COMMA)+, SelectField => ActionFn(94);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant5(__symbols);
-        let __sym0 = __pop_Variant6(__symbols);
+        let __sym1 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant8(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action94::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant13(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
         (2, 20)
     }
     fn __reduce38<
@@ -15586,7 +15841,7 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // Constant = I32Constant => ActionFn(44);
-        let __sym0 = __pop_Variant17(__symbols);
+        let __sym0 = __pop_Variant20(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action44::<>(input, __sym0);
@@ -15622,7 +15877,7 @@ mod __parse__UpdateCommand {
         // CreateCommand = CREATE, TABLE, IdToken, LPAREN, Comma<FieldDefinition>, RPAREN => ActionFn(22);
         assert!(__symbols.len() >= 6);
         let __sym5 = __pop_Variant0(__symbols);
-        let __sym4 = __pop_Variant12(__symbols);
+        let __sym4 = __pop_Variant14(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -15630,7 +15885,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym5.2;
         let __nt = super::__action22::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5);
-        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
         (6, 22)
     }
     fn __reduce42<
@@ -15644,7 +15899,7 @@ mod __parse__UpdateCommand {
     {
         // CreateCommand = CREATE, VIEW, IdToken, AS, Query => ActionFn(23);
         assert!(__symbols.len() >= 5);
-        let __sym4 = __pop_Variant20(__symbols);
+        let __sym4 = __pop_Variant24(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -15652,7 +15907,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym4.2;
         let __nt = super::__action23::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4);
-        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
         (5, 22)
     }
     fn __reduce43<
@@ -15677,7 +15932,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym7.2;
         let __nt = super::__action24::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5, __sym6, __sym7);
-        __symbols.push((__start, __Symbol::Variant14(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
         (8, 22)
     }
     fn __reduce44<
@@ -15690,11 +15945,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // Expression = AddExpr => ActionFn(31);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action31::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 23)
     }
     fn __reduce45<
@@ -15709,12 +15964,12 @@ mod __parse__UpdateCommand {
         // Factor = LPAREN, Expression, RPAREN => ActionFn(38);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant9(__symbols);
+        let __sym1 = __pop_Variant11(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action38::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 24)
     }
     fn __reduce46<
@@ -15731,7 +15986,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action39::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce47<
@@ -15744,11 +15999,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // Factor = I32Constant => ActionFn(40);
-        let __sym0 = __pop_Variant17(__symbols);
+        let __sym0 = __pop_Variant20(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action40::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce48<
@@ -15765,7 +16020,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action41::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce49<
@@ -15782,7 +16037,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action42::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 24)
     }
     fn __reduce50<
@@ -15796,7 +16051,7 @@ mod __parse__UpdateCommand {
     {
         // FieldDefinition = IdToken, FieldType => ActionFn(25);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant16(__symbols);
+        let __sym1 = __pop_Variant19(__symbols);
         let __sym0 = __pop_Variant5(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
@@ -15818,7 +16073,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action8::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
         (1, 26)
     }
     fn __reduce52<
@@ -15831,11 +16086,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // FieldList = Comma<SelectField> => ActionFn(9);
-        let __sym0 = __pop_Variant13(__symbols);
+        let __sym0 = __pop_Variant16(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action9::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
         (1, 26)
     }
     fn __reduce53<
@@ -15852,7 +16107,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action26::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
         (1, 27)
     }
     fn __reduce54<
@@ -15867,13 +16122,13 @@ mod __parse__UpdateCommand {
         // FieldType = VARCHAR, LPAREN, I32Constant, RPAREN => ActionFn(27);
         assert!(__symbols.len() >= 4);
         let __sym3 = __pop_Variant0(__symbols);
-        let __sym2 = __pop_Variant17(__symbols);
+        let __sym2 = __pop_Variant20(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym3.2;
         let __nt = super::__action27::<>(input, __sym0, __sym1, __sym2, __sym3);
-        __symbols.push((__start, __Symbol::Variant16(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
         (4, 27)
     }
     fn __reduce55<
@@ -15890,7 +16145,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action46::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant17(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant20(__nt), __end));
         (1, 28)
     }
     fn __reduce56<
@@ -15921,13 +16176,13 @@ mod __parse__UpdateCommand {
     {
         // MulExpr = MulExpr, STAR, Factor => ActionFn(35);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action35::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 30)
     }
     fn __reduce58<
@@ -15941,13 +16196,13 @@ mod __parse__UpdateCommand {
     {
         // MulExpr = MulExpr, SLASH, Factor => ActionFn(36);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action36::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (3, 30)
     }
     fn __reduce59<
@@ -15960,11 +16215,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // MulExpr = Factor => ActionFn(37);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action37::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant11(__nt), __end));
         (1, 30)
     }
     fn __reduce60<
@@ -15978,13 +16233,13 @@ mod __parse__UpdateCommand {
     {
         // OptOrderBy = ORDER, BY, Comma<IdToken> => ActionFn(14);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant13(__symbols);
+        let __sym2 = __pop_Variant15(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action14::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
         (3, 31)
     }
     fn __reduce61<
@@ -16000,7 +16255,7 @@ mod __parse__UpdateCommand {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action15::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant15(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
         (0, 31)
     }
     fn __reduce62<
@@ -16014,12 +16269,12 @@ mod __parse__UpdateCommand {
     {
         // OptPredicate = WHERE, Predicate => ActionFn(12);
         assert!(__symbols.len() >= 2);
-        let __sym1 = __pop_Variant19(__symbols);
+        let __sym1 = __pop_Variant23(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym1.2;
         let __nt = super::__action12::<>(input, __sym0, __sym1);
-        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
         (2, 32)
     }
     fn __reduce63<
@@ -16035,7 +16290,7 @@ mod __parse__UpdateCommand {
         let __start = __lookahead_start.cloned().or_else(|| __symbols.last().map(|s| s.2)).unwrap_or_default();
         let __end = __start;
         let __nt = super::__action13::<>(input, &__start, &__end);
-        __symbols.push((__start, __Symbol::Variant18(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
         (0, 32)
     }
     fn __reduce64<
@@ -16048,11 +16303,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // Predicate = And<Term> => ActionFn(28);
-        let __sym0 = __pop_Variant10(__symbols);
+        let __sym0 = __pop_Variant12(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action28::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant23(__nt), __end));
         (1, 33)
     }
     fn __reduce65<
@@ -16066,16 +16321,16 @@ mod __parse__UpdateCommand {
     {
         // Query = SELECT, FieldList, FROM, Comma<IdToken>, OptPredicate, OptOrderBy => ActionFn(7);
         assert!(__symbols.len() >= 6);
-        let __sym5 = __pop_Variant15(__symbols);
-        let __sym4 = __pop_Variant18(__symbols);
-        let __sym3 = __pop_Variant13(__symbols);
+        let __sym5 = __pop_Variant21(__symbols);
+        let __sym4 = __pop_Variant22(__symbols);
+        let __sym3 = __pop_Variant15(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
-        let __sym1 = __pop_Variant15(__symbols);
+        let __sym1 = __pop_Variant18(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0;
         let __end = __sym5.2;
         let __nt = super::__action7::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5);
-        __symbols.push((__start, __Symbol::Variant20(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant24(__nt), __end));
         (6, 34)
     }
     fn __reduce66<
@@ -16087,13 +16342,16 @@ mod __parse__UpdateCommand {
         _: core::marker::PhantomData<(&'input ())>,
     ) -> (usize, usize)
     {
-        // SelectField = IdToken => ActionFn(10);
-        let __sym0 = __pop_Variant5(__symbols);
+        // SelectField = Expression, AS, IdToken => ActionFn(10);
+        assert!(__symbols.len() >= 3);
+        let __sym2 = __pop_Variant5(__symbols);
+        let __sym1 = __pop_Variant0(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
-        let __end = __sym0.2;
-        let __nt = super::__action10::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant5(__nt), __end));
-        (1, 35)
+        let __end = __sym2.2;
+        let __nt = super::__action10::<>(input, __sym0, __sym1, __sym2);
+        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        (3, 35)
     }
     fn __reduce67<
         'input,
@@ -16104,16 +16362,13 @@ mod __parse__UpdateCommand {
         _: core::marker::PhantomData<(&'input ())>,
     ) -> (usize, usize)
     {
-        // SelectField = IdToken, AS, IdToken => ActionFn(11);
-        assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant5(__symbols);
-        let __sym1 = __pop_Variant0(__symbols);
+        // SelectField = IdToken => ActionFn(11);
         let __sym0 = __pop_Variant5(__symbols);
         let __start = __sym0.0;
-        let __end = __sym2.2;
-        let __nt = super::__action11::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant5(__nt), __end));
-        (3, 35)
+        let __end = __sym0.2;
+        let __nt = super::__action11::<>(input, __sym0);
+        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        (1, 35)
     }
     fn __reduce68<
         'input,
@@ -16125,11 +16380,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // Statement = Query => ActionFn(5);
-        let __sym0 = __pop_Variant20(__symbols);
+        let __sym0 = __pop_Variant24(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action5::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant25(__nt), __end));
         (1, 36)
     }
     fn __reduce69<
@@ -16142,11 +16397,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // Statement = UpdateCommand => ActionFn(6);
-        let __sym0 = __pop_Variant22(__symbols);
+        let __sym0 = __pop_Variant26(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action6::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant25(__nt), __end));
         (1, 36)
     }
     fn __reduce70<
@@ -16179,11 +16434,11 @@ mod __parse__UpdateCommand {
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant0(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action29::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (3, 38)
     }
     fn __reduce72<
@@ -16197,13 +16452,13 @@ mod __parse__UpdateCommand {
     {
         // Term = Expression, EQ, Expression => ActionFn(30);
         assert!(__symbols.len() >= 3);
-        let __sym2 = __pop_Variant9(__symbols);
+        let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant9(__symbols);
+        let __sym0 = __pop_Variant11(__symbols);
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action30::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (3, 38)
     }
     fn __reduce73<
@@ -16218,11 +16473,11 @@ mod __parse__UpdateCommand {
         // UpdateCommand = INSERT, INTO, IdToken, LPAREN, Comma<IdToken>, RPAREN, VALUES, LPAREN, Comma<Constant>, RPAREN => ActionFn(16);
         assert!(__symbols.len() >= 10);
         let __sym9 = __pop_Variant0(__symbols);
-        let __sym8 = __pop_Variant11(__symbols);
+        let __sym8 = __pop_Variant13(__symbols);
         let __sym7 = __pop_Variant0(__symbols);
         let __sym6 = __pop_Variant0(__symbols);
         let __sym5 = __pop_Variant0(__symbols);
-        let __sym4 = __pop_Variant13(__symbols);
+        let __sym4 = __pop_Variant15(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -16230,7 +16485,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym9.2;
         let __nt = super::__action16::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5, __sym6, __sym7, __sym8, __sym9);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (10, 39)
     }
     fn __reduce74<
@@ -16250,7 +16505,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym2.2;
         let __nt = super::__action17::<>(input, __sym0, __sym1, __sym2);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (3, 39)
     }
     fn __reduce75<
@@ -16264,7 +16519,7 @@ mod __parse__UpdateCommand {
     {
         // UpdateCommand = DELETE, FROM, IdToken, WHERE, Predicate => ActionFn(18);
         assert!(__symbols.len() >= 5);
-        let __sym4 = __pop_Variant19(__symbols);
+        let __sym4 = __pop_Variant23(__symbols);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant5(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
@@ -16272,7 +16527,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym4.2;
         let __nt = super::__action18::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (5, 39)
     }
     fn __reduce76<
@@ -16286,7 +16541,7 @@ mod __parse__UpdateCommand {
     {
         // UpdateCommand = MODIFY, IdToken, SET, IdToken, EQ, Expression => ActionFn(19);
         assert!(__symbols.len() >= 6);
-        let __sym5 = __pop_Variant9(__symbols);
+        let __sym5 = __pop_Variant11(__symbols);
         let __sym4 = __pop_Variant0(__symbols);
         let __sym3 = __pop_Variant5(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
@@ -16295,7 +16550,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym5.2;
         let __nt = super::__action19::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (6, 39)
     }
     fn __reduce77<
@@ -16309,9 +16564,9 @@ mod __parse__UpdateCommand {
     {
         // UpdateCommand = MODIFY, IdToken, SET, IdToken, EQ, Expression, WHERE, Predicate => ActionFn(20);
         assert!(__symbols.len() >= 8);
-        let __sym7 = __pop_Variant19(__symbols);
+        let __sym7 = __pop_Variant23(__symbols);
         let __sym6 = __pop_Variant0(__symbols);
-        let __sym5 = __pop_Variant9(__symbols);
+        let __sym5 = __pop_Variant11(__symbols);
         let __sym4 = __pop_Variant0(__symbols);
         let __sym3 = __pop_Variant5(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
@@ -16320,7 +16575,7 @@ mod __parse__UpdateCommand {
         let __start = __sym0.0;
         let __end = __sym7.2;
         let __nt = super::__action20::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4, __sym5, __sym6, __sym7);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (8, 39)
     }
     fn __reduce78<
@@ -16333,11 +16588,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // UpdateCommand = CreateCommand => ActionFn(21);
-        let __sym0 = __pop_Variant14(__symbols);
+        let __sym0 = __pop_Variant17(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action21::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant22(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant26(__nt), __end));
         (1, 39)
     }
     fn __reduce79<
@@ -16350,11 +16605,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // __Predicate = Predicate => ActionFn(3);
-        let __sym0 = __pop_Variant19(__symbols);
+        let __sym0 = __pop_Variant23(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action3::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant19(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant23(__nt), __end));
         (1, 40)
     }
     fn __reduce80<
@@ -16367,11 +16622,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // __Query = Query => ActionFn(1);
-        let __sym0 = __pop_Variant20(__symbols);
+        let __sym0 = __pop_Variant24(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action1::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant20(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant24(__nt), __end));
         (1, 41)
     }
     fn __reduce81<
@@ -16384,11 +16639,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // __Statement = Statement => ActionFn(0);
-        let __sym0 = __pop_Variant21(__symbols);
+        let __sym0 = __pop_Variant25(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action0::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant21(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant25(__nt), __end));
         (1, 42)
     }
     fn __reduce82<
@@ -16401,11 +16656,11 @@ mod __parse__UpdateCommand {
     ) -> (usize, usize)
     {
         // __Term = Term => ActionFn(4);
-        let __sym0 = __pop_Variant7(__symbols);
+        let __sym0 = __pop_Variant9(__symbols);
         let __start = __sym0.0;
         let __end = __sym0.2;
         let __nt = super::__action4::<>(input, __sym0);
-        __symbols.push((__start, __Symbol::Variant7(__nt), __end));
+        __symbols.push((__start, __Symbol::Variant9(__nt), __end));
         (1, 43)
     }
 }
@@ -16567,14 +16822,32 @@ fn __action6<'input>(
 fn __action7<'input>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
-    (_, fs, _): (usize, Option<Vec<String>>, usize),
+    (_, fs, _): (
+        usize,
+        Option<Vec<(predicate::Expression, Option<String>)>>,
+        usize,
+    ),
     (_, _, _): (usize, &'input str, usize),
     (_, ts, _): (usize, Vec<String>, usize),
     (_, p, _): (usize, Option<predicate::Predicate>, usize),
     (_, o, _): (usize, Option<Vec<String>>, usize),
 ) -> statement::QueryData {
     match fs {
-        Some(fields) => statement::QueryData::new_with_order(fields, ts, p, o),
+        Some(fields) => {
+            let output_fields = fields
+                .iter()
+                .map(|(expr, alias)| match (expr, alias) {
+                    (_, Some(a)) => a.clone(),
+                    (predicate::Expression::Field(f), None) => f.clone(),
+                    _ => panic!("expression without alias"),
+                })
+                .collect();
+            let extend_fields = fields
+                .into_iter()
+                .filter_map(|(expr, alias)| alias.map(|a| (expr, a)))
+                .collect();
+            statement::QueryData::new_with_order_and_extend(output_fields, ts, p, o, extend_fields)
+        }
         None => statement::QueryData::new_all_with_order(ts, p, o),
     }
 }
@@ -16588,7 +16861,7 @@ fn __action7<'input>(
 fn __action8<'input>(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> Option<Vec<String>> {
+) -> Option<Vec<(predicate::Expression, Option<String>)>> {
     None
 }
 
@@ -16600,8 +16873,8 @@ fn __action8<'input>(
 )]
 fn __action9<'input>(
     input: &'input str,
-    (_, fs, _): (usize, Vec<String>, usize),
-) -> Option<Vec<String>> {
+    (_, fs, _): (usize, Vec<(predicate::Expression, Option<String>)>, usize),
+) -> Option<Vec<(predicate::Expression, Option<String>)>> {
     Some(fs)
 }
 
@@ -16611,8 +16884,13 @@ fn __action9<'input>(
     clippy::needless_lifetimes,
     clippy::just_underscores_and_digits
 )]
-fn __action10<'input>(input: &'input str, (_, f, _): (usize, String, usize)) -> String {
-    f
+fn __action10<'input>(
+    input: &'input str,
+    (_, e, _): (usize, predicate::Expression, usize),
+    (_, _, _): (usize, &'input str, usize),
+    (_, alias, _): (usize, String, usize),
+) -> (predicate::Expression, Option<String>) {
+    (e, Some(alias))
 }
 
 #[allow(unused_variables)]
@@ -16624,10 +16902,8 @@ fn __action10<'input>(input: &'input str, (_, f, _): (usize, String, usize)) -> 
 fn __action11<'input>(
     input: &'input str,
     (_, f, _): (usize, String, usize),
-    (_, _, _): (usize, &'input str, usize),
-    (_, _alias, _): (usize, String, usize),
-) -> String {
-    f
+) -> (predicate::Expression, Option<String>) {
+    (predicate::Expression::Field(f.clone()), None)
 }
 
 #[allow(unused_variables)]
@@ -17212,9 +17488,13 @@ fn __action51<'input>(
 )]
 fn __action52<'input>(
     input: &'input str,
-    (_, mut v, _): (usize, alloc::vec::Vec<String>, usize),
-    (_, e, _): (usize, String, usize),
-) -> Vec<String> {
+    (_, mut v, _): (
+        usize,
+        alloc::vec::Vec<(predicate::Expression, Option<String>)>,
+        usize,
+    ),
+    (_, e, _): (usize, (predicate::Expression, Option<String>), usize),
+) -> Vec<(predicate::Expression, Option<String>)> {
     {
         v.push(e);
         v
@@ -17289,7 +17569,7 @@ fn __action57<'input>(
     input: &'input str,
     __lookbehind: &usize,
     __lookahead: &usize,
-) -> alloc::vec::Vec<String> {
+) -> alloc::vec::Vec<(predicate::Expression, Option<String>)> {
     alloc::vec![]
 }
 
@@ -17301,8 +17581,12 @@ fn __action57<'input>(
 )]
 fn __action58<'input>(
     input: &'input str,
-    (_, v, _): (usize, alloc::vec::Vec<String>, usize),
-) -> alloc::vec::Vec<String> {
+    (_, v, _): (
+        usize,
+        alloc::vec::Vec<(predicate::Expression, Option<String>)>,
+        usize,
+    ),
+) -> alloc::vec::Vec<(predicate::Expression, Option<String>)> {
     v
 }
 
@@ -17314,9 +17598,9 @@ fn __action58<'input>(
 )]
 fn __action59<'input>(
     input: &'input str,
-    (_, __0, _): (usize, String, usize),
+    (_, __0, _): (usize, (predicate::Expression, Option<String>), usize),
     (_, _, _): (usize, &'input str, usize),
-) -> String {
+) -> (predicate::Expression, Option<String>) {
     __0
 }
 
@@ -17544,8 +17828,8 @@ fn __action74<'input>(
 )]
 fn __action75<'input>(
     input: &'input str,
-    (_, __0, _): (usize, String, usize),
-) -> alloc::vec::Vec<String> {
+    (_, __0, _): (usize, (predicate::Expression, Option<String>), usize),
+) -> alloc::vec::Vec<(predicate::Expression, Option<String>)> {
     alloc::vec![__0]
 }
 
@@ -17557,9 +17841,13 @@ fn __action75<'input>(
 )]
 fn __action76<'input>(
     input: &'input str,
-    (_, v, _): (usize, alloc::vec::Vec<String>, usize),
-    (_, e, _): (usize, String, usize),
-) -> alloc::vec::Vec<String> {
+    (_, v, _): (
+        usize,
+        alloc::vec::Vec<(predicate::Expression, Option<String>)>,
+        usize,
+    ),
+    (_, e, _): (usize, (predicate::Expression, Option<String>), usize),
+) -> alloc::vec::Vec<(predicate::Expression, Option<String>)> {
     {
         let mut v = v;
         v.push(e);
@@ -17816,9 +18104,9 @@ fn __action90<'input>(
 )]
 fn __action91<'input>(
     input: &'input str,
-    __0: (usize, String, usize),
+    __0: (usize, (predicate::Expression, Option<String>), usize),
     __1: (usize, &'input str, usize),
-) -> alloc::vec::Vec<String> {
+) -> alloc::vec::Vec<(predicate::Expression, Option<String>)> {
     let __start0 = __0.0;
     let __end0 = __1.2;
     let __temp0 = __action59(input, __0, __1);
@@ -17834,10 +18122,14 @@ fn __action91<'input>(
 )]
 fn __action92<'input>(
     input: &'input str,
-    __0: (usize, alloc::vec::Vec<String>, usize),
-    __1: (usize, String, usize),
+    __0: (
+        usize,
+        alloc::vec::Vec<(predicate::Expression, Option<String>)>,
+        usize,
+    ),
+    __1: (usize, (predicate::Expression, Option<String>), usize),
     __2: (usize, &'input str, usize),
-) -> alloc::vec::Vec<String> {
+) -> alloc::vec::Vec<(predicate::Expression, Option<String>)> {
     let __start0 = __1.0;
     let __end0 = __2.2;
     let __temp0 = __action59(input, __1, __2);
@@ -17851,7 +18143,10 @@ fn __action92<'input>(
     clippy::needless_lifetimes,
     clippy::just_underscores_and_digits
 )]
-fn __action93<'input>(input: &'input str, __0: (usize, String, usize)) -> Vec<String> {
+fn __action93<'input>(
+    input: &'input str,
+    __0: (usize, (predicate::Expression, Option<String>), usize),
+) -> Vec<(predicate::Expression, Option<String>)> {
     let __start0 = __0.0;
     let __end0 = __0.0;
     let __temp0 = __action57(input, &__start0, &__end0);
@@ -17867,9 +18162,13 @@ fn __action93<'input>(input: &'input str, __0: (usize, String, usize)) -> Vec<St
 )]
 fn __action94<'input>(
     input: &'input str,
-    __0: (usize, alloc::vec::Vec<String>, usize),
-    __1: (usize, String, usize),
-) -> Vec<String> {
+    __0: (
+        usize,
+        alloc::vec::Vec<(predicate::Expression, Option<String>)>,
+        usize,
+    ),
+    __1: (usize, (predicate::Expression, Option<String>), usize),
+) -> Vec<(predicate::Expression, Option<String>)> {
     let __start0 = __0.0;
     let __end0 = __0.2;
     let __temp0 = __action58(input, __0);

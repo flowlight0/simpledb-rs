@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use enum_dispatch::enum_dispatch;
+use extend_plan::ExtendPlan;
 use product_plan::ProductPlan;
 use project_plan::ProjectPlan;
 use select_plan::SelectPlan;
@@ -19,6 +20,7 @@ use crate::{
     tx::transaction::Transaction,
 };
 
+pub mod extend_plan;
 pub mod product_plan;
 pub mod project_plan;
 pub mod select_plan;
@@ -30,6 +32,7 @@ pub enum Plan {
     ProductPlan(ProductPlan),
     ProjectPlan(ProjectPlan),
     SelectPlan(SelectPlan),
+    ExtendPlan(ExtendPlan),
     TablePlan(TablePlan),
     IndexJoinPlan(IndexJoinPlan),
     IndexSelectPlan(IndexSelectPlan),
