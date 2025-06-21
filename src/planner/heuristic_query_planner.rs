@@ -4,6 +4,7 @@ use crate::errors::TransactionError;
 use crate::materialization::{record_comparator::RecordComparator, sort_plan::SortPlan};
 use crate::metadata::MetadataManager;
 use crate::parser::statement::QueryData;
+use crate::plan::extend_plan::ExtendPlan;
 use crate::plan::project_plan::ProjectPlan;
 use crate::plan::{Plan, PlanControl};
 use crate::tx::transaction::Transaction;
@@ -131,12 +132,17 @@ impl QueryPlanner for HeuristicQueryPlanner {
             }
         }
 
-        // Step 4, Project on the field names
+        // Step 4, Extend fields using expressions
+        for (expr, alias) in &query.extend_fields {
+            current_plan = Plan::from(ExtendPlan::new(current_plan, expr.clone(), alias));
+        }
+
+        // Step 5, Project on the field names
         if let Some(fields) = &query.fields {
             current_plan = Plan::from(ProjectPlan::new(current_plan, fields.clone()));
         }
 
-        // Step 5, apply ordering if specified
+        // Step 6, apply ordering if specified
         if let Some(order_fields) = &query.order_by {
             let comparator = Arc::new(RecordComparator::new(order_fields));
             current_plan = Plan::from(SortPlan::new(current_plan, tx.clone(), comparator));
@@ -227,6 +233,60 @@ mod tests {
             }
         }
 
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_extend_heuristic_query_planner() -> Result<(), ExecutionError> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 1024;
+        let num_buffers = 100;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+
+        let table = "table1";
+        {
+            let mut md = db.metadata_manager.lock().unwrap();
+            let mut schema = Schema::new();
+            schema.add_i32_field("A");
+            md.create_table(table, &schema, tx.clone())?;
+            md.create_index("IA", table, "A", tx.clone())?;
+        }
+
+        for i in 0..5 {
+            let update_command = format!("INSERT INTO {} (A) VALUES ({})", table, i);
+            db.planner
+                .lock()
+                .unwrap()
+                .execute_update(&update_command, tx.clone())?;
+        }
+
+        let query = QueryData::new_with_order_and_extend(
+            vec!["B".to_string()],
+            vec![table.to_string()],
+            None,
+            None,
+            vec![(
+                Expression::Add(
+                    Box::new(Expression::Field("A".to_string())),
+                    Box::new(Expression::I32Constant(1)),
+                ),
+                "B".to_string(),
+            )],
+        );
+
+        let planner = HeuristicQueryPlanner::new(db.metadata_manager.clone());
+        let mut plan = planner.create_plan(&query, tx.clone())?;
+
+        let mut scan = plan.open(tx.clone())?;
+        scan.before_first()?;
+        for i in 0..5 {
+            assert!(scan.next()?);
+            assert_eq!(scan.get_i32("B")?, Some(i + 1));
+        }
+        assert!(!scan.next()?);
+        drop(scan);
         tx.lock().unwrap().commit()?;
         Ok(())
     }

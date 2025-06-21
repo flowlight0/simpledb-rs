@@ -6,8 +6,8 @@ use crate::{
     metadata::MetadataManager,
     parser::statement::QueryData,
     plan::{
-        product_plan::ProductPlan, project_plan::ProjectPlan, select_plan::SelectPlan,
-        table_plan::TablePlan, Plan, PlanControl,
+        extend_plan::ExtendPlan, product_plan::ProductPlan, project_plan::ProjectPlan,
+        select_plan::SelectPlan, table_plan::TablePlan, Plan, PlanControl,
     },
     tx::transaction::Transaction,
 };
@@ -63,11 +63,16 @@ impl QueryPlanner for BasicQueryPlanner {
         }
 
         // Step 4
+        for (expr, alias) in &query.extend_fields {
+            plan = Plan::from(ExtendPlan::new(plan, expr.clone(), alias));
+        }
+
+        // Step 5
         if let Some(fields) = &query.fields {
             plan = Plan::from(ProjectPlan::new(plan, fields.clone()));
         }
 
-        // Step 5
+        // Step 6
         if let Some(order_fields) = &query.order_by {
             let comparator = Arc::new(RecordComparator::new(order_fields));
             plan = Plan::from(SortPlan::new(plan, tx.clone(), comparator));
@@ -256,6 +261,64 @@ mod tests {
         for i in 0..5 {
             assert!(scan.next()?);
             assert_eq!(scan.get_i32("A")?, Some(i));
+        }
+        assert!(!scan.next()?);
+        drop(scan);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_extend_basic_query_planner() -> Result<(), TransactionError> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 256;
+        let num_buffers = 100;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+        {
+            let mut md = db.metadata_manager.lock().unwrap();
+            let mut schema = Schema::new();
+            schema.add_i32_field("A");
+            md.create_table("table1", &schema, tx.clone())?;
+        }
+
+        {
+            let layout = {
+                let md = db.metadata_manager.lock().unwrap();
+                md.get_layout("table1", tx.clone())?.unwrap()
+            };
+            let mut table_scan = TableScan::new(tx.clone(), "table1", Arc::new(layout))?;
+            table_scan.before_first()?;
+            for i in 0..5 {
+                table_scan.insert()?;
+                table_scan.set_i32("A", i)?;
+            }
+        }
+
+        let query = QueryData::new_with_order_and_extend(
+            vec!["A".to_string(), "B".to_string()],
+            vec!["table1".to_string()],
+            None,
+            None,
+            vec![(
+                Expression::Add(
+                    Box::new(Expression::Field("A".to_string())),
+                    Box::new(Expression::I32Constant(1)),
+                ),
+                "B".to_string(),
+            )],
+        );
+
+        let planner = BasicQueryPlanner::new(db.metadata_manager.clone());
+        let mut plan = planner.create_plan(&query, tx.clone())?;
+
+        let mut scan = plan.open(tx.clone())?;
+        scan.before_first()?;
+        for i in 0..5 {
+            assert!(scan.next()?);
+            assert_eq!(scan.get_i32("A")?, Some(i));
+            assert_eq!(scan.get_i32("B")?, Some(i + 1));
         }
         assert!(!scan.next()?);
         drop(scan);

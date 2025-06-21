@@ -23,6 +23,7 @@ The following issues correspond to finished exercises from the book:
 - [Exercise 9.12](https://github.com/flowlight0/simpledb-rs/issues/114): Allow keyword "AS" in queries
 - [Exercise 9.15](https://github.com/flowlight0/simpledb-rs/issues/79): Introduce "\*" character in the select clause
 - [Exercise 9.18](https://github.com/flowlight0/simpledb-rs/issues/83): More null handling in query processing
+- [Exercise 10.14](https://github.com/flowlight0/simpledb-rs/issues/122): Handle `AS` keyword in queries
 - [Exercise 11.4](https://github.com/flowlight0/simpledb-rs/issues/63): Implement methods 'beforeFirst' and 'absolute(int n)' for ResultSet
 - [Exercise 11.5](https://github.com/flowlight0/simpledb-rs/issues/72): Modify ResultSet to support previous and after_last
 - [Exercise 11.6](https://github.com/flowlight0/simpledb-rs/issues/85): Implement wasNull method for ResultSet

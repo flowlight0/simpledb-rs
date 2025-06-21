@@ -53,19 +53,39 @@ pub Statement: statement::Statement = {
 
 pub Query: statement::QueryData = {
     SELECT <fs:FieldList> FROM <ts:Comma<IdToken>> <p:OptPredicate> <o:OptOrderBy> => match fs {
-        Some(fields) => statement::QueryData::new_with_order(fields, ts, p, o),
-        None => statement::QueryData::new_all_with_order(ts, p, o),
+        Some(fields) => {
+            let output_fields = fields
+                .iter()
+                .map(|(expr, alias)| match (expr, alias) {
+                    (_, Some(a)) => a.clone(),
+                    (predicate::Expression::Field(f), None) => f.clone(),
+                    _ => panic!("expression without alias"),
+                })
+                .collect();
+            let extend_fields = fields
+                .into_iter()
+                .filter_map(|(expr, alias)| alias.map(|a| (expr, a)))
+                .collect();
+            statement::QueryData::new_with_order_and_extend(
+                output_fields,
+                ts,
+                p,
+                o,
+                extend_fields,
+            )
+        }
+        None => statement::QueryData::new_all_with_order_and_extend(ts, p, o, vec![]),
     },
 }
 
-FieldList: Option<Vec<String>> = {
+FieldList: Option<Vec<(predicate::Expression, Option<String>)>> = {
     STAR => None,
     <fs:Comma<SelectField>> => Some(fs),
 };
 
-SelectField: String = {
-    <f:IdToken> => f,
-    <f:IdToken> AS <_alias:IdToken> => f,
+SelectField: (predicate::Expression, Option<String>) = {
+    <e:Expression> AS <alias:IdToken> => (e, Some(alias)),
+    <f:IdToken> => (predicate::Expression::Field(f.clone()), None),
 };
 
 OptPredicate: Option<predicate::Predicate> = {

@@ -224,10 +224,34 @@ mod tests {
             grammar::StatementParser::new()
                 .parse("SELECT col AS alias FROM tbl")
                 .unwrap(),
-            Statement::Query(QueryData::new(
-                vec!["col".to_string()],
+            Statement::Query(QueryData::new_with_order_and_extend(
+                vec!["alias".to_string()],
                 vec!["tbl".to_string()],
                 None,
+                None,
+                vec![(Expression::Field("col".to_string()), "alias".to_string())],
+            ))
+        );
+    }
+
+    #[test]
+    fn test_select_expression_as_alias() {
+        assert_eq!(
+            grammar::StatementParser::new()
+                .parse("SELECT a + 1 AS b FROM tbl")
+                .unwrap(),
+            Statement::Query(QueryData::new_with_order_and_extend(
+                vec!["b".to_string()],
+                vec!["tbl".to_string()],
+                None,
+                None,
+                vec![(
+                    Expression::Add(
+                        Box::new(Expression::Field("a".to_string())),
+                        Box::new(Expression::I32Constant(1)),
+                    ),
+                    "b".to_string(),
+                ),],
             ))
         );
     }

@@ -14,15 +14,16 @@ pub struct QueryData {
     pub tables: Vec<String>,
     pub predicate: Option<Predicate>,
     pub order_by: Option<Vec<String>>, // None means no ordering
+    pub extend_fields: Vec<(Expression, String)>,
 }
 
 impl QueryData {
     pub fn new(fields: Vec<String>, tables: Vec<String>, predicate: Option<Predicate>) -> Self {
-        QueryData::new_with_order(fields, tables, predicate, None)
+        QueryData::new_with_order_and_extend(fields, tables, predicate, None, vec![])
     }
 
     pub fn new_all(tables: Vec<String>, predicate: Option<Predicate>) -> Self {
-        QueryData::new_all_with_order(tables, predicate, None)
+        QueryData::new_all_with_order_and_extend(tables, predicate, None, vec![])
     }
 
     pub fn new_with_order(
@@ -36,6 +37,7 @@ impl QueryData {
             tables,
             predicate,
             order_by,
+            extend_fields: Vec::new(),
         }
     }
 
@@ -49,6 +51,38 @@ impl QueryData {
             tables,
             predicate,
             order_by,
+            extend_fields: Vec::new(),
+        }
+    }
+
+    pub fn new_with_order_and_extend(
+        fields: Vec<String>,
+        tables: Vec<String>,
+        predicate: Option<Predicate>,
+        order_by: Option<Vec<String>>,
+        extend_fields: Vec<(Expression, String)>,
+    ) -> Self {
+        QueryData {
+            fields: Some(fields),
+            tables,
+            predicate,
+            order_by,
+            extend_fields,
+        }
+    }
+
+    pub fn new_all_with_order_and_extend(
+        tables: Vec<String>,
+        predicate: Option<Predicate>,
+        order_by: Option<Vec<String>>,
+        extend_fields: Vec<(Expression, String)>,
+    ) -> Self {
+        QueryData {
+            fields: None,
+            tables,
+            predicate,
+            order_by,
+            extend_fields,
         }
     }
 }
