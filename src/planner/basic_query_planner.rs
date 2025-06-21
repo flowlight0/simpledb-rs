@@ -68,14 +68,14 @@ impl QueryPlanner for BasicQueryPlanner {
         }
 
         // Step 5
-        if let Some(fields) = &query.fields {
-            plan = Plan::from(ProjectPlan::new(plan, fields.clone()));
-        }
-
-        // Step 6
         if let Some(order_fields) = &query.order_by {
             let comparator = Arc::new(RecordComparator::new(order_fields));
             plan = Plan::from(SortPlan::new(plan, tx.clone(), comparator));
+        }
+
+        // Step 6
+        if let Some(fields) = &query.fields {
+            plan = Plan::from(ProjectPlan::new(plan, fields.clone()));
         }
 
         Ok(plan)

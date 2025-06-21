@@ -137,15 +137,15 @@ impl QueryPlanner for HeuristicQueryPlanner {
             current_plan = Plan::from(ExtendPlan::new(current_plan, expr.clone(), alias));
         }
 
-        // Step 5, Project on the field names
-        if let Some(fields) = &query.fields {
-            current_plan = Plan::from(ProjectPlan::new(current_plan, fields.clone()));
-        }
-
-        // Step 6, apply ordering if specified
+        // Step 5, apply ordering if specified
         if let Some(order_fields) = &query.order_by {
             let comparator = Arc::new(RecordComparator::new(order_fields));
             current_plan = Plan::from(SortPlan::new(current_plan, tx.clone(), comparator));
+        }
+
+        // Step 6, Project on the field names
+        if let Some(fields) = &query.fields {
+            current_plan = Plan::from(ProjectPlan::new(current_plan, fields.clone()));
         }
 
         Ok(current_plan)
