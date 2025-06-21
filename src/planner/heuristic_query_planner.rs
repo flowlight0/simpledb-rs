@@ -358,4 +358,56 @@ mod tests {
         tx.lock().unwrap().commit()?;
         Ok(())
     }
+
+    #[test]
+    fn test_group_by_alias_heuristic_query_planner() -> Result<(), ExecutionError> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 1024;
+        let num_buffers = 100;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+
+        let table = "table1";
+        {
+            let mut md = db.metadata_manager.lock().unwrap();
+            let mut schema = Schema::new();
+            schema.add_i32_field("A");
+            schema.add_i32_field("B");
+            md.create_table(table, &schema, tx.clone())?;
+            md.create_index("IA", table, "A", tx.clone())?;
+        }
+
+        for i in 0..50 {
+            let update_command = format!("INSERT INTO {} (A, B) VALUES ({}, {})", table, i / 5, i);
+            db.planner
+                .lock()
+                .unwrap()
+                .execute_update(&update_command, tx.clone())?;
+        }
+
+        let query = QueryData::new_full(
+            Some(vec!["A".to_string(), "total".to_string()]),
+            vec![table.to_string()],
+            None,
+            Some(vec!["A".to_string()]),
+            None,
+            Vec::new(),
+            vec![AggregationFn::from(SumFn::new("B").with_alias("total"))],
+        );
+
+        let planner = HeuristicQueryPlanner::new(db.metadata_manager.clone());
+        let mut plan = planner.create_plan(&query, tx.clone())?;
+
+        let mut scan = plan.open(tx.clone())?;
+        scan.before_first()?;
+        for i in 0..10 {
+            assert!(scan.next()?);
+            assert_eq!(scan.get_i32("A")?, Some(i));
+            assert_eq!(scan.get_i32("total")?, Some(25 * i + 10));
+        }
+        assert!(!scan.next()?);
+        drop(scan);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
 }

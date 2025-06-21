@@ -6,6 +6,7 @@ pub mod statement;
 #[cfg(test)]
 mod tests {
     use crate::{
+        materialization::{aggregation_function::AggregationFn, sum_function::SumFn},
         parser::{
             expression::Expression,
             grammar,
@@ -254,6 +255,24 @@ mod tests {
                     ),
                     "b".to_string(),
                 ),],
+            ))
+        );
+    }
+
+    #[test]
+    fn test_select_aggregation_as_alias() {
+        assert_eq!(
+            grammar::StatementParser::new()
+                .parse("SELECT SUM(val) AS total FROM t GROUP BY val")
+                .unwrap(),
+            Statement::Query(QueryData::new_full(
+                Some(vec!["total".to_string()]),
+                vec!["t".to_string()],
+                None,
+                Some(vec!["val".to_string()]),
+                None,
+                Vec::new(),
+                vec![AggregationFn::from(SumFn::new("val").with_alias("total"))],
             ))
         );
     }

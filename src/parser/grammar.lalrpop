@@ -113,6 +113,7 @@ FieldList: Option<Vec<statement::SelectField>> = {
 SelectField: statement::SelectField = {
     <e:Expression> AS <alias:IdToken> => statement::SelectField::Expression(e, Some(alias)),
     <e:Expression> => statement::SelectField::Expression(e, None),
+    <a:AggregationFn> AS <alias:IdToken> => statement::SelectField::Aggregation(a.with_alias(&alias)),
     <a:AggregationFn> => statement::SelectField::Aggregation(a),
 };
 

@@ -10,6 +10,7 @@ use super::aggregation_function::AggregationFnControl;
 pub struct MaxFn {
     max_value: Option<Value>,
     field_name: String,
+    alias: Option<String>,
 }
 
 impl MaxFn {
@@ -17,7 +18,17 @@ impl MaxFn {
         MaxFn {
             max_value: None,
             field_name: field_name.to_string(),
+            alias: None,
         }
+    }
+
+    pub fn with_alias(mut self, alias: &str) -> Self {
+        self.alias = Some(alias.to_string());
+        self
+    }
+
+    pub fn input_field_name(&self) -> &str {
+        &self.field_name
     }
 }
 
@@ -48,7 +59,7 @@ impl AggregationFnControl for MaxFn {
     }
 
     fn get_field_name(&self) -> &str {
-        &self.field_name
+        self.alias.as_deref().unwrap_or(&self.field_name)
     }
 
     fn get_value(&self) -> Option<Value> {

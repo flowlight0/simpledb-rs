@@ -36,7 +36,8 @@ impl GroupByPlan {
         }
         for aggregation_fn in &aggregation_functions {
             let field_name = aggregation_fn.get_field_name();
-            schema.add_field(&field_name, &plan.schema().get_field_spec(field_name));
+            let input_name = aggregation_fn.input_field_name();
+            schema.add_field(&field_name, &plan.schema().get_field_spec(input_name));
         }
 
         let comparator = Arc::new(RecordComparator::new(&group_fields));
