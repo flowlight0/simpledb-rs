@@ -1,6 +1,6 @@
 use crate::record::field::{Spec, Value};
 
-use super::predicate::{Expression, Predicate};
+use super::{expression::Expression, predicate::Predicate};
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Statement {

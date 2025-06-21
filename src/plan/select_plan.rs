@@ -68,7 +68,7 @@ mod tests {
     use super::*;
     use crate::db::SimpleDB;
 
-    use crate::parser::predicate::{Expression, Term};
+    use crate::parser::{expression::Expression, predicate::Term};
     use crate::plan::select_plan;
     use crate::plan::table_plan::TablePlan;
     use crate::record::layout::Layout;

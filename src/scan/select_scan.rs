@@ -90,7 +90,7 @@ mod tests {
 
     use super::*;
     use crate::db::SimpleDB;
-    use crate::parser::predicate::{Expression, Term};
+    use crate::parser::{expression::Expression, predicate::Term};
     use crate::record::field::Value;
     use crate::record::layout::Layout;
     use crate::record::schema::Schema;

@@ -158,7 +158,10 @@ mod tests {
     use crate::{
         db::SimpleDB,
         errors::ExecutionError,
-        parser::predicate::{Expression, Predicate, Term},
+        parser::{
+            expression::Expression,
+            predicate::{Predicate, Term},
+        },
         record::schema::Schema,
         scan::ScanControl,
     };

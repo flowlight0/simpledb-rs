@@ -1,3 +1,4 @@
+pub mod expression;
 pub mod grammar;
 pub mod predicate;
 pub mod statement;
@@ -6,8 +7,9 @@ pub mod statement;
 mod tests {
     use crate::{
         parser::{
+            expression::Expression,
             grammar,
-            predicate::{Expression, Predicate, Term},
+            predicate::{Predicate, Term},
             statement::{CreateCommand, FieldDefinition, QueryData, Statement, UpdateCommand},
         },
         record::field::{Spec, Value},

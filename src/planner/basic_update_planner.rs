@@ -4,7 +4,8 @@ use crate::{
     errors::TransactionError,
     metadata::MetadataManager,
     parser::{
-        predicate::{Expression, Predicate},
+        expression::Expression,
+        predicate::Predicate,
         statement::{CreateCommand, UpdateCommand},
     },
     plan::{select_plan::SelectPlan, table_plan::TablePlan, Plan, PlanControl},
@@ -132,7 +133,10 @@ mod tests {
     use super::*;
     use crate::db::SimpleDB;
 
-    use crate::parser::predicate::{Expression, Predicate, Term};
+    use crate::parser::{
+        expression::Expression,
+        predicate::{Predicate, Term},
+    };
 
     use crate::parser::statement::{FieldDefinition, QueryData};
 

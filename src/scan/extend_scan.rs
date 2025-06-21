@@ -1,4 +1,4 @@
-use crate::{errors::TransactionError, parser::predicate::Expression, record::field::Value};
+use crate::{errors::TransactionError, parser::expression::Expression, record::field::Value};
 
 use super::{Scan, ScanControl};
 
@@ -70,7 +70,7 @@ mod tests {
 
     use crate::{
         db::SimpleDB,
-        parser::predicate::Expression,
+        parser::expression::Expression,
         record::{layout::Layout, schema::Schema},
         scan::table_scan::TableScan,
         scan::ScanControl,

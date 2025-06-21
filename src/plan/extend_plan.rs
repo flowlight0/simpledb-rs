@@ -2,7 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::{
     errors::TransactionError,
-    parser::predicate::Expression,
+    parser::expression::Expression,
     record::{field::Spec, schema::Schema},
     scan::{extend_scan::ExtendScan, Scan},
     tx::transaction::Transaction,
