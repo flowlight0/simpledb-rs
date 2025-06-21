@@ -23,7 +23,7 @@ impl QueryData {
     }
 
     pub fn new_all(tables: Vec<String>, predicate: Option<Predicate>) -> Self {
-        QueryData::new_all_with_order_and_extend(tables, predicate, None, vec![])
+        QueryData::new_all_with_order(tables, predicate, None)
     }
 
     pub fn new_with_order(

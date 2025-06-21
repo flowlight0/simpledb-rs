@@ -74,7 +74,7 @@ pub Query: statement::QueryData = {
                 extend_fields,
             )
         }
-        None => statement::QueryData::new_all_with_order_and_extend(ts, p, o, vec![]),
+        None => statement::QueryData::new_all_with_order(ts, p, o),
     },
 }
 

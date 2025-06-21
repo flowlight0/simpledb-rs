@@ -16848,7 +16848,7 @@ fn __action7<'input>(
                 .collect();
             statement::QueryData::new_with_order_and_extend(output_fields, ts, p, o, extend_fields)
         }
-        None => statement::QueryData::new_all_with_order_and_extend(ts, p, o, vec![]),
+        None => statement::QueryData::new_all_with_order(ts, p, o),
     }
 }
 
