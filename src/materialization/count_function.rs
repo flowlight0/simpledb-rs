@@ -6,7 +6,7 @@ use crate::{
 
 use super::aggregation_function::AggregationFnControl;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct CountFn {
     count: i32,
     field_name: String,

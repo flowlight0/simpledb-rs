@@ -2,7 +2,9 @@ use std::sync::{Arc, Mutex};
 
 use crate::{
     errors::TransactionError,
-    materialization::{record_comparator::RecordComparator, sort_plan::SortPlan},
+    materialization::{
+        group_by_plan::GroupByPlan, record_comparator::RecordComparator, sort_plan::SortPlan,
+    },
     metadata::MetadataManager,
     parser::statement::QueryData,
     plan::{
@@ -63,17 +65,27 @@ impl QueryPlanner for BasicQueryPlanner {
         }
 
         // Step 4
+        if let Some(group_fields) = &query.group_by {
+            plan = Plan::from(GroupByPlan::new(
+                tx.clone(),
+                plan,
+                group_fields.clone(),
+                query.aggregation_functions.clone(),
+            ));
+        }
+
+        // Step 5
         for (expr, alias) in &query.extend_fields {
             plan = Plan::from(ExtendPlan::new(plan, expr.clone(), alias));
         }
 
-        // Step 5
+        // Step 6
         if let Some(order_fields) = &query.order_by {
             let comparator = Arc::new(RecordComparator::new(order_fields));
             plan = Plan::from(SortPlan::new(plan, tx.clone(), comparator));
         }
 
-        // Step 6
+        // Step 7
         if let Some(fields) = &query.fields {
             plan = Plan::from(ProjectPlan::new(plan, fields.clone()));
         }

@@ -1,7 +1,9 @@
 use std::sync::{Arc, Mutex};
 
 use crate::errors::TransactionError;
-use crate::materialization::{record_comparator::RecordComparator, sort_plan::SortPlan};
+use crate::materialization::{
+    group_by_plan::GroupByPlan, record_comparator::RecordComparator, sort_plan::SortPlan,
+};
 use crate::metadata::MetadataManager;
 use crate::parser::statement::QueryData;
 use crate::plan::extend_plan::ExtendPlan;
@@ -132,18 +134,28 @@ impl QueryPlanner for HeuristicQueryPlanner {
             }
         }
 
-        // Step 4, Extend fields using expressions
+        // Step 4, Group by if specified
+        if let Some(group_fields) = &query.group_by {
+            current_plan = Plan::from(GroupByPlan::new(
+                tx.clone(),
+                current_plan,
+                group_fields.clone(),
+                query.aggregation_functions.clone(),
+            ));
+        }
+
+        // Step 5, Extend fields using expressions
         for (expr, alias) in &query.extend_fields {
             current_plan = Plan::from(ExtendPlan::new(current_plan, expr.clone(), alias));
         }
 
-        // Step 5, apply ordering if specified
+        // Step 6, apply ordering if specified
         if let Some(order_fields) = &query.order_by {
             let comparator = Arc::new(RecordComparator::new(order_fields));
             current_plan = Plan::from(SortPlan::new(current_plan, tx.clone(), comparator));
         }
 
-        // Step 6, Project on the field names
+        // Step 7, Project on the field names
         if let Some(fields) = &query.fields {
             current_plan = Plan::from(ProjectPlan::new(current_plan, fields.clone()));
         }

@@ -3,6 +3,15 @@ use super::statement;
 use super::predicate;
 use super::expression;
 use crate::record::field::{Spec, Value};
+use crate::materialization::{
+    aggregation_function::AggregationFn,
+    aggregation_function::AggregationFnControl,
+    avg_function::AvgFn,
+    count_function::CountFn,
+    max_function::MaxFn,
+    min_function::MinFn,
+    sum_function::SumFn,
+};
 
 grammar;
 
@@ -20,6 +29,12 @@ match {
     r"(?i)TABLE" => TABLE,
     r"(?i)VIEW" => VIEW,
     r"(?i)INDEX" => INDEX,
+    r"(?i)GROUP" => GROUP,
+    r"(?i)MAX" => MAX,
+    r"(?i)MIN" => MIN,
+    r"(?i)SUM" => SUM,
+    r"(?i)COUNT" => COUNT,
+    r"(?i)AVG" => AVG,
     r"(?i)ORDER" => ORDER,
     r"(?i)BY" => BY,
     r"(?i)ON" => ON,
@@ -53,44 +68,69 @@ pub Statement: statement::Statement = {
 }
 
 pub Query: statement::QueryData = {
-    SELECT <fs:FieldList> FROM <ts:Comma<IdToken>> <p:OptPredicate> <o:OptOrderBy> => match fs {
+    SELECT <fs:FieldList> FROM <ts:Comma<IdToken>> <p:OptPredicate> <g:OptGroupBy> <o:OptOrderBy> => match fs {
         Some(fields) => {
-            let output_fields = fields
-                .iter()
-                .map(|(expr, alias)| match (expr, alias) {
-                    (_, Some(a)) => a.clone(),
-                    (expression::Expression::Field(f), None) => f.clone(),
-                    _ => panic!("expression without alias"),
-                })
-                .collect();
-            let extend_fields = fields
-                .into_iter()
-                .filter_map(|(expr, alias)| alias.map(|a| (expr, a)))
-                .collect();
-            statement::QueryData::new_with_order_and_extend(
-                output_fields,
+            let mut output_fields = Vec::new();
+            let mut extend_fields = Vec::new();
+            let mut aggregation_functions = Vec::new();
+            for field in fields.into_iter() {
+                match field {
+                    statement::SelectField::Expression(expr, alias) => match alias {
+                        Some(a) => {
+                            output_fields.push(a.clone());
+                            extend_fields.push((expr, a));
+                        }
+                        None => match expr.try_get_field() {
+                            Some(f) => output_fields.push(f.to_string()),
+                            None => panic!("expression without alias"),
+                        },
+                    },
+                    statement::SelectField::Aggregation(af) => {
+                        output_fields.push(af.get_field_name().to_string());
+                        aggregation_functions.push(af);
+                    }
+                }
+            }
+            statement::QueryData::new_full(
+                Some(output_fields),
                 ts,
                 p,
+                g,
                 o,
                 extend_fields,
+                aggregation_functions,
             )
         }
-        None => statement::QueryData::new_all_with_order(ts, p, o),
+        None => statement::QueryData::new_full(None, ts, p, g, o, Vec::new(), Vec::new()),
     },
 }
 
-FieldList: Option<Vec<(expression::Expression, Option<String>)>> = {
+FieldList: Option<Vec<statement::SelectField>> = {
     STAR => None,
     <fs:Comma<SelectField>> => Some(fs),
 };
 
-SelectField: (expression::Expression, Option<String>) = {
-    <e:Expression> AS <alias:IdToken> => (e, Some(alias)),
-    <f:IdToken> => (expression::Expression::Field(f.clone()), None),
+SelectField: statement::SelectField = {
+    <e:Expression> AS <alias:IdToken> => statement::SelectField::Expression(e, Some(alias)),
+    <e:Expression> => statement::SelectField::Expression(e, None),
+    <a:AggregationFn> => statement::SelectField::Aggregation(a),
+};
+
+AggregationFn: AggregationFn = {
+    MAX LPAREN <f:IdToken> RPAREN => AggregationFn::from(MaxFn::new(&f)),
+    MIN LPAREN <f:IdToken> RPAREN => AggregationFn::from(MinFn::new(&f)),
+    SUM LPAREN <f:IdToken> RPAREN => AggregationFn::from(SumFn::new(&f)),
+    COUNT LPAREN <f:IdToken> RPAREN => AggregationFn::from(CountFn::new(&f)),
+    AVG LPAREN <f:IdToken> RPAREN => AggregationFn::from(AvgFn::new(&f)),
 };
 
 OptPredicate: Option<predicate::Predicate> = {
     WHERE <p:Predicate> => Some(p),
+    => None,
+};
+
+OptGroupBy: Option<Vec<String>> = {
+    GROUP BY <os:Comma<IdToken>> => Some(os),
     => None,
 };
 

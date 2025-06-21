@@ -6,7 +6,7 @@ use crate::{
 
 use super::aggregation_function::AggregationFnControl;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct MinFn {
     min_value: Option<Value>,
     field_name: String,
