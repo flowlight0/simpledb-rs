@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    errors::TransactionError,
+    errors::{ExecutionError, QueryError},
     materialization::{record_comparator::RecordComparator, sort_plan::SortPlan},
     metadata::MetadataManager,
     parser::statement::QueryData,
@@ -29,10 +29,16 @@ impl QueryPlanner for BasicQueryPlanner {
         &self,
         query: &QueryData,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Plan, TransactionError> {
+    ) -> Result<Plan, ExecutionError> {
         // Step 1
         let mut plans = vec![];
         for table_name in &query.tables {
+            {
+                let md = self.metadata_manager.lock().unwrap();
+                if md.get_layout(table_name, tx.clone())?.is_none() {
+                    return Err(QueryError::TableNotFound(table_name.to_string()).into());
+                }
+            }
             let table_plan = TablePlan::new(tx.clone(), table_name, self.metadata_manager.clone())?;
             plans.push(Plan::from(table_plan));
         }
@@ -87,6 +93,7 @@ mod tests {
 
     use super::*;
     use crate::db::SimpleDB;
+    use crate::errors::{ExecutionError, QueryError};
 
     use crate::parser::{
         expression::Expression,
@@ -98,7 +105,7 @@ mod tests {
     use crate::scan::ScanControl;
 
     #[test]
-    fn test_basic_query_planner() -> Result<(), TransactionError> {
+    fn test_basic_query_planner() -> Result<(), ExecutionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 100;
@@ -168,7 +175,7 @@ mod tests {
     }
 
     #[test]
-    fn test_select_all_basic_query_planner() -> Result<(), TransactionError> {
+    fn test_select_all_basic_query_planner() -> Result<(), ExecutionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 100;
@@ -222,7 +229,7 @@ mod tests {
     }
 
     #[test]
-    fn test_order_by_basic_query_planner() -> Result<(), TransactionError> {
+    fn test_order_by_basic_query_planner() -> Result<(), ExecutionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 100;
@@ -272,7 +279,7 @@ mod tests {
     }
 
     #[test]
-    fn test_extend_basic_query_planner() -> Result<(), TransactionError> {
+    fn test_extend_basic_query_planner() -> Result<(), ExecutionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 100;
@@ -325,6 +332,26 @@ mod tests {
         }
         assert!(!scan.next()?);
         drop(scan);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_invalid_table_basic_query_planner() -> Result<(), ExecutionError> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 256;
+        let num_buffers = 100;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+
+        let planner = BasicQueryPlanner::new(db.metadata_manager.clone());
+        let query = QueryData::new_all(vec!["nosuchtable".to_string()], None);
+        let result = planner.create_plan(&query, tx.clone());
+        assert!(matches!(
+            result,
+            Err(ExecutionError::QueryError(QueryError::TableNotFound(_)))
+        ));
         tx.lock().unwrap().commit()?;
         Ok(())
     }

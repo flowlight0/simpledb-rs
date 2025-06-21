@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 
-use crate::errors::TransactionError;
+use crate::errors::{ExecutionError, QueryError, TransactionError};
 use crate::materialization::{record_comparator::RecordComparator, sort_plan::SortPlan};
 use crate::metadata::MetadataManager;
 use crate::parser::statement::QueryData;
@@ -100,10 +100,16 @@ impl QueryPlanner for HeuristicQueryPlanner {
         &self,
         query: &QueryData,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Plan, TransactionError> {
+    ) -> Result<Plan, ExecutionError> {
         // Step 1, Create a TablePlanner object for each mentioned table
         let mut table_planners = vec![];
         for table_name in &query.tables {
+            {
+                let md = self.metadata_manager.lock().unwrap();
+                if md.get_layout(table_name, tx.clone())?.is_none() {
+                    return Err(QueryError::TableNotFound(table_name.to_string()).into());
+                }
+            }
             let table_planner = TablePlanner::new(
                 table_name,
                 &query.predicate,

@@ -4,7 +4,7 @@ use std::{
 };
 
 use crate::{
-    errors::TransactionError,
+    errors::{ExecutionError, QueryError, TransactionError},
     index::plan::{index_join_plan::IndexJoinPlan, index_select_plan::IndexSelectPlan},
     metadata::{index_manager::IndexInfo, MetadataManager},
     multibuffer::multibuffer_product_plan::MultiBufferProductPlan,
@@ -27,7 +27,13 @@ impl TablePlanner {
         predicate: &Option<Predicate>,
         tx: Arc<Mutex<Transaction>>,
         metadata_manager: Arc<Mutex<MetadataManager>>,
-    ) -> Result<Self, TransactionError> {
+    ) -> Result<Self, ExecutionError> {
+        {
+            let md = metadata_manager.lock().unwrap();
+            if md.get_layout(table_name, tx.clone())?.is_none() {
+                return Err(QueryError::TableNotFound(table_name.to_string()).into());
+            }
+        }
         let table_plan = TablePlan::new(tx.clone(), table_name, metadata_manager.clone())?;
         let index_info_map = metadata_manager
             .lock()

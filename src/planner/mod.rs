@@ -23,7 +23,7 @@ pub trait QueryPlanner: Send + Sync {
         &self,
         query: &QueryData,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Plan, TransactionError>;
+    ) -> Result<Plan, ExecutionError>;
 }
 
 pub trait UpdatePlanner: Send + Sync {

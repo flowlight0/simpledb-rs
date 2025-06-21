@@ -132,6 +132,7 @@ impl UpdatePlanner for BasicUpdatePlanner {
 mod tests {
     use super::*;
     use crate::db::SimpleDB;
+    use crate::errors::ExecutionError;
 
     use crate::parser::{
         expression::Expression,
@@ -145,7 +146,7 @@ mod tests {
     use crate::record::field::Spec;
 
     #[test]
-    fn test_basic_update_planner() -> Result<(), TransactionError> {
+    fn test_basic_update_planner() -> Result<(), ExecutionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 100;

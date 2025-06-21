@@ -23,6 +23,9 @@ pub enum TransactionError {
 pub enum QueryError {
     #[error("ParseError: {0}")]
     ParseError(ParseError<usize, String, String>),
+
+    #[error("Table not found: {0}")]
+    TableNotFound(String),
 }
 
 impl From<ParseError<usize, Token<'_>, &str>> for QueryError {
@@ -66,6 +69,7 @@ mod tests {
                     }
                 );
             }
+            _ => panic!("Unexpected variant"),
         }
     }
 }
