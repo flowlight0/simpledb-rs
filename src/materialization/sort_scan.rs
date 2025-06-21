@@ -124,9 +124,10 @@ impl ScanControl for SortScan {
     }
 
     fn has_field(&self, field_name: &str) -> bool {
-        self.scans[self.current_scan_index.unwrap()]
-            .borrow()
-            .has_field(field_name)
+        // All runs share the same schema so just check the first scan.
+        // `current_scan_index` might be `None` before iteration starts,
+        // which caused a panic when this method was called by `ProjectScan`.
+        self.scans[0].borrow().has_field(field_name)
     }
 }
 
