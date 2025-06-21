@@ -8,6 +8,52 @@ This repository is a Rust implementation of SimpleDB from the book "[Database De
 
 The main goal of this repoistory is my own learning. The code from Chapter 3 to Chapter 15 of the book was originally implemented in Java, and I have re-implemented it in Rust. I will add the code for the exercises of each chapter when I feel like it.
 
+
+## Usage
+
+Three binaries are available:
+
+- **create_student_db**: build the example `studentdb` database.
+- **client**: interactive shell using the embedded driver.
+- **server**: exposes SimpleDB over gRPC for the network driver.
+
+### Example (embedded)
+
+Run the setup script and issue a few queries:
+
+```bash
+$ cargo run --bin create_student_db
+$ cargo run --bin client -- jdbc:simpledb:studentdb
+SQL (studentdb)> SELECT SName FROM STUDENT WHERE SId=1;
+     SName
+----------
+joe
+SQL (studentdb)> INSERT INTO STUDENT(SId,SName,MajorId,GradYear) VALUES (10,'dan',10,2021);
+1 records processed
+SQL (studentdb)> SELECT SName, DName FROM STUDENT, DEPT WHERE MajorId=DId;
+joe | compsci
+...
+```
+
+Supported commands include `SELECT`, `INSERT`, `DELETE`, joins, and simple aggregation.
+
+### Remote server
+
+Start the gRPC server:
+
+```bash
+$ cargo run --bin server
+```
+
+Applications can connect using `NetworkDriver`:
+
+```rust
+use simpledb_rs::driver::{Driver, DriverControl};
+use simpledb_rs::driver::network::driver::NetworkDriver;
+
+let driver = Driver::Network(NetworkDriver::new());
+let (_db, mut conn) = driver.connect("jdbc:simpledb://127.0.0.1")?;
+```
 ## Completed excercises
 
 The following issues correspond to finished exercises from the book:
