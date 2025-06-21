@@ -1,7 +1,9 @@
 use std::sync::{Arc, Mutex};
 
 use crate::errors::TransactionError;
-use crate::materialization::{record_comparator::RecordComparator, sort_plan::SortPlan};
+use crate::materialization::{
+    group_by_plan::GroupByPlan, record_comparator::RecordComparator, sort_plan::SortPlan,
+};
 use crate::metadata::MetadataManager;
 use crate::parser::statement::QueryData;
 use crate::plan::extend_plan::ExtendPlan;
@@ -132,18 +134,28 @@ impl QueryPlanner for HeuristicQueryPlanner {
             }
         }
 
-        // Step 4, Extend fields using expressions
+        // Step 4, Group by if specified
+        if let Some(group_fields) = &query.group_by {
+            current_plan = Plan::from(GroupByPlan::new(
+                tx.clone(),
+                current_plan,
+                group_fields.clone(),
+                query.aggregation_functions.clone(),
+            ));
+        }
+
+        // Step 5, Extend fields using expressions
         for (expr, alias) in &query.extend_fields {
             current_plan = Plan::from(ExtendPlan::new(current_plan, expr.clone(), alias));
         }
 
-        // Step 5, apply ordering if specified
+        // Step 6, apply ordering if specified
         if let Some(order_fields) = &query.order_by {
             let comparator = Arc::new(RecordComparator::new(order_fields));
             current_plan = Plan::from(SortPlan::new(current_plan, tx.clone(), comparator));
         }
 
-        // Step 6, Project on the field names
+        // Step 7, Project on the field names
         if let Some(fields) = &query.fields {
             current_plan = Plan::from(ProjectPlan::new(current_plan, fields.clone()));
         }
@@ -158,6 +170,7 @@ mod tests {
     use crate::{
         db::SimpleDB,
         errors::ExecutionError,
+        materialization::{aggregation_function::AggregationFn, sum_function::SumFn},
         parser::{
             expression::Expression,
             predicate::{Predicate, Term},
@@ -287,6 +300,110 @@ mod tests {
         for i in 0..5 {
             assert!(scan.next()?);
             assert_eq!(scan.get_i32("B")?, Some(i + 1));
+        }
+        assert!(!scan.next()?);
+        drop(scan);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_group_by_heuristic_query_planner() -> Result<(), ExecutionError> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 1024;
+        let num_buffers = 100;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+
+        let table = "table1";
+        {
+            let mut md = db.metadata_manager.lock().unwrap();
+            let mut schema = Schema::new();
+            schema.add_i32_field("A");
+            schema.add_i32_field("B");
+            md.create_table(table, &schema, tx.clone())?;
+            md.create_index("IA", table, "A", tx.clone())?;
+        }
+
+        for i in 0..50 {
+            let update_command = format!("INSERT INTO {} (A, B) VALUES ({}, {})", table, i / 5, i);
+            db.planner
+                .lock()
+                .unwrap()
+                .execute_update(&update_command, tx.clone())?;
+        }
+
+        let query = QueryData::new_full(
+            Some(vec!["A".to_string(), "B".to_string()]),
+            vec![table.to_string()],
+            None,
+            Some(vec!["A".to_string()]),
+            None,
+            Vec::new(),
+            vec![AggregationFn::from(SumFn::new("B"))],
+        );
+
+        let planner = HeuristicQueryPlanner::new(db.metadata_manager.clone());
+        let mut plan = planner.create_plan(&query, tx.clone())?;
+
+        let mut scan = plan.open(tx.clone())?;
+        scan.before_first()?;
+        for i in 0..10 {
+            assert!(scan.next()?);
+            assert_eq!(scan.get_i32("A")?, Some(i));
+            assert_eq!(scan.get_i32("B")?, Some(25 * i + 10));
+        }
+        assert!(!scan.next()?);
+        drop(scan);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_group_by_alias_heuristic_query_planner() -> Result<(), ExecutionError> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 1024;
+        let num_buffers = 100;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+
+        let table = "table1";
+        {
+            let mut md = db.metadata_manager.lock().unwrap();
+            let mut schema = Schema::new();
+            schema.add_i32_field("A");
+            schema.add_i32_field("B");
+            md.create_table(table, &schema, tx.clone())?;
+            md.create_index("IA", table, "A", tx.clone())?;
+        }
+
+        for i in 0..50 {
+            let update_command = format!("INSERT INTO {} (A, B) VALUES ({}, {})", table, i / 5, i);
+            db.planner
+                .lock()
+                .unwrap()
+                .execute_update(&update_command, tx.clone())?;
+        }
+
+        let query = QueryData::new_full(
+            Some(vec!["A".to_string(), "total".to_string()]),
+            vec![table.to_string()],
+            None,
+            Some(vec!["A".to_string()]),
+            None,
+            vec![(Expression::Field("B".to_string()), "total".to_string())],
+            vec![AggregationFn::from(SumFn::new("B"))],
+        );
+
+        let planner = HeuristicQueryPlanner::new(db.metadata_manager.clone());
+        let mut plan = planner.create_plan(&query, tx.clone())?;
+
+        let mut scan = plan.open(tx.clone())?;
+        scan.before_first()?;
+        for i in 0..10 {
+            assert!(scan.next()?);
+            assert_eq!(scan.get_i32("A")?, Some(i));
+            assert_eq!(scan.get_i32("total")?, Some(25 * i + 10));
         }
         assert!(!scan.next()?);
         drop(scan);

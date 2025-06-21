@@ -7,7 +7,7 @@ use super::{
     sum_function::SumFn,
 };
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 #[enum_dispatch]
 pub enum AggregationFn {
     Max(MaxFn),

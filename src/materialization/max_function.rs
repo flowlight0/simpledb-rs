@@ -6,7 +6,7 @@ use crate::{
 
 use super::aggregation_function::AggregationFnControl;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct MaxFn {
     max_value: Option<Value>,
     field_name: String,
