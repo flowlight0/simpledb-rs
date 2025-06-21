@@ -1,5 +1,5 @@
 // auto-generated: "lalrpop 0.22.0"
-// sha3: a1f95ca00eb9c07b7f582ed1db9e9677965a01724a15649f0c3d35ca728c20f4
+// sha3: 5cbdfea2e9abfaac60a9f8a247ba9b8903616225fdb4b4cd33a8e05be4e049b8
 use super::expression;
 use super::predicate;
 use super::statement;
@@ -18674,8 +18674,15 @@ fn __action7<'input>(
                             None => panic!("expression without alias"),
                         },
                     },
-                    statement::SelectField::Aggregation(af) => {
-                        output_fields.push(af.get_field_name().to_string());
+                    statement::SelectField::Aggregation(af, alias) => {
+                        let field_name = af.get_field_name().to_string();
+                        match alias {
+                            Some(a) => {
+                                output_fields.push(a.clone());
+                                extend_fields.push((expression::Expression::Field(field_name), a));
+                            }
+                            None => output_fields.push(field_name),
+                        }
                         aggregation_functions.push(af);
                     }
                 }
@@ -18760,7 +18767,7 @@ fn __action12<'input>(
     (_, _, _): (usize, &'input str, usize),
     (_, alias, _): (usize, String, usize),
 ) -> statement::SelectField {
-    statement::SelectField::Aggregation(a.with_alias(&alias))
+    statement::SelectField::Aggregation(a, Some(alias))
 }
 
 #[allow(unused_variables)]
@@ -18773,7 +18780,7 @@ fn __action13<'input>(
     input: &'input str,
     (_, a, _): (usize, AggregationFn, usize),
 ) -> statement::SelectField {
-    statement::SelectField::Aggregation(a)
+    statement::SelectField::Aggregation(a, None)
 }
 
 #[allow(unused_variables)]
