@@ -12,7 +12,7 @@ pub enum Statement {
 #[derive(Debug, PartialEq, Eq)]
 pub enum SelectField {
     Expression(Expression, Option<String>),
-    Aggregation(AggregationFn),
+    Aggregation(AggregationFn, Option<String>),
 }
 
 #[derive(Debug, PartialEq, Eq)]

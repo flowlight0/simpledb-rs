@@ -11,7 +11,6 @@ pub struct SumFn {
     sum: i64,
     field_name: String,
     has_value: bool,
-    alias: Option<String>,
 }
 
 impl SumFn {
@@ -20,17 +19,7 @@ impl SumFn {
             sum: 0,
             field_name: field_name.to_string(),
             has_value: false,
-            alias: None,
         }
-    }
-
-    pub fn with_alias(mut self, alias: &str) -> Self {
-        self.alias = Some(alias.to_string());
-        self
-    }
-
-    pub fn input_field_name(&self) -> &str {
-        &self.field_name
     }
 }
 
@@ -62,7 +51,7 @@ impl AggregationFnControl for SumFn {
     }
 
     fn get_field_name(&self) -> &str {
-        self.alias.as_deref().unwrap_or(&self.field_name)
+        &self.field_name
     }
 
     fn get_value(&self) -> Option<Value> {

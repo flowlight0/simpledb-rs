@@ -271,8 +271,8 @@ mod tests {
                 None,
                 Some(vec!["val".to_string()]),
                 None,
-                Vec::new(),
-                vec![AggregationFn::from(SumFn::new("val").with_alias("total"))],
+                vec![(Expression::Field("val".to_string()), "total".to_string())],
+                vec![AggregationFn::from(SumFn::new("val"))],
             ))
         );
     }

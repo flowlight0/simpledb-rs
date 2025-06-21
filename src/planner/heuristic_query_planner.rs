@@ -391,8 +391,8 @@ mod tests {
             None,
             Some(vec!["A".to_string()]),
             None,
-            Vec::new(),
-            vec![AggregationFn::from(SumFn::new("B").with_alias("total"))],
+            vec![(Expression::Field("B".to_string()), "total".to_string())],
+            vec![AggregationFn::from(SumFn::new("B"))],
         );
 
         let planner = HeuristicQueryPlanner::new(db.metadata_manager.clone());

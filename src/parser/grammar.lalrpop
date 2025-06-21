@@ -85,8 +85,15 @@ pub Query: statement::QueryData = {
                             None => panic!("expression without alias"),
                         },
                     },
-                    statement::SelectField::Aggregation(af) => {
-                        output_fields.push(af.get_field_name().to_string());
+                    statement::SelectField::Aggregation(af, alias) => {
+                        let field_name = af.get_field_name().to_string();
+                        match alias {
+                            Some(a) => {
+                                output_fields.push(a.clone());
+                                extend_fields.push((expression::Expression::Field(field_name), a));
+                            }
+                            None => output_fields.push(field_name),
+                        }
                         aggregation_functions.push(af);
                     }
                 }
@@ -113,8 +120,8 @@ FieldList: Option<Vec<statement::SelectField>> = {
 SelectField: statement::SelectField = {
     <e:Expression> AS <alias:IdToken> => statement::SelectField::Expression(e, Some(alias)),
     <e:Expression> => statement::SelectField::Expression(e, None),
-    <a:AggregationFn> AS <alias:IdToken> => statement::SelectField::Aggregation(a.with_alias(&alias)),
-    <a:AggregationFn> => statement::SelectField::Aggregation(a),
+    <a:AggregationFn> AS <alias:IdToken> => statement::SelectField::Aggregation(a, Some(alias)),
+    <a:AggregationFn> => statement::SelectField::Aggregation(a, None),
 };
 
 AggregationFn: AggregationFn = {
