@@ -317,7 +317,16 @@ fn run_client<W: Write, E: ClientEditor>(
 
 fn main() -> Result<(), anyhow::Error> {
     let mut editor = DefaultEditor::new()?;
-    let db_url = std::env::args().nth(1);
+    let mut db_url = None;
+    let mut verbose = false;
+    for arg in std::env::args().skip(1) {
+        if arg == "--verbose" {
+            verbose = true;
+        } else {
+            db_url = Some(arg);
+        }
+    }
+    simpledb_rs::config::set_verbose(verbose);
     run_client(
         Driver::Embedded(EmbeddedDriver::new()),
         &mut editor,

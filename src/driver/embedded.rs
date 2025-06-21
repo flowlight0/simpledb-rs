@@ -5,6 +5,7 @@ use std::{
 };
 
 use crate::{
+    config,
     db::SimpleDB,
     errors::ExecutionError,
     plan::{Plan, PlanControl},
@@ -178,6 +179,9 @@ impl EmbeddedConnectionImpl {
     }
 
     fn print_file_access_stats(&self) {
+        if !config::is_verbose() {
+            return;
+        }
         let mut file_manager = self.db.file_manager.lock().unwrap();
         let tx_write_count = file_manager.file_access_stats.write_count;
         let tx_read_count = file_manager.file_access_stats.read_count;

@@ -1,4 +1,5 @@
 pub mod buffer;
+pub mod config;
 pub mod db;
 pub mod driver;
 pub mod errors;
