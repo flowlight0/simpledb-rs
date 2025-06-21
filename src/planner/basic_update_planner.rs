@@ -140,12 +140,13 @@ mod tests {
 
     use crate::parser::statement::{FieldDefinition, QueryData};
 
+    use crate::errors::ExecutionError;
     use crate::planner::basic_query_planner::BasicQueryPlanner;
     use crate::planner::QueryPlanner;
     use crate::record::field::Spec;
 
     #[test]
-    fn test_basic_update_planner() -> Result<(), TransactionError> {
+    fn test_basic_update_planner() -> Result<(), ExecutionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 100;

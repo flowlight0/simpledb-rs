@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    errors::TransactionError,
+    errors::{ExecutionError, QueryError},
     materialization::{
         group_by_plan::GroupByPlan, record_comparator::RecordComparator, sort_plan::SortPlan,
     },
@@ -31,7 +31,16 @@ impl QueryPlanner for BasicQueryPlanner {
         &self,
         query: &QueryData,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Plan, TransactionError> {
+    ) -> Result<Plan, ExecutionError> {
+        {
+            let md = self.metadata_manager.lock().unwrap();
+            for table_name in &query.tables {
+                if md.get_layout(table_name, tx.clone())?.is_none() {
+                    return Err(QueryError::InvalidTable(table_name.to_string()).into());
+                }
+            }
+        }
+
         // Step 1
         let mut plans = vec![];
         for table_name in &query.tables {
@@ -111,7 +120,7 @@ mod tests {
     use crate::scan::ScanControl;
 
     #[test]
-    fn test_basic_query_planner() -> Result<(), TransactionError> {
+    fn test_basic_query_planner() -> Result<(), ExecutionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 100;
@@ -181,7 +190,7 @@ mod tests {
     }
 
     #[test]
-    fn test_select_all_basic_query_planner() -> Result<(), TransactionError> {
+    fn test_select_all_basic_query_planner() -> Result<(), ExecutionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 100;
@@ -235,7 +244,7 @@ mod tests {
     }
 
     #[test]
-    fn test_order_by_basic_query_planner() -> Result<(), TransactionError> {
+    fn test_order_by_basic_query_planner() -> Result<(), ExecutionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 100;
@@ -285,7 +294,7 @@ mod tests {
     }
 
     #[test]
-    fn test_extend_basic_query_planner() -> Result<(), TransactionError> {
+    fn test_extend_basic_query_planner() -> Result<(), ExecutionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 100;
@@ -343,7 +352,7 @@ mod tests {
     }
 
     #[test]
-    fn test_group_by_basic_query_planner() -> Result<(), TransactionError> {
+    fn test_group_by_basic_query_planner() -> Result<(), ExecutionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 100;
@@ -399,7 +408,7 @@ mod tests {
     }
 
     #[test]
-    fn test_group_by_alias_basic_query_planner() -> Result<(), TransactionError> {
+    fn test_group_by_alias_basic_query_planner() -> Result<(), ExecutionError> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
         let block_size = 256;
         let num_buffers = 100;

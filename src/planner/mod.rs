@@ -23,7 +23,7 @@ pub trait QueryPlanner: Send + Sync {
         &self,
         query: &QueryData,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Plan, TransactionError>;
+    ) -> Result<Plan, ExecutionError>;
 }
 
 pub trait UpdatePlanner: Send + Sync {
@@ -123,6 +123,31 @@ mod tests {
         }
         assert!(!scan.next()?);
         drop(scan);
+        tx.lock().unwrap().commit()?;
+        Ok(())
+    }
+
+    #[test]
+    fn test_invalid_table_error() -> Result<(), ExecutionError> {
+        let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
+        let block_size = 1024;
+        let num_buffers = 3;
+        let db = SimpleDB::new(temp_dir, block_size, num_buffers)?;
+        let tx = Arc::new(Mutex::new(db.new_transaction()?));
+
+        let result = db
+            .planner
+            .lock()
+            .unwrap()
+            .create_query_plan("select * from not_exist", tx.clone());
+
+        match result {
+            Err(ExecutionError::QueryError(QueryError::InvalidTable(t))) => {
+                assert_eq!(t, "not_exist")
+            }
+            _ => panic!("Expected InvalidTable error"),
+        }
+
         tx.lock().unwrap().commit()?;
         Ok(())
     }

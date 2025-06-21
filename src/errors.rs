@@ -23,6 +23,8 @@ pub enum TransactionError {
 pub enum QueryError {
     #[error("ParseError: {0}")]
     ParseError(ParseError<usize, String, String>),
+    #[error("Invalid table: {0}")]
+    InvalidTable(String),
 }
 
 impl From<ParseError<usize, Token<'_>, &str>> for QueryError {
@@ -66,6 +68,7 @@ mod tests {
                     }
                 );
             }
+            _ => unreachable!(),
         }
     }
 }
