@@ -73,44 +73,44 @@ impl DriverService for RemoteDriver {
 
 pub struct NetworkDriver {
     runtime: Arc<Runtime>,
+    host: String,
+    port: u16,
 }
 
 impl NetworkDriver {
-    pub fn new() -> Self {
+    pub fn new(host: &str, port: u16) -> Self {
         let runtime = Builder::new_current_thread().enable_all().build().unwrap();
         let runtime = Arc::new(runtime);
-        NetworkDriver { runtime }
+        NetworkDriver {
+            runtime,
+            host: host.to_string(),
+            port,
+        }
     }
 }
 
 impl DriverControl for NetworkDriver {
     fn connect(&self, db_url: &str) -> Result<(String, Connection), anyhow::Error> {
-        if let Some(idx) = db_url.find("//") {
-            let db_url = db_url[idx + 2..].trim();
-            let url = format!("http://{}:50051", db_url);
-            dbg!(&url);
-            let endpoint = Endpoint::from_shared(url)?;
-            let channel = self.runtime.block_on(endpoint.connect())?;
-            let mut client = DriverServiceClient::new(channel.clone());
-            let response = self
-                .runtime
-                .block_on(client.create_connection(DriverCreateConnectionRequest {
-                    url: db_url.to_string(),
-                }))?
-                .into_inner();
-            let connection_id = response.connection_id;
+        let url = format!("http://{}:{}", self.host, self.port);
+        let endpoint = Endpoint::from_shared(url)?;
+        let channel = self.runtime.block_on(endpoint.connect())?;
+        let mut client = DriverServiceClient::new(channel.clone());
+        let response = self
+            .runtime
+            .block_on(client.create_connection(DriverCreateConnectionRequest {
+                url: db_url.to_string(),
+            }))?
+            .into_inner();
+        let connection_id = response.connection_id;
 
-            return Ok((
-                "".to_string(),
-                Connection::Network(NetworkConnection::new(
-                    self.runtime.clone(),
-                    channel,
-                    connection_id,
-                )?),
-            ));
-        } else {
-            panic!("Invalid URL");
-        }
+        Ok((
+            "".to_string(),
+            Connection::Network(NetworkConnection::new(
+                self.runtime.clone(),
+                channel,
+                connection_id,
+            )?),
+        ))
     }
 }
 
@@ -168,7 +168,7 @@ mod tests {
         // give the server a moment to start
         thread::sleep(Duration::from_millis(100));
 
-        let driver = NetworkDriver::new();
+        let driver = NetworkDriver::new("127.0.0.1", 50051);
         let (_db_name, connection) = driver.connect("jdbc:simpledb://127.0.0.1")?;
 
         let mut statement = connection.create_statement()?;

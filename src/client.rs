@@ -1,17 +1,37 @@
 use std::io::{stdout, Write};
 use std::path::{Path, PathBuf};
 
+use clap::Parser;
 use colored::Colorize;
 
 use rustyline::{error::ReadlineError, DefaultEditor};
 
 use simpledb_rs::{
     driver::{
-        embedded::EmbeddedDriver, ConnectionControl, Driver, DriverControl, MetadataControl,
-        ResultSetControl, Statement, StatementControl,
+        embedded::EmbeddedDriver, network::driver::NetworkDriver, ConnectionControl, Driver,
+        DriverControl, MetadataControl, ResultSetControl, Statement, StatementControl,
     },
     record::field::Type,
 };
+
+#[derive(Parser)]
+#[command(name = "client")]
+struct Args {
+    /// Enable verbose output
+    #[arg(long)]
+    verbose: bool,
+
+    /// Network server host. If omitted, use embedded driver
+    #[arg(long)]
+    host: Option<String>,
+
+    /// Network server port
+    #[arg(long, default_value_t = 50051)]
+    port: u16,
+
+    /// Database URL
+    db_url: Option<String>,
+}
 
 trait ClientEditor {
     fn readline(&mut self, prompt: &str) -> Result<String, ReadlineError>;
@@ -316,23 +336,19 @@ fn run_client<W: Write, E: ClientEditor>(
 }
 
 fn main() -> Result<(), anyhow::Error> {
+    let args = Args::parse();
+
     let mut editor = DefaultEditor::new()?;
-    let mut db_url = None;
-    let mut verbose = false;
-    for arg in std::env::args().skip(1) {
-        if arg == "--verbose" {
-            verbose = true;
-        } else {
-            db_url = Some(arg);
-        }
-    }
-    simpledb_rs::config::set_verbose(verbose);
-    run_client(
-        Driver::Embedded(EmbeddedDriver::new()),
-        &mut editor,
-        &mut stdout(),
-        db_url.as_deref(),
-    )
+
+    simpledb_rs::config::set_verbose(args.verbose);
+
+    let driver = if let Some(h) = args.host {
+        Driver::Network(NetworkDriver::new(&h, args.port))
+    } else {
+        Driver::Embedded(EmbeddedDriver::new())
+    };
+
+    run_client(driver, &mut editor, &mut stdout(), args.db_url.as_deref())
 }
 
 #[cfg(test)]
