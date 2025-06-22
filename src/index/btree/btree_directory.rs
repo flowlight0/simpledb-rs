@@ -138,6 +138,7 @@ impl BTreeDirectory {
     }
 
     #[allow(dead_code)]
+    #[cfg(not(tarpaulin_include))]
     pub(crate) fn debug_print(
         &self,
         btree_leaf_file_name: &str,

@@ -1,6 +1,9 @@
 use std::{env, path::PathBuf, process::Command};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Recognize Tarpaulin cfgs for conditional compilation without warnings
+    println!("cargo:rustc-check-cfg=cfg(tarpaulin)");
+    println!("cargo:rustc-check-cfg=cfg(tarpaulin_include)");
     let manifest_dir = env::var("CARGO_MANIFEST_DIR")?;
     let out_dir = PathBuf::from(&manifest_dir).join("src/proto");
     tonic_build::configure()
