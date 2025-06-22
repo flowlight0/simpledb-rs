@@ -67,6 +67,10 @@ impl ScanControl for SelectScan {
         self.base_scan.set_string(field_name, value)
     }
 
+    fn set_value(&mut self, field_name: &str, value: &Value) -> Result<(), TransactionError> {
+        self.base_scan.set_value(field_name, value)
+    }
+
     fn delete(&mut self) -> Result<(), TransactionError> {
         self.base_scan.delete()
     }
