@@ -444,9 +444,9 @@ mod tests {
             work_dir.path().join("db").to_string_lossy()
         );
         let commands = vec![
-            "create table T(A I32, B I32)".to_string(),
-            "insert into T(A, B) values (1, 2)".to_string(),
-            "select A, B from T".to_string(),
+            "create table T(A I32, B I32, C VARCHAR(5))".to_string(),
+            "insert into T(A, B, C) values (1, 2, 'foo')".to_string(),
+            "select A, B, C from T".to_string(),
             "exit".to_string(),
         ];
         let mut editor = ScriptedEditor::new(commands);
@@ -464,14 +464,16 @@ mod tests {
         use colored::Colorize;
         let output_str = String::from_utf8(output).unwrap();
         let expected = format!(
-            "{}\n{}\n{} | {}\n{}\n{} | {}\n",
+            "{}\n{}\n{} | {} | {}\n{}\n{} | {} | {}\n",
             "0 records processed".magenta(),
             "1 records processed".magenta(),
             format!("{:>12}", "A").bold().cyan(),
             format!("{:>12}", "B").bold().cyan(),
-            "-".repeat(27).bright_blue(),
+            format!("{:>5}", "C").bold().cyan(),
+            "-".repeat(35).bright_blue(),
             format!("{:>12}", 1).yellow(),
             format!("{:>12}", 2).yellow(),
+            format!("{:<5}", "foo").green(),
         );
         assert_eq!(output_str, expected);
         Ok(())
