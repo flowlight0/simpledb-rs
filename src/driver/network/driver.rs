@@ -90,7 +90,7 @@ impl NetworkDriver {
 }
 
 impl DriverControl for NetworkDriver {
-    fn connect(&self, db_url: &str) -> Result<(String, Connection), anyhow::Error> {
+    fn connect(&self, db_name: &str) -> Result<(String, Connection), anyhow::Error> {
         let url = format!("http://{}:{}", self.host, self.port);
         let endpoint = Endpoint::from_shared(url)?;
         let channel = self.runtime.block_on(endpoint.connect())?;
@@ -98,7 +98,7 @@ impl DriverControl for NetworkDriver {
         let response = self
             .runtime
             .block_on(client.create_connection(DriverCreateConnectionRequest {
-                url: db_url.to_string(),
+                url: db_name.to_string(),
             }))?
             .into_inner();
         let connection_id = response.connection_id;
@@ -169,7 +169,7 @@ mod tests {
         thread::sleep(Duration::from_millis(100));
 
         let driver = NetworkDriver::new("127.0.0.1", 50051);
-        let (_db_name, connection) = driver.connect("jdbc:simpledb://127.0.0.1")?;
+        let (_db_name, connection) = driver.connect("sample")?;
 
         let mut statement = connection.create_statement()?;
         statement.execute_update("create table test (A I32, B VARCHAR(20))")?;
