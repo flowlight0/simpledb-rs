@@ -10,9 +10,34 @@ The main goal of this repoistory is my own learning. The code from Chapter 3 to 
 
 ## Usage
 
-### Example
+Three binaries are available:
+
+- `client`: A SQL client for interacting with the database.
+  - It receives three command line arguments:
+    - `db`: The name of the database to connect to.
+    - `host`: The host where the database server is running. If it is not specified, the client will connect to local DB with the embedded driver. Otherwise, it will connect to the remote DB server with the specified host and port.
+    - `port`: The port on which the database server is listening (default: `50051`). If the `host` is not specified, this argument is ignored.
+- `server`: The database server that handles client requests.
+- `create_student_db`: Creates a sample database for the student records.
+
+You can run these binaries using `cargo run --bin <binary_name>`. For example, to run the client, use:
+
+```bash
+cargo run --bin client studentdb
+```
+
+### Example (embedded)
 
 ```zsh
+➜  simpledb-rs git:(main) ✗ cargo run --quiet --bin create_student_db # Create STUDENT DB for DEMO
+Table STUDENT created.
+STUDENT records inserted.
+Table DEPT created.
+DEPT records inserted.
+Table COURSE created.
+COURSE records inserted.
+Table SECTION created.
+SECTION records inserted.
 ➜  simpledb-rs git:(main) ✗ cargo run --quiet --bin create_student_db # Create STUDENT DB for DEMO
 Table STUDENT created.
 STUDENT records inserted.
