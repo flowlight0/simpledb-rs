@@ -82,10 +82,7 @@ impl ConnectionService for RemoteConnection {
             .expect(&format!("Unknown connection_id: {}", connection_id));
         connection.close().unwrap();
 
-        self.embedded_connection_dict
-            .lock()
-            .unwrap()
-            .remove(&connection_id);
+        lock.remove(&connection_id);
         Ok(Response::new(ConnectionCloseResponse {}))
     }
 
