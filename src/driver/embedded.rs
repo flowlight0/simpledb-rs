@@ -265,7 +265,7 @@ impl EmbeddedDriver {
 
 impl DriverControl for EmbeddedDriver {
     fn connect(&self, db_url: &str) -> Result<(String, Connection), anyhow::Error> {
-        let db_name = db_url.replace("jdbc:simpledb:", "").trim().to_string();
+        let db_name = db_url.trim().to_string();
         let db_directory = PathBuf::from(&db_name);
         let db = SimpleDB::new(db_directory, DEFAULT_BLOCK_SIZE, DEFAULT_NUM_BUFFERS)?;
         Ok((db_name, Connection::Embedded(EmbeddedConnection::new(db)?)))
@@ -279,10 +279,10 @@ mod tests {
     #[test]
     fn test_embedded_driver_basic_flow() -> Result<(), anyhow::Error> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("directory");
-        let db_url = format!("jdbc:simpledb:{}", temp_dir.to_string_lossy());
+        let db_name = temp_dir.to_string_lossy().to_string();
 
         let driver = EmbeddedDriver::new();
-        let (db_name, mut connection) = driver.connect(&db_url)?;
+        let (db_name, mut connection) = driver.connect(&db_name)?;
         assert_eq!(db_name, temp_dir.to_string_lossy());
 
         let mut statement = connection.create_statement()?;
@@ -322,10 +322,10 @@ mod tests {
     #[test]
     fn test_embedded_driver_null_handling() -> Result<(), anyhow::Error> {
         let temp_dir = tempfile::tempdir().unwrap().into_path().join("dir_null");
-        let db_url = format!("jdbc:simpledb:{}", temp_dir.to_string_lossy());
+        let db_name = temp_dir.to_string_lossy();
 
         let driver = EmbeddedDriver::new();
-        let (_db_name, connection) = driver.connect(&db_url)?;
+        let (_db_name, connection) = driver.connect(&db_name)?;
 
         let mut statement = connection.create_statement()?;
         statement.execute_update("create table test (A I32, B VARCHAR(20))")?;

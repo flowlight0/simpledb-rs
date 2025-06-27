@@ -29,8 +29,8 @@ struct Args {
     #[arg(long, default_value_t = 50051)]
     port: u16,
 
-    /// Database URL
-    db_url: Option<String>,
+    /// Database name
+    db: Option<String>,
 }
 
 trait ClientEditor {
@@ -275,13 +275,13 @@ fn run_client<W: Write, E: ClientEditor>(
     driver: Driver,
     editor: &mut E,
     writer: &mut W,
-    db_url: Option<&str>,
+    db: Option<&str>,
 ) -> Result<(), anyhow::Error> {
     let history_path = PathBuf::from(".simpledb_history");
     let _ = editor.load_history(&history_path);
 
-    let db_url = match db_url {
-        Some(url) => url.to_string(),
+    let db_name = match db {
+        Some(db_name) => db_name.to_string(),
         None => loop {
             match editor.readline("Connect> ") {
                 Ok(line) => break line,
@@ -292,7 +292,7 @@ fn run_client<W: Write, E: ClientEditor>(
         },
     };
 
-    let (db_name, mut connection) = driver.connect(db_url.trim_end())?;
+    let (db_name, mut connection) = driver.connect(db_name.trim_end())?;
     let mut statement = connection.create_statement()?;
 
     loop {
@@ -348,7 +348,7 @@ fn main() -> Result<(), anyhow::Error> {
         Driver::Embedded(EmbeddedDriver::new())
     };
 
-    run_client(driver, &mut editor, &mut stdout(), args.db_url.as_deref())
+    run_client(driver, &mut editor, &mut stdout(), args.db.as_deref())
 }
 
 #[cfg(test)]
@@ -407,10 +407,8 @@ mod tests {
     #[serial_test::serial]
     fn test_run_client_select() -> Result<(), anyhow::Error> {
         let work_dir = tempfile::tempdir()?;
-        let db_url = format!(
-            "jdbc:simpledb:{}",
-            work_dir.path().join("db").to_string_lossy()
-        );
+        let db_name = work_dir.path().join("db").to_string_lossy().to_string();
+
         let commands = vec![
             "create table T(A I32)".to_string(),
             "insert into T(A) values (1)".to_string(),
@@ -426,7 +424,7 @@ mod tests {
             Driver::Embedded(EmbeddedDriver::new()),
             &mut editor,
             &mut output,
-            Some(&db_url),
+            Some(&db_name),
         )?;
         std::env::set_current_dir(current)?;
 
@@ -455,10 +453,7 @@ mod tests {
     #[serial_test::serial]
     fn test_run_client_select_two_columns() -> Result<(), anyhow::Error> {
         let work_dir = tempfile::tempdir()?;
-        let db_url = format!(
-            "jdbc:simpledb:{}",
-            work_dir.path().join("db").to_string_lossy()
-        );
+        let db_name = work_dir.path().join("db").to_string_lossy().to_string();
         let commands = vec![
             "create table T(A I32, B I32, C VARCHAR(5))".to_string(),
             "insert into T(A, B, C) values (1, 2, 'foo')".to_string(),
@@ -473,7 +468,7 @@ mod tests {
             Driver::Embedded(EmbeddedDriver::new()),
             &mut editor,
             &mut output,
-            Some(&db_url),
+            Some(&db_name),
         )?;
         std::env::set_current_dir(current)?;
 
@@ -499,10 +494,7 @@ mod tests {
     #[serial_test::serial]
     fn test_run_client_ignore_empty_input() -> Result<(), anyhow::Error> {
         let work_dir = tempfile::tempdir()?;
-        let db_url = format!(
-            "jdbc:simpledb:{}",
-            work_dir.path().join("db").to_string_lossy()
-        );
+        let db_name = work_dir.path().join("db").to_string_lossy().to_string();
         let commands = vec![
             "".to_string(),
             "create table T(A I32)".to_string(),
@@ -518,7 +510,7 @@ mod tests {
             Driver::Embedded(EmbeddedDriver::new()),
             &mut editor,
             &mut output,
-            Some(&db_url),
+            Some(&db_name),
         )?;
         std::env::set_current_dir(current)?;
 
@@ -544,10 +536,7 @@ mod tests {
     #[serial_test::serial]
     fn test_run_client_show_tables() -> Result<(), anyhow::Error> {
         let work_dir = tempfile::tempdir()?;
-        let db_url = format!(
-            "jdbc:simpledb:{}",
-            work_dir.path().join("db").to_string_lossy()
-        );
+        let db_name = work_dir.path().join("db").to_string_lossy().to_string();
         let commands = vec![
             "create table T1(A I32, B VARCHAR(10))".to_string(),
             "create table T2(C I32)".to_string(),
@@ -562,7 +551,7 @@ mod tests {
             Driver::Embedded(EmbeddedDriver::new()),
             &mut editor,
             &mut output,
-            Some(&db_url),
+            Some(&db_name),
         )?;
         std::env::set_current_dir(current)?;
 
