@@ -112,6 +112,10 @@ SQL (studentdb)> exit
 
 ```
 
+### Interactive Client
+
+The `client` binary now uses `rustyline` for input. This allows convenient line editing and command history. Previous statements are stored in a `.simpledb_history` file in the current directory and loaded automatically the next time the client runs.
+
 ## Completed excercises
 
 The following issues correspond to finished exercises from the book:
@@ -134,10 +138,6 @@ The following issues correspond to finished exercises from the book:
 - [Exercise 13.15](https://github.com/flowlight0/simpledb-rs/issues/110): Support "ORDER BY" clause
 - [Exercise 13.16](https://github.com/flowlight0/simpledb-rs/issues/112): Implement more aggregation functions
 - [Exercise 13.7](https://github.com/flowlight0/simpledb-rs/issues/127): Support "GROUP BY" clause
-
-## Interactive Client
-
-The `client` binary now uses `rustyline` for input. This allows convenient line editing and command history. Previous statements are stored in a `.simpledb_history` file in the current directory and loaded automatically the next time the client runs.
 
 ## Useful links
 
