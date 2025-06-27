@@ -112,6 +112,31 @@ SQL (studentdb)> exit
 
 ```
 
+### Example (remote)
+
+In terminal A, start the server:
+
+```bash
+➜  simpledb-rs git:(main) ✗ cargo run --quiet --bin server # Start the server whose port is 50051
+```
+
+In terminal B, connect to the server:
+
+```bash
+➜  simpledb-rs git:(main) ✗ cargo run --quiet --bin client -- --host 127.0.0.1 studentdb # Connect to the local server with network driver
+SQL ()> select * from COURSE
+         CId |       DeptId |                Title
+--------------------------------------------------
+          12 |           10 | db systems
+          22 |           10 | compilers
+          32 |           20 | calculus
+          42 |           20 | algebra
+          52 |           30 | acting
+          62 |           30 | elocution
+
+SQL ()> exit
+```
+
 ### Interactive Client
 
 The `client` binary now uses `rustyline` for input. This allows convenient line editing and command history. Previous statements are stored in a `.simpledb_history` file in the current directory and loaded automatically the next time the client runs.
@@ -143,3 +168,7 @@ The following issues correspond to finished exercises from the book:
 
 - https://github.com/mnogu/simpledb-rs: Better implementation of SimpleDB in Rust
 - https://zenn.dev/hmarui66/scraps/850df4edc50c58: Well organized Japanese summary of each chapter of the book
+
+```
+
+```
