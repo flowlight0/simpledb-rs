@@ -40,7 +40,7 @@ Table SECTION created.
 SECTION records inserted.
 Table ENROLL created.
 ENROLL records inserted.
-➜  simpledb-rs git:(main) ✗ cargo run --quiet --bin client studentdb
+➜  simpledb-rs git:(main) ✗ cargo run --quiet --bin client studentdb # Connect to the local studentdb with embedded driver
 SQL (studentdb)> show tables
    name |                                                                     schema
 ------------------------------------------------------------------------------------
