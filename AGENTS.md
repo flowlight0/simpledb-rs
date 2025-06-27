@@ -11,3 +11,4 @@
 - Format Rust with `cargo fmt`
 - Run tests with `cargo test`
 - The above commands should be run before submitting a pull request
+- Feature branches should be named in English
