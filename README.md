@@ -28,16 +28,7 @@ cargo run --bin client studentdb
 
 ### Example (embedded)
 
-```zsh
-➜  simpledb-rs git:(main) ✗ cargo run --quiet --bin create_student_db # Create STUDENT DB for DEMO
-Table STUDENT created.
-STUDENT records inserted.
-Table DEPT created.
-DEPT records inserted.
-Table COURSE created.
-COURSE records inserted.
-Table SECTION created.
-SECTION records inserted.
+```bash
 ➜  simpledb-rs git:(main) ✗ cargo run --quiet --bin create_student_db # Create STUDENT DB for DEMO
 Table STUDENT created.
 STUDENT records inserted.
