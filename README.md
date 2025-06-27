@@ -6,7 +6,95 @@ This repository is a Rust implementation of SimpleDB from the book "[Database De
 
 ## Overview
 
-The main goal of this repoistory is my own learning. The code from Chapter 3 to Chapter 15 of the book was originally implemented in Java, and I have re-implemented it in Rust. I will add the code for the exercises of each chapter when I feel like it.
+The main goal of this repoistory is my own learning. The code from Chapter 3 to Chapter 15 of the book was originally implemented in Java, and I have re-implemented it in Rust.
+
+## Usage
+
+### Example
+
+```zsh
+➜  simpledb-rs git:(main) ✗ cargo run --quiet --bin create_student_db # Create STUDENT DB for DEMO
+Table STUDENT created.
+STUDENT records inserted.
+Table DEPT created.
+DEPT records inserted.
+Table COURSE created.
+COURSE records inserted.
+Table SECTION created.
+SECTION records inserted.
+Table ENROLL created.
+ENROLL records inserted.
+➜  simpledb-rs git:(main) ✗ cargo run --quiet --bin client studentdb
+SQL (studentdb)> show tables
+   name |                                                                     schema
+------------------------------------------------------------------------------------
+tblcat  | slotsize I32, tblname VARCHAR(50)
+fldcat  | type I32, length I32, offset I32, tblname VARCHAR(50), fldname VARCHAR(50)
+idxcat  | index_name VARCHAR(255), table_name VARCHAR(255), field_name VARCHAR(255)
+STUDENT | SId I32, MajorId I32, GradYear I32, SName VARCHAR(10)
+DEPT    | DId I32, DName VARCHAR(8)
+COURSE  | CId I32, DeptId I32, Title VARCHAR(20)
+SECTION | SectId I32, CourseId I32, YearOffered I32, Prof VARCHAR(8)
+ENROLL  | EId I32, StudentId I32, SectionId I32, Grade VARCHAR(2)
+
+SQL (studentdb)> select * from STUDENT
+         SId |      MajorId |     GradYear |      SName
+-------------------------------------------------------
+           1 |           10 |         2021 | joe
+           2 |           20 |         2020 | amy
+           3 |           10 |         2022 | max
+           4 |           20 |         2022 | sue
+           5 |           30 |         2020 | bob
+           6 |           20 |         2020 | kim
+           7 |           30 |         2021 | art
+           8 |           20 |         2019 | pat
+           9 |           10 |         2021 | lee
+
+SQL (studentdb)> select SName, DName, Grade, YearOffered from STUDENT, DEPT, ENROLL, SECTION where SId = StudentId and SectId = SectionId and DId = MajorId and YearOffered = 2018
+ YearOffered |      SName |    DName | Grade
+--------------------------------------------
+        2018 | joe        | compsci  | A
+        2018 | sue        | math     | A
+        2018 | kim        | math     | A
+
+SQL (studentdb)> select * from ENROLL
+         EId |    StudentId |    SectionId | Grade
+--------------------------------------------------
+          14 |            1 |           13 | A
+          24 |            1 |           43 | C
+          34 |            2 |           43 | B+
+          44 |            4 |           33 | B
+          54 |            4 |           53 | A
+          64 |            6 |           53 | A
+
+SQL (studentdb)> MODIFY ENROLL SET Grade = 'A+' WHERE StudentId = 6
+1 records processed
+
+SQL (studentdb)> select SName, DName, Grade, YearOffered from STUDENT, DEPT, ENROLL, SECTION where SId = StudentId and SectId = SectionId and DId = MajorId and YearOffered = 2018
+ YearOffered |      SName |    DName | Grade
+--------------------------------------------
+        2018 | joe        | compsci  | A
+        2018 | sue        | math     | A
+        2018 | kim        | math     | A+
+
+SQL (studentdb)> DELETE FROM STUDENT WHERE SName = 'joe'
+1 records processed
+
+SQL (studentdb)> select * from STUDENT
+         SId |      MajorId |     GradYear |      SName
+-------------------------------------------------------
+           2 |           20 |         2020 | amy
+           3 |           10 |         2022 | max
+           4 |           20 |         2022 | sue
+           5 |           30 |         2020 | bob
+           6 |           20 |         2020 | kim
+           7 |           30 |         2021 | art
+           8 |           20 |         2019 | pat
+           9 |           10 |         2021 | lee
+
+SQL (studentdb)> exit
+
+```
 
 ## Completed excercises
 
