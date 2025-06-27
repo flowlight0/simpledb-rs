@@ -26,6 +26,26 @@ You can run these binaries using `cargo run --bin <binary_name>`. For example, t
 cargo run --bin client studentdb
 ```
 
+### Supported SQL Commands
+
+The client supports the following SQL commands:
+
+- `SELECT`: Retrieve data from one or more tables. It supports some additional clauses and keywords:
+
+  - `WHERE`: Filter records based on conditions.
+  - `ORDER BY`: Sort the results by one or more columns.
+  - `GROUP BY`: Group records based on one or more columns.
+  - `AS`: Rename columns in the result set.
+
+- `INSERT`: Add new records to a table.
+- `DELETE`: Remove records from a table.
+- `MODIFY`: Update existing records in a table.
+- `SHOW TABLES`: List all tables in the database.
+- `CREATE TABLE`: Create a new table in the database.
+- `CREATE INDEX`: Create an index on a table.
+
+For more details, please see the grammar in `src/parser/grammar.lalrpop`.
+
 ### Example (embedded)
 
 ```bash
